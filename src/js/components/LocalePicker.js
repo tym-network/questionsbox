@@ -1,6 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// Import all flags
+function importAll (r) {
+    r.keys().forEach(r);
+}
+
+importAll(require.context('../../assets/img/flags', true, /\.svg$/));
+
 export default class LocalePicker extends React.PureComponent {
 
     static propTypes = {
@@ -30,11 +37,14 @@ export default class LocalePicker extends React.PureComponent {
                 <h1>Select a language</h1>
                 <div className="flex row center align-center grow">
                     {
-                        this.props.locales.map(locale => (
-                            <div className="flag" key={locale} onClick={this.setLocale(locale)}>
-                                <img src={`../images/${locale}.svg`}/>
-                            </div>
-                        ))
+                        this.props.locales.map(locale => {
+                            const flagImg = require(`../../assets/img/flags/${locale}.svg`);
+                            return (
+                                <div className="flag" key={locale} onClick={this.setLocale(locale)}>
+                                    <img src={flagImg}/>
+                                </div>
+                            );
+                        })
                     }
                 </div>
             </div>
