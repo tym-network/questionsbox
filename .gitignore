@@ -1,0 +1,16 @@
+# nwjs
+nwjc
+nwjs.app
+chromedriver
+credits.html
+minidump_stackwalk
+payload
+
+# Data (config file)
+.data/
+
+# Error file
+error.json
+
+# Dependencies
+node_modules/

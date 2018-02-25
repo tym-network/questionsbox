@@ -1,0 +1,18 @@
+{
+    "default": {
+        "settings": "Réglages",
+        "audioInput": "Entrée son",
+        "videoInput": "Caméra",
+        "saveSettings": "Sauvegarder les réglages",
+        "instructionsButton": "Instructions",
+        "instruction1": "Des questions vont être affichées à l'écran. Lisez la question à haute voix puis répondez et/ou buzzez",
+        "instruction2": "Vous avez tout votre temps, vous contrôlez le passage à la question suivante.",
+        "buzz": "buzz",
+        "nextQuestion": "question suivante",
+        "previousQuestion": "question précédente",
+        "letsGo": "C'est parti!",
+        "next": "Suivant",
+        "thankYou": "Merci d'avoir participé!",
+        "restartMessage": "Redémarrage automatique dans {{time}} secondes"
+    }
+}

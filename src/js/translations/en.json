@@ -1,0 +1,18 @@
+{
+    "default": {
+        "settings": "Settings",
+        "audioInput": "Audio input",
+        "videoInput": "Camera",
+        "saveSettings": "Save settings",
+        "instructionsButton": "Instructions",
+        "instruction1": "Questions will be displayed on the screen. Read them out loud then answer and/or hit the buzzer",
+        "instruction2": "Take all your time, you are the one controlling when the next question is displayed.",
+        "buzz": "buzz",
+        "nextQuestion": "next question",
+        "previousQuestion": "previous question",
+        "letsGo": "Let's go!",
+        "next": "Next",
+        "thankYou": "Thank you!",
+        "restartMessage": "The app will start again in {{time}} seconds"
+    }
+}
