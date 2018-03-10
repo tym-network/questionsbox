@@ -69,6 +69,19 @@ module.exports = {
                         publicPath: '../'
                     }
                 }]
+            },
+            {
+                test: /\.(ogg)$/,
+                include: [
+                    path.resolve(__dirname, "src", "assets", "sound"),
+                ],
+                use: [{
+                    loader: 'file-loader',
+                    options: {
+                        name: 'sound/[name]-[hash].[ext]',
+                        publicPath: '../'
+                    }
+                }]
             }
         ]
     },

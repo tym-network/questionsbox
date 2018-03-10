@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import fs from 'fs';
 
+import Buzzer from './Buzzer';
 import Instructions from './Instructions';
 import IntroVideo from './IntroVideo';
 import Questions from './Questions';
@@ -24,17 +25,28 @@ export default class MainViewer extends React.PureComponent {
         'thanks'
     ];
 
+    lastBuzzId = 0;
+
     constructor(props) {
         super(props);
 
         this.state = {
             step: 'instructions',
-            style: {}
+            style: {},
+            buzzers: []
         };
 
         this.goToNextSubstep = this.goToNextSubstep.bind(this);
         this.goToNextStep = this.goToNextStep.bind(this);
         this.setStyle = this.setStyle.bind(this);
+    }
+
+    componentDidMount() {
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') {
+                this.addBuzzer();
+            }
+        });
     }
 
     goToNextSubstep() {
@@ -70,6 +82,31 @@ export default class MainViewer extends React.PureComponent {
     setStyle(style) {
         this.setState({
             style
+        });
+    }
+
+    addBuzzer() {
+        let newBuzzers = this.state.buzzers.slice(0);
+
+        newBuzzers.push(this.lastBuzzId);
+        this.lastBuzzId++;
+
+        this.setState({
+            buzzers: newBuzzers
+        });
+    }
+
+    onBuzzerEnd(id) {
+        // Remove buzzer based on the id
+        const index = this.state.buzzers.indexOf(id);
+        let newBuzzers = this.state.buzzers;
+
+        if (index >= 0) {
+            newBuzzers = this.state.buzzers.splice(index, 1);
+        }
+
+        this.setState({
+            buzzers: newBuzzers
         });
     }
 
@@ -115,11 +152,20 @@ export default class MainViewer extends React.PureComponent {
                 break;
         }
 
+        const buzzers = this.state.buzzers.map(buzzerId => (
+            <Buzzer
+                key={buzzerId}
+                id={buzzerId}
+                onEnd={this.onBuzzerEnd}
+            />
+        ))
+
         return (
             <div id="start" className={classNames} style={this.state.style}>
                 <TransitionGroup>
                     {currentComponent}
                 </TransitionGroup>
+                {buzzers}
             </div>
         );
     }
