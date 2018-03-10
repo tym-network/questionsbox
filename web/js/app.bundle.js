@@ -31296,22 +31296,30 @@ var MainViewer = function (_React$PureComponent) {
             buzzers: []
         };
 
+        _this.onDocumentClick = _this.onDocumentClick.bind(_this);
         _this.goToNextSubstep = _this.goToNextSubstep.bind(_this);
         _this.goToNextStep = _this.goToNextStep.bind(_this);
         _this.setStyle = _this.setStyle.bind(_this);
+        _this.onBuzzerEnd = _this.onBuzzerEnd.bind(_this);
         return _this;
     }
 
     _createClass(MainViewer, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            var _this2 = this;
-
-            document.addEventListener('click', function (e) {
-                if (e.target.tagName !== 'BUTTON') {
-                    _this2.addBuzzer();
-                }
-            });
+            document.addEventListener('click', this.onDocumentClick);
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            document.removeEventListener('click', this.onDocumentClick);
+        }
+    }, {
+        key: 'onDocumentClick',
+        value: function onDocumentClick(e) {
+            if (e.target.tagName !== 'BUTTON') {
+                this.addBuzzer();
+            }
         }
     }, {
         key: 'goToNextSubstep',
@@ -31382,7 +31390,7 @@ var MainViewer = function (_React$PureComponent) {
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
+            var _this2 = this;
 
             var currentComponent = void 0;
             var timeoutTransition = 400;
@@ -31425,7 +31433,7 @@ var MainViewer = function (_React$PureComponent) {
                 return _react2.default.createElement(_Buzzer2.default, {
                     key: buzzerId,
                     id: buzzerId,
-                    onEnd: _this3.onBuzzerEnd
+                    onEnd: _this2.onBuzzerEnd
                 });
             });
 
@@ -31489,31 +31497,40 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var MainViewer = function (_React$PureComponent) {
     _inherits(MainViewer, _React$PureComponent);
 
-    function MainViewer() {
+    function MainViewer(props) {
         _classCallCheck(this, MainViewer);
 
-        return _possibleConstructorReturn(this, (MainViewer.__proto__ || Object.getPrototypeOf(MainViewer)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (MainViewer.__proto__ || Object.getPrototypeOf(MainViewer)).call(this, props));
+
+        _this.onEnded = _this.onEnded.bind(_this);
+        return _this;
     }
 
     _createClass(MainViewer, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            var _this2 = this;
-
-            this.buzzer.addEventListener('ended', function () {
-                _this2.props.onEnd(_this2.props.id);
-            });
+            this.buzzer.addEventListener('ended', this.onEnded);
             this.buzzer.play();
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            this.buzzer.removeEventListener('ended', this.onEnded);
+        }
+    }, {
+        key: 'onEnded',
+        value: function onEnded() {
+            this.props.onEnd(this.props.id);
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
+            var _this2 = this;
 
             return _react2.default.createElement(
                 'audio',
                 { className: 'buzzer', ref: function ref(_ref) {
-                        return _this3.buzzer = _ref;
+                        return _this2.buzzer = _ref;
                     } },
                 _react2.default.createElement('source', { src: _buzz2.default, type: 'audio/ogg' })
             );

@@ -9,11 +9,23 @@ export default class MainViewer extends React.PureComponent {
         onEnd: PropTypes.func.isRequired
     };
 
+    constructor(props) {
+        super(props);
+
+        this.onEnded = this.onEnded.bind(this);
+    }
+
     componentDidMount() {
-        this.buzzer.addEventListener('ended', () => {
-            this.props.onEnd(this.props.id);
-        });
+        this.buzzer.addEventListener('ended', this.onEnded);
         this.buzzer.play();
+    }
+
+    componentWillUnmount() {
+        this.buzzer.removeEventListener('ended', this.onEnded);
+    }
+
+    onEnded() {
+        this.props.onEnd(this.props.id);
     }
 
     render() {

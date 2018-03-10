@@ -36,17 +36,25 @@ export default class MainViewer extends React.PureComponent {
             buzzers: []
         };
 
+        this.onDocumentClick = this.onDocumentClick.bind(this);
         this.goToNextSubstep = this.goToNextSubstep.bind(this);
         this.goToNextStep = this.goToNextStep.bind(this);
         this.setStyle = this.setStyle.bind(this);
+        this.onBuzzerEnd = this.onBuzzerEnd.bind(this);
     }
 
     componentDidMount() {
-        document.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'BUTTON') {
-                this.addBuzzer();
-            }
-        });
+        document.addEventListener('click', this.onDocumentClick);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('click', this.onDocumentClick);
+    }
+
+    onDocumentClick (e) {
+        if (e.target.tagName !== 'BUTTON') {
+            this.addBuzzer();
+        }
     }
 
     goToNextSubstep() {
