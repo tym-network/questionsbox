@@ -17,6 +17,9 @@ $border: #cfcfcf;
 $borderHover: darken($border, 10%);
 $borderFocus: darken($border, 20%);
 
+// Widths
+$size-sm: 768px;
+
 @import 'fonts/questions-box';
 @import 'pages/settings';
 @import 'pages/locale-picker';
@@ -25,6 +28,7 @@ $borderFocus: darken($border, 20%);
 
 html {
     height: 100%;
+    user-select: none;
 }
 
 body {
@@ -186,9 +190,9 @@ button,
 
 #main {
     position: relative;
-    max-width: 900px;
     width: 100%;
-    min-width: 27em;
+    min-width: 100px;
+    max-width: 900px;
     height: 550px;
     cursor: default;
     opacity: 1;
@@ -267,22 +271,3 @@ footer {
 #video-output {
     height: 150px;
 }
-
-.video-placeholder {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 200px;
-    height: 100%;
-    margin-left: 20px;
-    background: $lightgrey;
-    border-radius: 2px;
-
-    i {
-        line-height: 35px;
-        font-size: 50px;
-        color: $lightmediumgrey;
-    }
-}
-

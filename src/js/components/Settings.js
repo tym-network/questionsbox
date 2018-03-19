@@ -194,13 +194,13 @@ export default class Settings extends React.PureComponent {
     }
 
     render() {
-        const classNames = `${this.props.frontBack} flex column space-between`;
+        const className = `${this.props.frontBack}`;
         return (
-            <section id="settings" className={classNames}>
+            <section id="settings" className={className}>
                 <div>
                     <h1>{i18next.t('settings')}</h1>
-                    <div className="flex row space-between">
-                        <div className="flex column grow">
+                    <div className="settings-wrapper">
+                        <div className="settings-wrapper-inputs">
                             <div className="select-input">
                                 <label htmlFor="audio-input">{i18next.t('audioInput')}</label>
                                 <div className="select-wrapper">
@@ -222,28 +222,26 @@ export default class Settings extends React.PureComponent {
                                 </div>
                             </div>
                         </div>
-                        {(() => {
-                            if (this.state.showVideoOuput) {
-                                return (
-                                    <div className="flex column center">
+                        <div className="settings-wrapper-video">
+                            {(() => {
+                                if (this.state.showVideoOuput) {
+                                    return (
                                         <VideoOutput
                                             ref={ref => this.videoOutput = ref}
                                             audioInputId={this.props.currentAudioInputId}
                                             videoInputId={this.props.currentVideoInputId}
                                             resolution={this.props.resolution}
                                         />
-                                    </div>
-                                );
-                            } else {
-                                return (
-                                    <div className="flex column center">
+                                    );
+                                } else {
+                                    return (
                                         <div className="video-placeholder">
                                             <i className="icon-no-camera"></i>
                                         </div>
-                                    </div>
-                                );
-                            }
-                        })()}
+                                    );
+                                }
+                            })()}
+                        </div>
                     </div>
                 </div>
                 <footer>

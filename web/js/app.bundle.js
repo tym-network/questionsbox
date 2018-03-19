@@ -30071,10 +30071,10 @@ var Settings = function (_React$PureComponent) {
         value: function render() {
             var _this8 = this;
 
-            var classNames = this.props.frontBack + ' flex column space-between';
+            var className = '' + this.props.frontBack;
             return _react2.default.createElement(
                 'section',
-                { id: 'settings', className: classNames },
+                { id: 'settings', className: className },
                 _react2.default.createElement(
                     'div',
                     null,
@@ -30085,10 +30085,10 @@ var Settings = function (_React$PureComponent) {
                     ),
                     _react2.default.createElement(
                         'div',
-                        { className: 'flex row space-between' },
+                        { className: 'settings-wrapper' },
                         _react2.default.createElement(
                             'div',
-                            { className: 'flex column grow' },
+                            { className: 'settings-wrapper-inputs' },
                             _react2.default.createElement(
                                 'div',
                                 { className: 'select-input' },
@@ -30138,32 +30138,28 @@ var Settings = function (_React$PureComponent) {
                                 )
                             )
                         ),
-                        function () {
-                            if (_this8.state.showVideoOuput) {
-                                return _react2.default.createElement(
-                                    'div',
-                                    { className: 'flex column center' },
-                                    _react2.default.createElement(_VideoOutput2.default, {
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'settings-wrapper-video' },
+                            function () {
+                                if (_this8.state.showVideoOuput) {
+                                    return _react2.default.createElement(_VideoOutput2.default, {
                                         ref: function ref(_ref) {
                                             return _this8.videoOutput = _ref;
                                         },
                                         audioInputId: _this8.props.currentAudioInputId,
                                         videoInputId: _this8.props.currentVideoInputId,
                                         resolution: _this8.props.resolution
-                                    })
-                                );
-                            } else {
-                                return _react2.default.createElement(
-                                    'div',
-                                    { className: 'flex column center' },
-                                    _react2.default.createElement(
+                                    });
+                                } else {
+                                    return _react2.default.createElement(
                                         'div',
                                         { className: 'video-placeholder' },
                                         _react2.default.createElement('i', { className: 'icon-no-camera' })
-                                    )
-                                );
-                            }
-                        }()
+                                    );
+                                }
+                            }()
+                        )
                     )
                 ),
                 _react2.default.createElement(
@@ -31987,7 +31983,7 @@ var Thanks = function (_React$PureComponent) {
         value: function render() {
             return _react2.default.createElement(
                 'div',
-                { id: 'thanks', className: 'flex column center grow' },
+                { id: 'thanks' },
                 _react2.default.createElement(
                     'p',
                     null,

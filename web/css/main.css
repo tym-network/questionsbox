@@ -47,8 +47,47 @@
 .icon-no-camera:before {
   content: "g"; }
 
-#settings #video-output {
-  margin-left: 20px; }
+#settings {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; }
+  #settings .settings-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; }
+    @media (max-width: 768px) {
+      #settings .settings-wrapper {
+        flex-direction: column; } }
+    #settings .settings-wrapper .settings-wrapper-inputs {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1; }
+    #settings .settings-wrapper .settings-wrapper-video {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-left: 20px; }
+      @media (max-width: 768px) {
+        #settings .settings-wrapper .settings-wrapper-video {
+          margin-top: 20px;
+          margin-left: 0; } }
+  #settings .video-placeholder {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 100%;
+    background: #f3f3f3;
+    border-radius: 2px; }
+    @media (max-width: 768px) {
+      #settings .video-placeholder {
+        min-height: 150px; } }
+    #settings .video-placeholder i {
+      line-height: 35px;
+      font-size: 50px;
+      color: #a5a5a5; }
 
 #locale {
   transition: all 0.5s ease-in-out; }
@@ -118,16 +157,26 @@
       text-transform: none;
       margin: 0; }
   #start #thanks {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
     height: 100%; }
     #start #thanks p {
       font-size: 40px;
       line-height: 120px;
       margin: 0; }
+      @media (max-width: 768px) {
+        #start #thanks p {
+          font-size: 24px;
+          line-height: 40px; } }
       #start #thanks p.restart {
+        margin-top: 30px;
         font-size: 16px; }
 
 html {
-  height: 100%; }
+  height: 100%;
+  user-select: none; }
 
 body {
   height: 100%;
@@ -254,9 +303,9 @@ button,
 
 #main {
   position: relative;
-  max-width: 900px;
   width: 100%;
-  min-width: 27em;
+  min-width: 100px;
+  max-width: 900px;
   height: 550px;
   cursor: default;
   opacity: 1;
@@ -317,18 +366,3 @@ footer {
 
 #video-output {
   height: 150px; }
-
-.video-placeholder {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 200px;
-  height: 100%;
-  margin-left: 20px;
-  background: #f3f3f3;
-  border-radius: 2px; }
-  .video-placeholder i {
-    line-height: 35px;
-    font-size: 50px;
-    color: #a5a5a5; }

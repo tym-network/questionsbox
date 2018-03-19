@@ -30,7 +30,7 @@ export default class Thanks extends React.PureComponent {
 
     render() {
         return (
-            <div id="thanks" className="flex column center grow">
+            <div id="thanks">
                 <p>{i18next.t('thankYou')}</p>
                 <p className="restart">{i18next.t('restartMessage', {time: this.state.timeToRestart})}</p>
             </div>
