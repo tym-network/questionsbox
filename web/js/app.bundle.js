@@ -5966,6 +5966,12 @@ window.locales.forEach(function (locale) {
     resources[locale] = __webpack_require__(368)("./" + locale + '.json');
 });
 
+// Disable right click
+document.body.addEventListener('contextmenu', function (ev) {
+    ev.preventDefault();
+    return false;
+});
+
 _i18next2.default.init({
     lng: 'en',
     fallbackLng: 'en',
@@ -31373,10 +31379,10 @@ var MainViewer = function (_React$PureComponent) {
         value: function onBuzzerEnd(id) {
             // Remove buzzer based on the id
             var index = this.state.buzzers.indexOf(id);
-            var newBuzzers = this.state.buzzers;
+            var newBuzzers = JSON.parse(JSON.stringify(this.state.buzzers));
 
             if (index >= 0) {
-                newBuzzers = this.state.buzzers.splice(index, 1);
+                newBuzzers.splice(index, 1);
             }
 
             this.setState({

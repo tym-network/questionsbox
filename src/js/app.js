@@ -27,6 +27,12 @@ window.locales.forEach(locale => {
     resources[locale] = require(`./translations/${locale}.json`);
 });
 
+// Disable right click
+document.body.addEventListener('contextmenu', function(ev) {
+    ev.preventDefault();
+    return false;
+});
+
 i18next.init(
     {
         lng: 'en',
