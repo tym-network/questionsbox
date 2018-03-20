@@ -107,10 +107,10 @@ export default class MainViewer extends React.PureComponent {
     onBuzzerEnd(id) {
         // Remove buzzer based on the id
         const index = this.state.buzzers.indexOf(id);
-        let newBuzzers = this.state.buzzers;
+        let newBuzzers = JSON.parse(JSON.stringify(this.state.buzzers));
 
         if (index >= 0) {
-            newBuzzers = this.state.buzzers.splice(index, 1);
+            newBuzzers.splice(index, 1);
         }
 
         this.setState({
