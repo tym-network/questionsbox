@@ -1,12 +1,29 @@
 #start {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     transition: height 1s ease-in-out;
 
     & > div {
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
     }
 
     #instructions {
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: space-between;
+
+        .instructions-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: center;
+        }
 
         .largeParagraph {
             font-size: 16px;
@@ -41,6 +58,10 @@
 
     #question {
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: center;
 
         p {
             font-size: 40px;

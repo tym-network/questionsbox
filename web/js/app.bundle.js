@@ -155,12 +155,6 @@ module.exports = emptyFunction;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports) {
-
-module.exports = require("util");
-
-/***/ }),
-/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -200,6 +194,12 @@ var on = __WEBPACK_IMPORTED_MODULE_0__i18next_js__["a" /* default */].on.bind(__
 var setDefaultNamespace = __WEBPACK_IMPORTED_MODULE_0__i18next_js__["a" /* default */].setDefaultNamespace.bind(__WEBPACK_IMPORTED_MODULE_0__i18next_js__["a" /* default */]);
 var t = __WEBPACK_IMPORTED_MODULE_0__i18next_js__["a" /* default */].t.bind(__WEBPACK_IMPORTED_MODULE_0__i18next_js__["a" /* default */]);
 var use = __WEBPACK_IMPORTED_MODULE_0__i18next_js__["a" /* default */].use.bind(__WEBPACK_IMPORTED_MODULE_0__i18next_js__["a" /* default */]);
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+module.exports = require("util");
 
 /***/ }),
 /* 5 */
@@ -313,7 +313,7 @@ var Logger = function () {
  *
  */
 
-var util = __webpack_require__(3),
+var util = __webpack_require__(4),
     crypto = __webpack_require__(315),
     cycle = __webpack_require__(316),
     fs = __webpack_require__(11),
@@ -1243,7 +1243,7 @@ defineProps(colors, init());
  */
 
 var events = __webpack_require__(10),
-    util = __webpack_require__(3);
+    util = __webpack_require__(4);
 
 //
 // ### function Transport (options)
@@ -1698,7 +1698,7 @@ var common             = __webpack_require__(6);
 winston.hash           = common.hash;
 winston.clone          = common.clone;
 winston.longestElement = common.longestElement;
-winston.exception      = __webpack_require__(32);
+winston.exception      = __webpack_require__(33);
 winston.config         = __webpack_require__(22);
 winston.addColors      = winston.config.addColors;
 
@@ -1924,6 +1924,133 @@ function mixin (target) {
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _fs = __webpack_require__(11);
+
+var _fs2 = _interopRequireDefault(_fs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Utils = function () {
+    function Utils() {
+        _classCallCheck(this, Utils);
+    }
+
+    _createClass(Utils, null, [{
+        key: "throttle",
+        value: function throttle(callback, wait) {
+            var context = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this;
+
+            var timeout = null;
+            var callbackArgs = null;
+
+            var later = function later() {
+                timeout = null;
+            };
+
+            return function () {
+                if (!timeout) {
+                    callbackArgs = arguments;
+                    callback.apply(context, callbackArgs);
+                    timeout = setTimeout(later, wait);
+                }
+            };
+        }
+    }, {
+        key: "readJsonFile",
+        value: function readJsonFile(fileName) {
+            return new Promise(function (res, rej) {
+                _fs2.default.readFile(fileName, function (err, data) {
+                    if (err && err.code !== 'ENOENT') {
+                        rej(err);
+                    }
+
+                    try {
+                        data = JSON.parse(data);
+                        res(data);
+                    } catch (err) {
+                        rej(err);
+                    }
+                });
+            });
+        }
+    }]);
+
+    return Utils;
+}();
+
+Utils.standardResolutions = [{
+    "label": "4K(UHD)",
+    "width": 3840,
+    "height": 2160,
+    "ratio": "16:9"
+}, {
+    "label": "1080p(FHD)",
+    "width": 1920,
+    "height": 1080,
+    "ratio": "16:9"
+}, {
+    "label": "UXGA",
+    "width": 1600,
+    "height": 1200,
+    "ratio": "4:3"
+}, {
+    "label": "720p(HD)",
+    "width": 1280,
+    "height": 720,
+    "ratio": "16:9"
+}, {
+    "label": "SVGA",
+    "width": 800,
+    "height": 600,
+    "ratio": "4:3"
+}, {
+    "label": "VGA",
+    "width": 640,
+    "height": 480,
+    "ratio": "4:3"
+}, {
+    "label": "360p(nHD)",
+    "width": 640,
+    "height": 360,
+    "ratio": "16:9"
+}, {
+    "label": "CIF",
+    "width": 352,
+    "height": 288,
+    "ratio": "4:3"
+}, {
+    "label": "QVGA",
+    "width": 320,
+    "height": 240,
+    "ratio": "4:3"
+}, {
+    "label": "QCIF",
+    "width": 176,
+    "height": 144,
+    "ratio": "4:3"
+}, {
+    "label": "QQVGA",
+    "width": 160,
+    "height": 120,
+    "ratio": "4:3"
+}];
+exports.default = Utils;
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 function checkDCE() {
   /* global __REACT_DEVTOOLS_GLOBAL_HOOK__ */
   if (
@@ -1963,7 +2090,7 @@ if (process.env.NODE_ENV === 'production') {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2002,7 +2129,7 @@ var ExecutionEnvironment = {
 module.exports = ExecutionEnvironment;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2082,7 +2209,7 @@ var EventListener = {
 module.exports = EventListener;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2124,7 +2251,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 module.exports = getActiveElement;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2195,7 +2322,7 @@ function shallowEqual(objA, objB) {
 module.exports = shallowEqual;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2238,7 +2365,7 @@ function containsNode(outerNode, innerNode) {
 module.exports = containsNode;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2268,7 +2395,7 @@ function focusNode(node) {
 module.exports = focusNode;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2291,7 +2418,7 @@ module.exports = focusNode;
 });
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -3581,7 +3708,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -3643,7 +3770,7 @@ exception.getTrace = function (err) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3657,7 +3784,7 @@ var _TransitionGroup = __webpack_require__(349);
 
 var _TransitionGroup2 = _interopRequireDefault(_TransitionGroup);
 
-var _Transition = __webpack_require__(34);
+var _Transition = __webpack_require__(35);
 
 var _Transition2 = _interopRequireDefault(_Transition);
 
@@ -3670,7 +3797,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3687,11 +3814,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(23);
+var _reactDom = __webpack_require__(24);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _PropTypes = __webpack_require__(35);
+var _PropTypes = __webpack_require__(36);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4233,7 +4360,7 @@ Transition.EXITING = 4;
 exports.default = Transition;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4285,109 +4412,6 @@ var classNamesShape = exports.classNamesShape = _propTypes2.default.oneOfType([_
   exit: _propTypes2.default.string,
   exitActive: _propTypes2.default.string
 })]);
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Utils = function () {
-    function Utils() {
-        _classCallCheck(this, Utils);
-    }
-
-    _createClass(Utils, null, [{
-        key: "throttle",
-        value: function throttle(callback, wait) {
-            var context = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this;
-
-            var timeout = null;
-            var callbackArgs = null;
-
-            var later = function later() {
-                timeout = null;
-            };
-
-            return function () {
-                if (!timeout) {
-                    callbackArgs = arguments;
-                    callback.apply(context, callbackArgs);
-                    timeout = setTimeout(later, wait);
-                }
-            };
-        }
-    }]);
-
-    return Utils;
-}();
-
-Utils.standardResolutions = [{
-    "label": "4K(UHD)",
-    "width": 3840,
-    "height": 2160,
-    "ratio": "16:9"
-}, {
-    "label": "1080p(FHD)",
-    "width": 1920,
-    "height": 1080,
-    "ratio": "16:9"
-}, {
-    "label": "UXGA",
-    "width": 1600,
-    "height": 1200,
-    "ratio": "4:3"
-}, {
-    "label": "720p(HD)",
-    "width": 1280,
-    "height": 720,
-    "ratio": "16:9"
-}, {
-    "label": "SVGA",
-    "width": 800,
-    "height": 600,
-    "ratio": "4:3"
-}, {
-    "label": "VGA",
-    "width": 640,
-    "height": 480,
-    "ratio": "4:3"
-}, {
-    "label": "360p(nHD)",
-    "width": 640,
-    "height": 360,
-    "ratio": "16:9"
-}, {
-    "label": "CIF",
-    "width": 352,
-    "height": 288,
-    "ratio": "4:3"
-}, {
-    "label": "QVGA",
-    "width": 320,
-    "height": 240,
-    "ratio": "4:3"
-}, {
-    "label": "QCIF",
-    "width": 176,
-    "height": 144,
-    "ratio": "4:3"
-}, {
-    "label": "QQVGA",
-    "width": 160,
-    "height": 120,
-    "ratio": "4:3"
-}];
-exports.default = Utils;
 
 /***/ }),
 /* 37 */
@@ -5930,11 +5954,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(23);
+var _reactDom = __webpack_require__(24);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _i18next = __webpack_require__(4);
+var _i18next = __webpack_require__(3);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
@@ -5946,7 +5970,7 @@ var _App = __webpack_require__(342);
 
 var _App2 = _interopRequireDefault(_App);
 
-__webpack_require__(367);
+__webpack_require__(368);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5963,7 +5987,7 @@ window.logger = new _winston2.default.Logger({
 window.locales = ['en', 'fr'];
 var resources = {};
 window.locales.forEach(function (locale) {
-    resources[locale] = __webpack_require__(368)("./" + locale + '.json');
+    resources[locale] = __webpack_require__(369)("./" + locale + '.json');
 });
 
 // Disable right click
@@ -7402,7 +7426,7 @@ module.exports = react;
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var aa=__webpack_require__(0),l=__webpack_require__(24),B=__webpack_require__(7),C=__webpack_require__(2),ba=__webpack_require__(25),da=__webpack_require__(26),ea=__webpack_require__(27),fa=__webpack_require__(28),ia=__webpack_require__(29),D=__webpack_require__(15);
+var aa=__webpack_require__(0),l=__webpack_require__(25),B=__webpack_require__(7),C=__webpack_require__(2),ba=__webpack_require__(26),da=__webpack_require__(27),ea=__webpack_require__(28),fa=__webpack_require__(29),ia=__webpack_require__(30),D=__webpack_require__(15);
 function E(a){for(var b=arguments.length-1,c="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);b=Error(c+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}aa?void 0:E("227");
 var oa={children:!0,dangerouslySetInnerHTML:!0,defaultValue:!0,defaultChecked:!0,innerHTML:!0,suppressContentEditableWarning:!0,suppressHydrationWarning:!0,style:!0};function pa(a,b){return(a&b)===b}
 var ta={MUST_USE_PROPERTY:1,HAS_BOOLEAN_VALUE:4,HAS_NUMERIC_VALUE:8,HAS_POSITIVE_NUMERIC_VALUE:24,HAS_OVERLOADED_BOOLEAN_VALUE:32,HAS_STRING_BOOLEAN_VALUE:64,injectDOMPropertyConfig:function(a){var b=ta,c=a.Properties||{},d=a.DOMAttributeNamespaces||{},e=a.DOMAttributeNames||{};a=a.DOMMutationMethods||{};for(var f in c){ua.hasOwnProperty(f)?E("48",f):void 0;var g=f.toLowerCase(),h=c[f];g={attributeName:g,attributeNamespace:null,propertyName:f,mutationMethod:null,mustUseProperty:pa(h,b.MUST_USE_PROPERTY),
@@ -7702,14 +7726,14 @@ if (process.env.NODE_ENV !== "production") {
 var React = __webpack_require__(0);
 var invariant = __webpack_require__(8);
 var warning = __webpack_require__(16);
-var ExecutionEnvironment = __webpack_require__(24);
+var ExecutionEnvironment = __webpack_require__(25);
 var _assign = __webpack_require__(7);
 var emptyFunction = __webpack_require__(2);
-var EventListener = __webpack_require__(25);
-var getActiveElement = __webpack_require__(26);
-var shallowEqual = __webpack_require__(27);
-var containsNode = __webpack_require__(28);
-var focusNode = __webpack_require__(29);
+var EventListener = __webpack_require__(26);
+var getActiveElement = __webpack_require__(27);
+var shallowEqual = __webpack_require__(28);
+var containsNode = __webpack_require__(29);
+var focusNode = __webpack_require__(30);
 var emptyObject = __webpack_require__(15);
 var checkPropTypes = __webpack_require__(18);
 var hyphenateStyleName = __webpack_require__(299);
@@ -23249,7 +23273,7 @@ module.exports = camelize;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__BackendConnector_js__ = __webpack_require__(309);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__CacheConnector_js__ = __webpack_require__(310);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__defaults_js__ = __webpack_require__(311);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__postProcessor_js__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__postProcessor_js__ = __webpack_require__(31);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -23814,7 +23838,7 @@ var ResourceStore = function (_EventEmitter) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__logger_js__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmitter_js__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__postProcessor_js__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__postProcessor_js__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_js__ = __webpack_require__(17);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -25153,7 +25177,7 @@ Object.defineProperty(exports, 'Memory', {
 
 var events = __webpack_require__(10),
     os = __webpack_require__(21),
-    util = __webpack_require__(3),
+    util = __webpack_require__(4),
     common = __webpack_require__(6),
     Transport = __webpack_require__(14).Transport;
 
@@ -25983,8 +26007,8 @@ syslogConfig.colors = {
 var events = __webpack_require__(10),
     fs = __webpack_require__(11),
     path = __webpack_require__(332),
-    util = __webpack_require__(3),
-    async = __webpack_require__(31),
+    util = __webpack_require__(4),
+    async = __webpack_require__(32),
     zlib = __webpack_require__(333),
     common = __webpack_require__(6),
     Transport = __webpack_require__(14).Transport,
@@ -26708,7 +26732,7 @@ module.exports.isDuplex   = isDuplex
 /* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(3),
+var util = __webpack_require__(4),
     winston = __webpack_require__(20),
     http = __webpack_require__(336),
     https = __webpack_require__(337),
@@ -26967,7 +26991,7 @@ module.exports = require("https");
 /***/ (function(module, exports, __webpack_require__) {
 
 var events = __webpack_require__(10),
-    util = __webpack_require__(3),
+    util = __webpack_require__(4),
     common = __webpack_require__(6),
     Transport = __webpack_require__(14).Transport;
 
@@ -27213,7 +27237,7 @@ exports._createParsedCallSite = function(properties) {
 
 var common = __webpack_require__(6),
     winston = __webpack_require__(20),
-    extend = __webpack_require__(3)._extend;
+    extend = __webpack_require__(4)._extend;
 
 //
 // ### function Container (options)
@@ -27346,11 +27370,11 @@ Container.prototype._delete = function (id) {
  */
 
 var events = __webpack_require__(10),
-    util = __webpack_require__(3),
-    async = __webpack_require__(31),
+    util = __webpack_require__(4),
+    async = __webpack_require__(32),
     config = __webpack_require__(22),
     common = __webpack_require__(6),
-    exception = __webpack_require__(32),
+    exception = __webpack_require__(33),
     Stream = __webpack_require__(12).Stream;
 
 var formatRegExp = /%[sdj%]/g;
@@ -28085,33 +28109,37 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _fs = __webpack_require__(11);
-
-var _fs2 = _interopRequireDefault(_fs);
-
-var _i18next = __webpack_require__(4);
+var _i18next = __webpack_require__(3);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
-var _reactTransitionGroup = __webpack_require__(33);
+var _reactTransitionGroup = __webpack_require__(34);
 
-var _Settings = __webpack_require__(351);
+var _Utils = __webpack_require__(23);
 
-var _Settings2 = _interopRequireDefault(_Settings);
+var _Utils2 = _interopRequireDefault(_Utils);
 
-var _LocalePicker = __webpack_require__(353);
+var _DataSettings = __webpack_require__(351);
+
+var _DataSettings2 = _interopRequireDefault(_DataSettings);
+
+var _DeviceSettings = __webpack_require__(352);
+
+var _DeviceSettings2 = _interopRequireDefault(_DeviceSettings);
+
+var _LocalePicker = __webpack_require__(354);
 
 var _LocalePicker2 = _interopRequireDefault(_LocalePicker);
 
-var _PreviewVideo = __webpack_require__(356);
+var _PreviewVideo = __webpack_require__(357);
 
 var _PreviewVideo2 = _interopRequireDefault(_PreviewVideo);
 
-var _Introduction = __webpack_require__(357);
+var _Introduction = __webpack_require__(358);
 
 var _Introduction2 = _interopRequireDefault(_Introduction);
 
-var _MainViewer = __webpack_require__(359);
+var _MainViewer = __webpack_require__(360);
 
 var _MainViewer2 = _interopRequireDefault(_MainViewer);
 
@@ -28122,9 +28150,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var fs = __webpack_require__(11);
 // import MediaStreamRecorder from 'msr';
 // import blobUtil from 'blob-util';
-
 
 var App = function (_React$Component) {
     _inherits(App, _React$Component);
@@ -28134,15 +28163,18 @@ var App = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-        _this.steps = ['settings', 'locale', 'preview-video', 'introduction', 'main-viewer'];
+        _this.steps = ['data-settings', 'device-settings', 'locale', 'preview-video', 'introduction', 'main-viewer'];
         _this.frontBack = 'front';
 
 
         _this.state = {
-            step: 'settings',
+            step: 'data-settings',
             locale: 'en',
-            currentAudioInputId: '',
-            currentVideoInputId: '',
+            configuration: {
+                audioInputDeviceId: '',
+                videoInputDeviceId: '',
+                title: 'Questions Box'
+            },
             cameraResolution: null,
             questions: {},
             stream: null
@@ -28152,6 +28184,7 @@ var App = function (_React$Component) {
         _this.isFlipped = _this.isFlipped.bind(_this);
         _this.goToNextStep = _this.goToNextStep.bind(_this);
         _this.setCurrentInput = _this.setCurrentInput.bind(_this);
+        _this.setTitle = _this.setTitle.bind(_this);
         _this.setLocale = _this.setLocale.bind(_this);
         _this.setResolution = _this.setResolution.bind(_this);
         _this.startRecording = _this.startRecording.bind(_this);
@@ -28163,26 +28196,56 @@ var App = function (_React$Component) {
         key: 'componentDidMount',
         value: function componentDidMount() {
             this.loadQuestions();
+            this.loadConfiguration();
         }
     }, {
         key: 'loadQuestions',
         value: function loadQuestions() {
             var _this2 = this;
 
-            // Read config file
-            _fs2.default.readFile('questions.json', function (err, data) {
-                if (err && err.code !== 'ENOENT') {
-                    window.logger.error('Error while reading questions.json file', err);
+            _Utils2.default.readJsonFile('questions.json').then(function (data) {
+                // If only one language, use it for the interface
+                var locales = Object.keys(data);
+                if (locales.length === 1) {
+                    _this2.setLocale(locales[0]);
                 }
 
-                try {
-                    data = JSON.parse(data);
-                    _this2.setState({
-                        questions: data
-                    });
-                } catch (err) {
-                    window.logger.error('Unable to parse JSON data from questions.json');
+                _this2.setState({
+                    questions: data
+                });
+            }, function (err) {
+                window.logger.error('Error while reading questions.json file', err);
+            });
+        }
+    }, {
+        key: 'loadConfiguration',
+        value: function loadConfiguration() {
+            var _this3 = this;
+
+            // Read config file
+            _Utils2.default.readJsonFile('.data/config.json').then(function (data) {
+                var mergedConfiguration = Object.assign({}, _this3.state.configuration, data);
+
+                _this3.setState({
+                    configuration: mergedConfiguration
+                });
+            }, function (err) {
+                window.logger.error('Error while reading .data/config.json file', err);
+            });
+        }
+    }, {
+        key: 'saveConfiguration',
+        value: function saveConfiguration() {
+            var _this4 = this;
+
+            // Save to config.json file
+            fs.mkdir('.data', function (err) {
+                if (err && err.code !== 'EEXIST') {
+                    window.logger.error('Failed to create ".data" dir ', err);
                 }
+                fs.writeFile('.data/config.json', JSON.stringify(_this4.state.configuration, null, 4), function (err) {
+                    err && window.logger.error(err);
+                });
             });
         }
     }, {
@@ -28200,12 +28263,19 @@ var App = function (_React$Component) {
     }, {
         key: 'nextStep',
         value: function nextStep(index) {
+            if (this.state.step === 'data-settings' || this.state.step === 'device-settings') {
+                this.saveConfiguration();
+            }
+
             if (index >= 0) {
                 if (index + 1 >= this.steps.length) {
-                    index = 0;
+                    // Back to locale picker
+                    index = 2;
+                } else {
+                    index++;
                 }
 
-                var nextStep = this.steps[index + 1];
+                var nextStep = this.steps[index];
                 if (this.shouldShowNextStep(nextStep)) {
                     this.frontBack = this.frontBack === 'front' ? 'back' : 'front';
                     this.setState({
@@ -28222,7 +28292,6 @@ var App = function (_React$Component) {
             if (nextStep === 'locale') {
                 var locales = Object.keys(this.state.questions);
                 if (locales.length === 1) {
-                    this.setLocale(locales[0]);
                     return false;
                 }
                 return true;
@@ -28233,14 +28302,30 @@ var App = function (_React$Component) {
         key: 'setCurrentInput',
         value: function setCurrentInput(type, id, cb) {
             if (type === 'audio') {
+                var newConfiguration = Object.assign({}, this.state.configuration, {
+                    audioInputDeviceId: id
+                });
                 this.setState({
-                    currentAudioInputId: id
+                    configuration: newConfiguration
                 }, cb);
             } else if (type === 'video') {
+                var _newConfiguration = Object.assign({}, this.state.configuration, {
+                    videoInputDeviceId: id
+                });
                 this.setState({
-                    currentVideoInputId: id
+                    configuration: _newConfiguration
                 }, cb);
             }
+        }
+    }, {
+        key: 'setTitle',
+        value: function setTitle(title) {
+            var newConfiguration = Object.assign({}, this.state.configuration, {
+                title: title
+            });
+            this.setState({
+                configuration: newConfiguration
+            });
         }
     }, {
         key: 'setResolution',
@@ -28264,12 +28349,12 @@ var App = function (_React$Component) {
     }, {
         key: 'startRecording',
         value: function startRecording() {
-            var _this3 = this;
+            var _this5 = this;
 
             var mediaConstraints = {
-                audio: { deviceId: { exact: this.state.currentAudioInputId } },
+                audio: { deviceId: { exact: this.state.configuration.audioInputDeviceId } },
                 video: {
-                    deviceId: { exact: this.state.currentVideoInputId },
+                    deviceId: { exact: this.state.configuration.videoInputDeviceId },
                     width: { exact: this.state.cameraResolution.width },
                     height: { exact: this.state.cameraResolution.height }
                 }
@@ -28280,7 +28365,7 @@ var App = function (_React$Component) {
             };
 
             var onMediaSuccess = function onMediaSuccess(stream) {
-                _this3.setState({ stream: stream });
+                _this5.setState({ stream: stream });
 
                 // this.multiStreamRecorder = new MediaStreamRecorder.MultiStreamRecorder(stream);
                 // this.multiStreamRecorder.stream = stream;
@@ -28312,7 +28397,7 @@ var App = function (_React$Component) {
                 // // get blob after specific time interval
                 // this.multiStreamRecorder.start(timeInterval);
 
-                _this3.video.play();
+                _this5.video.play();
             };
 
             navigator.mediaDevices.getUserMedia(mediaConstraints).then(onMediaSuccess).catch(onMediaError);
@@ -28335,17 +28420,9 @@ var App = function (_React$Component) {
             }
         }
     }, {
-        key: 'logger',
-        value: function logger(name) {
-            return function () {
-                var t = console;
-                t.log('EVENT', name);
-            };
-        }
-    }, {
         key: 'render',
         value: function render() {
-            var _this4 = this;
+            var _this6 = this;
 
             var wrapperClasses = null;
             var timeoutFlip = 1000;
@@ -28356,16 +28433,29 @@ var App = function (_React$Component) {
 
             var currentComponent = void 0;
             switch (this.state.step) {
-                case 'settings':
+                case 'data-settings':
                     currentComponent = _react2.default.createElement(
                         _reactTransitionGroup.CSSTransition,
                         { key: this.state.step, classNames: 'flip', timeout: timeoutFlip },
-                        _react2.default.createElement(_Settings2.default, {
+                        _react2.default.createElement(_DataSettings2.default, {
                             className: 'fade fade-' + status,
                             goToNextStep: this.goToNextStep,
                             frontBack: this.frontBack,
-                            currentAudioInputId: this.state.currentAudioInputId,
-                            currentVideoInputId: this.state.currentVideoInputId,
+                            title: this.state.configuration.title,
+                            setTitle: this.setTitle
+                        })
+                    );
+                    break;
+                case 'device-settings':
+                    currentComponent = _react2.default.createElement(
+                        _reactTransitionGroup.CSSTransition,
+                        { key: this.state.step, classNames: 'flip', timeout: timeoutFlip },
+                        _react2.default.createElement(_DeviceSettings2.default, {
+                            className: 'fade fade-' + status,
+                            goToNextStep: this.goToNextStep,
+                            frontBack: this.frontBack,
+                            currentAudioInputId: this.state.configuration.audioInputDeviceId,
+                            currentVideoInputId: this.state.configuration.videoInputDeviceId,
                             resolution: this.state.cameraResolution,
                             setCurrentInput: this.setCurrentInput,
                             setResolution: this.setResolution
@@ -28404,7 +28494,8 @@ var App = function (_React$Component) {
                         { key: this.state.step, classNames: 'flip', timeout: timeoutFlip },
                         _react2.default.createElement(_Introduction2.default, {
                             frontBack: this.frontBack,
-                            goToNextStep: this.goToNextStep
+                            goToNextStep: this.goToNextStep,
+                            title: this.state.configuration.title
                         })
                     );
                     break;
@@ -28441,7 +28532,7 @@ var App = function (_React$Component) {
                     )
                 ),
                 this.state.stream && _react2.default.createElement('video', { id: 'video-feedback', ref: function ref(_ref) {
-                        return _this4.video = _ref;
+                        return _this6.video = _ref;
                     }, muted: 'true', src: URL.createObjectURL(this.state.stream) })
             );
         }
@@ -28479,11 +28570,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Transition = __webpack_require__(34);
+var _Transition = __webpack_require__(35);
 
 var _Transition2 = _interopRequireDefault(_Transition);
 
-var _PropTypes = __webpack_require__(35);
+var _PropTypes = __webpack_require__(36);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29849,15 +29940,129 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _i18next = __webpack_require__(4);
+var _i18next = __webpack_require__(3);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
-var _VideoOutput = __webpack_require__(352);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DataSettings = function (_React$PureComponent) {
+    _inherits(DataSettings, _React$PureComponent);
+
+    function DataSettings(props) {
+        _classCallCheck(this, DataSettings);
+
+        var _this = _possibleConstructorReturn(this, (DataSettings.__proto__ || Object.getPrototypeOf(DataSettings)).call(this, props));
+
+        _this.onSave = _this.onSave.bind(_this);
+        _this.onTitleChanged = _this.onTitleChanged.bind(_this);
+        return _this;
+    }
+
+    _createClass(DataSettings, [{
+        key: 'onSave',
+        value: function onSave() {
+            this.props.goToNextStep();
+        }
+    }, {
+        key: 'onTitleChanged',
+        value: function onTitleChanged(e) {
+            var title = e.target.value;
+
+            this.props.setTitle(title);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var className = '' + this.props.frontBack;
+            return _react2.default.createElement(
+                'section',
+                { id: 'data-settings', className: className },
+                _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(
+                        'h1',
+                        null,
+                        _i18next2.default.t('settings'),
+                        ' (1/2)'
+                    ),
+                    _react2.default.createElement(
+                        'label',
+                        { htmlFor: 'title' },
+                        _i18next2.default.t('title')
+                    ),
+                    _react2.default.createElement('input', {
+                        id: 'title',
+                        type: 'text',
+                        value: this.props.title,
+                        onChange: this.onTitleChanged
+                    })
+                ),
+                _react2.default.createElement(
+                    'footer',
+                    null,
+                    _react2.default.createElement(
+                        'button',
+                        {
+                            id: 'save-settings',
+                            type: 'button',
+                            onClick: this.onSave
+                        },
+                        _i18next2.default.t('saveSettings')
+                    )
+                )
+            );
+        }
+    }]);
+
+    return DataSettings;
+}(_react2.default.PureComponent);
+
+DataSettings.propTypes = {
+    frontBack: _propTypes2.default.string.isRequired,
+    goToNextStep: _propTypes2.default.func.isRequired,
+    setTitle: _propTypes2.default.func.isRequired,
+    title: _propTypes2.default.string
+};
+exports.default = DataSettings;
+
+/***/ }),
+/* 352 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(1);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _i18next = __webpack_require__(3);
+
+var _i18next2 = _interopRequireDefault(_i18next);
+
+var _VideoOutput = __webpack_require__(353);
 
 var _VideoOutput2 = _interopRequireDefault(_VideoOutput);
 
-var _Utils = __webpack_require__(36);
+var _Utils = __webpack_require__(23);
 
 var _Utils2 = _interopRequireDefault(_Utils);
 
@@ -29869,15 +30074,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var fs = __webpack_require__(11);
+var DeviceSettings = function (_React$PureComponent) {
+    _inherits(DeviceSettings, _React$PureComponent);
 
-var Settings = function (_React$PureComponent) {
-    _inherits(Settings, _React$PureComponent);
+    function DeviceSettings(props) {
+        _classCallCheck(this, DeviceSettings);
 
-    function Settings(props) {
-        _classCallCheck(this, Settings);
-
-        var _this = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (DeviceSettings.__proto__ || Object.getPrototypeOf(DeviceSettings)).call(this, props));
 
         _this.state = {
             audioInputs: [],
@@ -29887,7 +30090,7 @@ var Settings = function (_React$PureComponent) {
         };
 
         _this.listDevices = _this.listDevices.bind(_this);
-        _this.loadFromConfigFile = _this.loadFromConfigFile.bind(_this);
+        _this.startVideo = _this.startVideo.bind(_this);
         _this.determineResolution = _this.determineResolution.bind(_this);
         _this.testResolution = _this.testResolution.bind(_this);
         _this.setCurrentInput = _this.setCurrentInput.bind(_this);
@@ -29895,10 +30098,10 @@ var Settings = function (_React$PureComponent) {
         return _this;
     }
 
-    _createClass(Settings, [{
+    _createClass(DeviceSettings, [{
         key: 'componentWillMount',
         value: function componentWillMount() {
-            navigator.mediaDevices.enumerateDevices().then(this.listDevices).then(this.loadFromConfigFile).catch(function (err) {
+            navigator.mediaDevices.enumerateDevices().then(this.listDevices).then(this.startVideo).catch(function (err) {
                 window.logger.error('Error while enumerating devices', err);
             });
         }
@@ -29926,35 +30129,25 @@ var Settings = function (_React$PureComponent) {
                 audioInputs: audioInputs,
                 videoInputs: videoInputs
             });
+
+            return true;
         }
     }, {
-        key: 'loadFromConfigFile',
-        value: function loadFromConfigFile() {
+        key: 'startVideo',
+        value: function startVideo() {
             var _this2 = this;
 
-            // Read config file
-            fs.readFile('.data/config.json', function (err, data) {
-                if (err && err.code !== 'ENOENT') {
-                    window.logger.error('Error while reading config file', err);
-                }
-
-                try {
-                    data = JSON.parse(data);
-                    if (_this2.state.audioInputs.find(function (input) {
-                        return input.id === data.audioInputDeviceId;
-                    })) {
-                        _this2.setCurrentInput('audio', data.audioInputDeviceId || null);
-                    }
-
-                    if (_this2.state.videoInputs.find(function (input) {
-                        return input.id === data.videoInputDeviceId;
-                    })) {
-                        _this2.setCurrentInput('video', data.videoInputDeviceId || null);
-                    }
-                } catch (err) {
-                    window.logger.error('Unable to parse JSON data from .data/config.json');
-                }
+            // Select the first device to show
+            var audioInputExists = this.state.audioInputs.find(function (device) {
+                return device.id == _this2.props.currentAudioInputId;
             });
+            var videoInputExists = this.state.videoInputs.find(function (device) {
+                return device.id == _this2.props.currentVideoInputId;
+            });
+
+            if (audioInputExists && videoInputExists) {
+                this.determineResolution();
+            }
         }
     }, {
         key: 'determineResolution',
@@ -30019,8 +30212,6 @@ var Settings = function (_React$PureComponent) {
     }, {
         key: 'onSave',
         value: function onSave() {
-            var _this5 = this;
-
             if (!this.state.canSave) {
                 return;
             }
@@ -30028,35 +30219,21 @@ var Settings = function (_React$PureComponent) {
             this.videoOutput && this.videoOutput.stop();
 
             this.props.goToNextStep();
-
-            // Save to config.json file
-            fs.mkdir('.data', function (err) {
-                var configFile = {
-                    audioInputDeviceId: _this5.props.currentAudioInputId,
-                    videoInputDeviceId: _this5.props.currentVideoInputId
-                };
-                if (err && err.code !== 'EEXIST') {
-                    window.logger.error('Failed to create ".data" dir ', err);
-                }
-                fs.writeFile('.data/config.json', JSON.stringify(configFile, null, 4), function (err) {
-                    err && window.logger.error(err);
-                });
-            });
         }
     }, {
         key: 'setCurrentInput',
         value: function setCurrentInput(mediaType, id) {
-            var _this6 = this;
+            var _this5 = this;
 
             this.setState({
                 showVideoOuput: false,
                 canSave: false
             }, function () {
-                _this6.props.setCurrentInput(mediaType, id);
+                _this5.props.setCurrentInput(mediaType, id);
 
                 if (mediaType === 'video') {
-                    _this6.props.setResolution(null, function () {
-                        _this6.determineResolution();
+                    _this5.props.setResolution(null, function () {
+                        _this5.determineResolution();
                     });
                 }
             });
@@ -30064,30 +30241,31 @@ var Settings = function (_React$PureComponent) {
     }, {
         key: 'onInputChanged',
         value: function onInputChanged(mediaType) {
-            var _this7 = this;
+            var _this6 = this;
 
             return function (e) {
                 var id = e.target.value;
 
-                _this7.setCurrentInput(mediaType, id);
+                _this6.setCurrentInput(mediaType, id);
             };
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this8 = this;
+            var _this7 = this;
 
             var className = '' + this.props.frontBack;
             return _react2.default.createElement(
                 'section',
-                { id: 'settings', className: className },
+                { id: 'device-settings', className: className },
                 _react2.default.createElement(
                     'div',
                     null,
                     _react2.default.createElement(
                         'h1',
                         null,
-                        _i18next2.default.t('settings')
+                        _i18next2.default.t('settings'),
+                        ' (2/2)'
                     ),
                     _react2.default.createElement(
                         'div',
@@ -30148,14 +30326,14 @@ var Settings = function (_React$PureComponent) {
                             'div',
                             { className: 'settings-wrapper-video' },
                             function () {
-                                if (_this8.state.showVideoOuput) {
+                                if (_this7.state.showVideoOuput) {
                                     return _react2.default.createElement(_VideoOutput2.default, {
                                         ref: function ref(_ref) {
-                                            return _this8.videoOutput = _ref;
+                                            return _this7.videoOutput = _ref;
                                         },
-                                        audioInputId: _this8.props.currentAudioInputId,
-                                        videoInputId: _this8.props.currentVideoInputId,
-                                        resolution: _this8.props.resolution
+                                        audioInputId: _this7.props.currentAudioInputId,
+                                        videoInputId: _this7.props.currentVideoInputId,
+                                        resolution: _this7.props.resolution
                                     });
                                 } else {
                                     return _react2.default.createElement(
@@ -30186,10 +30364,10 @@ var Settings = function (_React$PureComponent) {
         }
     }]);
 
-    return Settings;
+    return DeviceSettings;
 }(_react2.default.PureComponent);
 
-Settings.propTypes = {
+DeviceSettings.propTypes = {
     frontBack: _propTypes2.default.string.isRequired,
     goToNextStep: _propTypes2.default.func.isRequired,
     setCurrentInput: _propTypes2.default.func.isRequired,
@@ -30198,10 +30376,10 @@ Settings.propTypes = {
     currentVideoInputId: _propTypes2.default.string,
     resolution: _propTypes2.default.object
 };
-exports.default = Settings;
+exports.default = DeviceSettings;
 
 /***/ }),
-/* 352 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30354,7 +30532,7 @@ VideoOutput.propTypes = {
 exports.default = VideoOutput;
 
 /***/ }),
-/* 353 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30387,7 +30565,7 @@ function importAll(r) {
     r.keys().forEach(r);
 }
 
-importAll(__webpack_require__(354));
+importAll(__webpack_require__(355));
 
 var LocalePicker = function (_React$PureComponent) {
     _inherits(LocalePicker, _React$PureComponent);
@@ -30429,7 +30607,7 @@ var LocalePicker = function (_React$PureComponent) {
                     'div',
                     { className: 'flex row center align-center grow' },
                     this.props.locales.map(function (locale) {
-                        var flagImg = __webpack_require__(355)("./" + locale + '.svg');
+                        var flagImg = __webpack_require__(356)("./" + locale + '.svg');
                         return _react2.default.createElement(
                             'div',
                             { className: 'flag', key: locale, onClick: _this3.setLocale(locale) },
@@ -30451,283 +30629,6 @@ LocalePicker.propTypes = {
     setLocale: _propTypes2.default.func.isRequired
 };
 exports.default = LocalePicker;
-
-/***/ }),
-/* 354 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var map = {
-	"./ad.svg": 37,
-	"./ae.svg": 38,
-	"./af.svg": 39,
-	"./ag.svg": 40,
-	"./ai.svg": 41,
-	"./al.svg": 42,
-	"./am.svg": 43,
-	"./ao.svg": 44,
-	"./aq.svg": 45,
-	"./ar.svg": 46,
-	"./as.svg": 47,
-	"./at.svg": 48,
-	"./au.svg": 49,
-	"./aw.svg": 50,
-	"./ax.svg": 51,
-	"./az.svg": 52,
-	"./ba.svg": 53,
-	"./bb.svg": 54,
-	"./bd.svg": 55,
-	"./be.svg": 56,
-	"./bf.svg": 57,
-	"./bg.svg": 58,
-	"./bh.svg": 59,
-	"./bi.svg": 60,
-	"./bj.svg": 61,
-	"./bl.svg": 62,
-	"./bm.svg": 63,
-	"./bn.svg": 64,
-	"./bo.svg": 65,
-	"./bq.svg": 66,
-	"./br.svg": 67,
-	"./bs.svg": 68,
-	"./bt.svg": 69,
-	"./bv.svg": 70,
-	"./bw.svg": 71,
-	"./by.svg": 72,
-	"./bz.svg": 73,
-	"./ca.svg": 74,
-	"./cc.svg": 75,
-	"./cd.svg": 76,
-	"./cf.svg": 77,
-	"./cg.svg": 78,
-	"./ch.svg": 79,
-	"./ci.svg": 80,
-	"./ck.svg": 81,
-	"./cl.svg": 82,
-	"./cm.svg": 83,
-	"./cn.svg": 84,
-	"./co.svg": 85,
-	"./cr.svg": 86,
-	"./cu.svg": 87,
-	"./cv.svg": 88,
-	"./cw.svg": 89,
-	"./cx.svg": 90,
-	"./cy.svg": 91,
-	"./cz.svg": 92,
-	"./de.svg": 93,
-	"./dj.svg": 94,
-	"./dk.svg": 95,
-	"./dm.svg": 96,
-	"./do.svg": 97,
-	"./dz.svg": 98,
-	"./ec.svg": 99,
-	"./ee.svg": 100,
-	"./eg.svg": 101,
-	"./eh.svg": 102,
-	"./en.svg": 103,
-	"./er.svg": 104,
-	"./es.svg": 105,
-	"./et.svg": 106,
-	"./eu.svg": 107,
-	"./fi.svg": 108,
-	"./fj.svg": 109,
-	"./fk.svg": 110,
-	"./fm.svg": 111,
-	"./fo.svg": 112,
-	"./fr.svg": 113,
-	"./ga.svg": 114,
-	"./gb-eng.svg": 115,
-	"./gb-sct.svg": 116,
-	"./gb-wls.svg": 117,
-	"./gb.svg": 118,
-	"./gd.svg": 119,
-	"./ge.svg": 120,
-	"./gf.svg": 121,
-	"./gg.svg": 122,
-	"./gh.svg": 123,
-	"./gi.svg": 124,
-	"./gl.svg": 125,
-	"./gm.svg": 126,
-	"./gn.svg": 127,
-	"./gp.svg": 128,
-	"./gq.svg": 129,
-	"./gr.svg": 130,
-	"./gs.svg": 131,
-	"./gt.svg": 132,
-	"./gu.svg": 133,
-	"./gw.svg": 134,
-	"./gy.svg": 135,
-	"./hk.svg": 136,
-	"./hm.svg": 137,
-	"./hn.svg": 138,
-	"./hr.svg": 139,
-	"./ht.svg": 140,
-	"./hu.svg": 141,
-	"./id.svg": 142,
-	"./ie.svg": 143,
-	"./il.svg": 144,
-	"./im.svg": 145,
-	"./in.svg": 146,
-	"./io.svg": 147,
-	"./iq.svg": 148,
-	"./ir.svg": 149,
-	"./is.svg": 150,
-	"./it.svg": 151,
-	"./je.svg": 152,
-	"./jm.svg": 153,
-	"./jo.svg": 154,
-	"./jp.svg": 155,
-	"./ke.svg": 156,
-	"./kg.svg": 157,
-	"./kh.svg": 158,
-	"./ki.svg": 159,
-	"./km.svg": 160,
-	"./kn.svg": 161,
-	"./kp.svg": 162,
-	"./kr.svg": 163,
-	"./kw.svg": 164,
-	"./ky.svg": 165,
-	"./kz.svg": 166,
-	"./la.svg": 167,
-	"./lb.svg": 168,
-	"./lc.svg": 169,
-	"./li.svg": 170,
-	"./lk.svg": 171,
-	"./lr.svg": 172,
-	"./ls.svg": 173,
-	"./lt.svg": 174,
-	"./lu.svg": 175,
-	"./lv.svg": 176,
-	"./ly.svg": 177,
-	"./ma.svg": 178,
-	"./mc.svg": 179,
-	"./md.svg": 180,
-	"./me.svg": 181,
-	"./mf.svg": 182,
-	"./mg.svg": 183,
-	"./mh.svg": 184,
-	"./mk.svg": 185,
-	"./ml.svg": 186,
-	"./mm.svg": 187,
-	"./mn.svg": 188,
-	"./mo.svg": 189,
-	"./mp.svg": 190,
-	"./mq.svg": 191,
-	"./mr.svg": 192,
-	"./ms.svg": 193,
-	"./mt.svg": 194,
-	"./mu.svg": 195,
-	"./mv.svg": 196,
-	"./mw.svg": 197,
-	"./mx.svg": 198,
-	"./my.svg": 199,
-	"./mz.svg": 200,
-	"./na.svg": 201,
-	"./nc.svg": 202,
-	"./ne.svg": 203,
-	"./nf.svg": 204,
-	"./ng.svg": 205,
-	"./ni.svg": 206,
-	"./nl.svg": 207,
-	"./no.svg": 208,
-	"./np.svg": 209,
-	"./nr.svg": 210,
-	"./nu.svg": 211,
-	"./nz.svg": 212,
-	"./om.svg": 213,
-	"./pa.svg": 214,
-	"./pe.svg": 215,
-	"./pf.svg": 216,
-	"./pg.svg": 217,
-	"./ph.svg": 218,
-	"./pk.svg": 219,
-	"./pl.svg": 220,
-	"./pm.svg": 221,
-	"./pn.svg": 222,
-	"./pr.svg": 223,
-	"./ps.svg": 224,
-	"./pt.svg": 225,
-	"./pw.svg": 226,
-	"./py.svg": 227,
-	"./qa.svg": 228,
-	"./re.svg": 229,
-	"./ro.svg": 230,
-	"./rs.svg": 231,
-	"./ru.svg": 232,
-	"./rw.svg": 233,
-	"./sa.svg": 234,
-	"./sb.svg": 235,
-	"./sc.svg": 236,
-	"./sd.svg": 237,
-	"./se.svg": 238,
-	"./sg.svg": 239,
-	"./sh.svg": 240,
-	"./si.svg": 241,
-	"./sj.svg": 242,
-	"./sk.svg": 243,
-	"./sl.svg": 244,
-	"./sm.svg": 245,
-	"./sn.svg": 246,
-	"./so.svg": 247,
-	"./sr.svg": 248,
-	"./ss.svg": 249,
-	"./st.svg": 250,
-	"./sv.svg": 251,
-	"./sx.svg": 252,
-	"./sy.svg": 253,
-	"./sz.svg": 254,
-	"./tc.svg": 255,
-	"./td.svg": 256,
-	"./tf.svg": 257,
-	"./tg.svg": 258,
-	"./th.svg": 259,
-	"./tj.svg": 260,
-	"./tk.svg": 261,
-	"./tl.svg": 262,
-	"./tm.svg": 263,
-	"./tn.svg": 264,
-	"./to.svg": 265,
-	"./tr.svg": 266,
-	"./tt.svg": 267,
-	"./tv.svg": 268,
-	"./tw.svg": 269,
-	"./tz.svg": 270,
-	"./ua.svg": 271,
-	"./ug.svg": 272,
-	"./um.svg": 273,
-	"./us.svg": 274,
-	"./uy.svg": 275,
-	"./uz.svg": 276,
-	"./va.svg": 277,
-	"./vc.svg": 278,
-	"./ve.svg": 279,
-	"./vg.svg": 280,
-	"./vi.svg": 281,
-	"./vn.svg": 282,
-	"./vu.svg": 283,
-	"./wf.svg": 284,
-	"./ws.svg": 285,
-	"./ye.svg": 286,
-	"./yt.svg": 287,
-	"./za.svg": 288,
-	"./zm.svg": 289,
-	"./zw.svg": 290,
-	"./zz.svg": 291
-};
-function webpackContext(req) {
-	return __webpack_require__(webpackContextResolve(req));
-};
-function webpackContextResolve(req) {
-	var id = map[req];
-	if(!(id + 1)) // check for number or string
-		throw new Error("Cannot find module '" + req + "'.");
-	return id;
-};
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = 354;
 
 /***/ }),
 /* 355 */
@@ -31010,6 +30911,283 @@ webpackContext.id = 355;
 /* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var map = {
+	"./ad.svg": 37,
+	"./ae.svg": 38,
+	"./af.svg": 39,
+	"./ag.svg": 40,
+	"./ai.svg": 41,
+	"./al.svg": 42,
+	"./am.svg": 43,
+	"./ao.svg": 44,
+	"./aq.svg": 45,
+	"./ar.svg": 46,
+	"./as.svg": 47,
+	"./at.svg": 48,
+	"./au.svg": 49,
+	"./aw.svg": 50,
+	"./ax.svg": 51,
+	"./az.svg": 52,
+	"./ba.svg": 53,
+	"./bb.svg": 54,
+	"./bd.svg": 55,
+	"./be.svg": 56,
+	"./bf.svg": 57,
+	"./bg.svg": 58,
+	"./bh.svg": 59,
+	"./bi.svg": 60,
+	"./bj.svg": 61,
+	"./bl.svg": 62,
+	"./bm.svg": 63,
+	"./bn.svg": 64,
+	"./bo.svg": 65,
+	"./bq.svg": 66,
+	"./br.svg": 67,
+	"./bs.svg": 68,
+	"./bt.svg": 69,
+	"./bv.svg": 70,
+	"./bw.svg": 71,
+	"./by.svg": 72,
+	"./bz.svg": 73,
+	"./ca.svg": 74,
+	"./cc.svg": 75,
+	"./cd.svg": 76,
+	"./cf.svg": 77,
+	"./cg.svg": 78,
+	"./ch.svg": 79,
+	"./ci.svg": 80,
+	"./ck.svg": 81,
+	"./cl.svg": 82,
+	"./cm.svg": 83,
+	"./cn.svg": 84,
+	"./co.svg": 85,
+	"./cr.svg": 86,
+	"./cu.svg": 87,
+	"./cv.svg": 88,
+	"./cw.svg": 89,
+	"./cx.svg": 90,
+	"./cy.svg": 91,
+	"./cz.svg": 92,
+	"./de.svg": 93,
+	"./dj.svg": 94,
+	"./dk.svg": 95,
+	"./dm.svg": 96,
+	"./do.svg": 97,
+	"./dz.svg": 98,
+	"./ec.svg": 99,
+	"./ee.svg": 100,
+	"./eg.svg": 101,
+	"./eh.svg": 102,
+	"./en.svg": 103,
+	"./er.svg": 104,
+	"./es.svg": 105,
+	"./et.svg": 106,
+	"./eu.svg": 107,
+	"./fi.svg": 108,
+	"./fj.svg": 109,
+	"./fk.svg": 110,
+	"./fm.svg": 111,
+	"./fo.svg": 112,
+	"./fr.svg": 113,
+	"./ga.svg": 114,
+	"./gb-eng.svg": 115,
+	"./gb-sct.svg": 116,
+	"./gb-wls.svg": 117,
+	"./gb.svg": 118,
+	"./gd.svg": 119,
+	"./ge.svg": 120,
+	"./gf.svg": 121,
+	"./gg.svg": 122,
+	"./gh.svg": 123,
+	"./gi.svg": 124,
+	"./gl.svg": 125,
+	"./gm.svg": 126,
+	"./gn.svg": 127,
+	"./gp.svg": 128,
+	"./gq.svg": 129,
+	"./gr.svg": 130,
+	"./gs.svg": 131,
+	"./gt.svg": 132,
+	"./gu.svg": 133,
+	"./gw.svg": 134,
+	"./gy.svg": 135,
+	"./hk.svg": 136,
+	"./hm.svg": 137,
+	"./hn.svg": 138,
+	"./hr.svg": 139,
+	"./ht.svg": 140,
+	"./hu.svg": 141,
+	"./id.svg": 142,
+	"./ie.svg": 143,
+	"./il.svg": 144,
+	"./im.svg": 145,
+	"./in.svg": 146,
+	"./io.svg": 147,
+	"./iq.svg": 148,
+	"./ir.svg": 149,
+	"./is.svg": 150,
+	"./it.svg": 151,
+	"./je.svg": 152,
+	"./jm.svg": 153,
+	"./jo.svg": 154,
+	"./jp.svg": 155,
+	"./ke.svg": 156,
+	"./kg.svg": 157,
+	"./kh.svg": 158,
+	"./ki.svg": 159,
+	"./km.svg": 160,
+	"./kn.svg": 161,
+	"./kp.svg": 162,
+	"./kr.svg": 163,
+	"./kw.svg": 164,
+	"./ky.svg": 165,
+	"./kz.svg": 166,
+	"./la.svg": 167,
+	"./lb.svg": 168,
+	"./lc.svg": 169,
+	"./li.svg": 170,
+	"./lk.svg": 171,
+	"./lr.svg": 172,
+	"./ls.svg": 173,
+	"./lt.svg": 174,
+	"./lu.svg": 175,
+	"./lv.svg": 176,
+	"./ly.svg": 177,
+	"./ma.svg": 178,
+	"./mc.svg": 179,
+	"./md.svg": 180,
+	"./me.svg": 181,
+	"./mf.svg": 182,
+	"./mg.svg": 183,
+	"./mh.svg": 184,
+	"./mk.svg": 185,
+	"./ml.svg": 186,
+	"./mm.svg": 187,
+	"./mn.svg": 188,
+	"./mo.svg": 189,
+	"./mp.svg": 190,
+	"./mq.svg": 191,
+	"./mr.svg": 192,
+	"./ms.svg": 193,
+	"./mt.svg": 194,
+	"./mu.svg": 195,
+	"./mv.svg": 196,
+	"./mw.svg": 197,
+	"./mx.svg": 198,
+	"./my.svg": 199,
+	"./mz.svg": 200,
+	"./na.svg": 201,
+	"./nc.svg": 202,
+	"./ne.svg": 203,
+	"./nf.svg": 204,
+	"./ng.svg": 205,
+	"./ni.svg": 206,
+	"./nl.svg": 207,
+	"./no.svg": 208,
+	"./np.svg": 209,
+	"./nr.svg": 210,
+	"./nu.svg": 211,
+	"./nz.svg": 212,
+	"./om.svg": 213,
+	"./pa.svg": 214,
+	"./pe.svg": 215,
+	"./pf.svg": 216,
+	"./pg.svg": 217,
+	"./ph.svg": 218,
+	"./pk.svg": 219,
+	"./pl.svg": 220,
+	"./pm.svg": 221,
+	"./pn.svg": 222,
+	"./pr.svg": 223,
+	"./ps.svg": 224,
+	"./pt.svg": 225,
+	"./pw.svg": 226,
+	"./py.svg": 227,
+	"./qa.svg": 228,
+	"./re.svg": 229,
+	"./ro.svg": 230,
+	"./rs.svg": 231,
+	"./ru.svg": 232,
+	"./rw.svg": 233,
+	"./sa.svg": 234,
+	"./sb.svg": 235,
+	"./sc.svg": 236,
+	"./sd.svg": 237,
+	"./se.svg": 238,
+	"./sg.svg": 239,
+	"./sh.svg": 240,
+	"./si.svg": 241,
+	"./sj.svg": 242,
+	"./sk.svg": 243,
+	"./sl.svg": 244,
+	"./sm.svg": 245,
+	"./sn.svg": 246,
+	"./so.svg": 247,
+	"./sr.svg": 248,
+	"./ss.svg": 249,
+	"./st.svg": 250,
+	"./sv.svg": 251,
+	"./sx.svg": 252,
+	"./sy.svg": 253,
+	"./sz.svg": 254,
+	"./tc.svg": 255,
+	"./td.svg": 256,
+	"./tf.svg": 257,
+	"./tg.svg": 258,
+	"./th.svg": 259,
+	"./tj.svg": 260,
+	"./tk.svg": 261,
+	"./tl.svg": 262,
+	"./tm.svg": 263,
+	"./tn.svg": 264,
+	"./to.svg": 265,
+	"./tr.svg": 266,
+	"./tt.svg": 267,
+	"./tv.svg": 268,
+	"./tw.svg": 269,
+	"./tz.svg": 270,
+	"./ua.svg": 271,
+	"./ug.svg": 272,
+	"./um.svg": 273,
+	"./us.svg": 274,
+	"./uy.svg": 275,
+	"./uz.svg": 276,
+	"./va.svg": 277,
+	"./vc.svg": 278,
+	"./ve.svg": 279,
+	"./vg.svg": 280,
+	"./vi.svg": 281,
+	"./vn.svg": 282,
+	"./vu.svg": 283,
+	"./wf.svg": 284,
+	"./ws.svg": 285,
+	"./ye.svg": 286,
+	"./yt.svg": 287,
+	"./za.svg": 288,
+	"./zm.svg": 289,
+	"./zw.svg": 290,
+	"./zz.svg": 291
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number or string
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 356;
+
+/***/ }),
+/* 357 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -31027,7 +31205,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _i18next = __webpack_require__(4);
+var _i18next = __webpack_require__(3);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
@@ -31129,7 +31307,7 @@ PreviewVideo.propTypes = {
 exports.default = PreviewVideo;
 
 /***/ }),
-/* 357 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31149,7 +31327,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _i18next = __webpack_require__(4);
+var _i18next = __webpack_require__(3);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
@@ -31161,7 +31339,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var logo = __webpack_require__(358);
+var logo = __webpack_require__(359);
 
 var Introduction = function (_React$PureComponent) {
     _inherits(Introduction, _React$PureComponent);
@@ -31175,13 +31353,13 @@ var Introduction = function (_React$PureComponent) {
     _createClass(Introduction, [{
         key: 'render',
         value: function render() {
-            var classNames = this.props.frontBack + ' flex column space-between';
+            var classNames = this.props.frontBack;
             return _react2.default.createElement(
                 'div',
-                { id: 'home', className: classNames },
+                { id: 'introduction', className: classNames },
                 _react2.default.createElement(
                     'div',
-                    { className: 'flex column center grow' },
+                    { className: 'introduction-wrapper' },
                     _react2.default.createElement(
                         'div',
                         null,
@@ -31193,7 +31371,7 @@ var Introduction = function (_React$PureComponent) {
                         _react2.default.createElement(
                             'h1',
                             null,
-                            'Questions Box'
+                            this.props.title
                         )
                     )
                 ),
@@ -31215,18 +31393,19 @@ var Introduction = function (_React$PureComponent) {
 
 Introduction.propTypes = {
     frontBack: _propTypes2.default.string.isRequired,
-    goToNextStep: _propTypes2.default.func.isRequired
+    goToNextStep: _propTypes2.default.func.isRequired,
+    title: _propTypes2.default.string.isRequired
 };
 exports.default = Introduction;
 
 /***/ }),
-/* 358 */
+/* 359 */
 /***/ (function(module, exports) {
 
 module.exports = "../img/logo-7139109f819ed7b70885a490f49565a6.png";
 
 /***/ }),
-/* 359 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31246,29 +31425,29 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _reactTransitionGroup = __webpack_require__(33);
+var _reactTransitionGroup = __webpack_require__(34);
 
 var _fs = __webpack_require__(11);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _Buzzer = __webpack_require__(360);
+var _Buzzer = __webpack_require__(361);
 
 var _Buzzer2 = _interopRequireDefault(_Buzzer);
 
-var _Instructions = __webpack_require__(362);
+var _Instructions = __webpack_require__(363);
 
 var _Instructions2 = _interopRequireDefault(_Instructions);
 
-var _IntroVideo = __webpack_require__(363);
+var _IntroVideo = __webpack_require__(364);
 
 var _IntroVideo2 = _interopRequireDefault(_IntroVideo);
 
-var _Questions = __webpack_require__(364);
+var _Questions = __webpack_require__(365);
 
 var _Questions2 = _interopRequireDefault(_Questions);
 
-var _Thanks = __webpack_require__(366);
+var _Thanks = __webpack_require__(367);
 
 var _Thanks2 = _interopRequireDefault(_Thanks);
 
@@ -31464,7 +31643,7 @@ MainViewer.propTypes = {
 exports.default = MainViewer;
 
 /***/ }),
-/* 360 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31484,7 +31663,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _buzz = __webpack_require__(361);
+var _buzz = __webpack_require__(362);
 
 var _buzz2 = _interopRequireDefault(_buzz);
 
@@ -31549,13 +31728,13 @@ MainViewer.propTypes = {
 exports.default = MainViewer;
 
 /***/ }),
-/* 361 */
+/* 362 */
 /***/ (function(module, exports) {
 
 module.exports = "../sound/buzz-d158413028a0af782a187617e98a4a09.ogg";
 
 /***/ }),
-/* 362 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31575,7 +31754,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _i18next = __webpack_require__(4);
+var _i18next = __webpack_require__(3);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
@@ -31601,10 +31780,10 @@ var Instructions = function (_React$PureComponent) {
         value: function render() {
             return _react2.default.createElement(
                 'div',
-                { id: 'instructions', className: 'flex column space-between' },
+                { id: 'instructions' },
                 _react2.default.createElement(
                     'div',
-                    { className: 'flex column center grow' },
+                    { className: 'instructions-wrapper' },
                     _react2.default.createElement(
                         'div',
                         null,
@@ -31667,7 +31846,7 @@ Instructions.propTypes = {
 exports.default = Instructions;
 
 /***/ }),
-/* 363 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31748,7 +31927,7 @@ IntroVideo.propTypes = {
 exports.default = IntroVideo;
 
 /***/ }),
-/* 364 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31768,11 +31947,11 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _Question = __webpack_require__(365);
+var _Question = __webpack_require__(366);
 
 var _Question2 = _interopRequireDefault(_Question);
 
-var _Utils = __webpack_require__(36);
+var _Utils = __webpack_require__(23);
 
 var _Utils2 = _interopRequireDefault(_Utils);
 
@@ -31848,7 +32027,7 @@ var Questions = function (_React$PureComponent) {
         value: function render() {
             return _react2.default.createElement(
                 'div',
-                { id: 'question', className: 'flex column center grow' },
+                { id: 'question' },
                 _react2.default.createElement(_Question2.default, {
                     question: this.props.questions[this.state.questionIndex]
                 })
@@ -31866,7 +32045,7 @@ Questions.propTypes = {
 exports.default = Questions;
 
 /***/ }),
-/* 365 */
+/* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31923,7 +32102,7 @@ Question.propTypes = {
 exports.default = Question;
 
 /***/ }),
-/* 366 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31943,7 +32122,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _i18next = __webpack_require__(4);
+var _i18next = __webpack_require__(3);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
@@ -32013,18 +32192,18 @@ Thanks.propTypes = {
 exports.default = Thanks;
 
 /***/ }),
-/* 367 */
+/* 368 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 368 */
+/* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en.json": 369,
-	"./fr.json": 370
+	"./en.json": 370,
+	"./fr.json": 371
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -32040,19 +32219,19 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 368;
-
-/***/ }),
-/* 369 */
-/***/ (function(module, exports) {
-
-module.exports = {"default":{"settings":"Settings","audioInput":"Audio input","videoInput":"Camera","saveSettings":"Save settings","instructionsButton":"Instructions","instruction1":"Questions will be displayed on the screen. Read them out loud then answer and/or hit the buzzer","instruction2":"Take all your time, you are the one controlling when the next question is displayed.","buzz":"buzz","nextQuestion":"next question","previousQuestion":"previous question","letsGo":"Let's go!","next":"Next","thankYou":"Thank you!","restartMessage":"The app will start again in {{time}} seconds"}}
+webpackContext.id = 369;
 
 /***/ }),
 /* 370 */
 /***/ (function(module, exports) {
 
-module.exports = {"default":{"settings":"Réglages","audioInput":"Entrée son","videoInput":"Caméra","saveSettings":"Sauvegarder les réglages","instructionsButton":"Instructions","instruction1":"Des questions vont être affichées à l'écran. Lisez la question à haute voix puis répondez et/ou buzzez","instruction2":"Vous avez tout votre temps, vous contrôlez le passage à la question suivante.","buzz":"buzz","nextQuestion":"question suivante","previousQuestion":"question précédente","letsGo":"C'est parti!","next":"Suivant","thankYou":"Merci d'avoir participé!","restartMessage":"Redémarrage automatique dans {{time}} secondes"}}
+module.exports = {"default":{"settings":"Settings","audioInput":"Audio input","videoInput":"Camera","saveSettings":"Save settings","instructionsButton":"Instructions","instruction1":"Questions will be displayed on the screen. Read them out loud then answer and/or hit the buzzer","instruction2":"Take all your time, you are the one controlling when the next question is displayed.","buzz":"buzz","nextQuestion":"next question","previousQuestion":"previous question","letsGo":"Let's go!","next":"Next","thankYou":"Thank you!","restartMessage":"The app will start again in {{time}} seconds","title":"Title"}}
+
+/***/ }),
+/* 371 */
+/***/ (function(module, exports) {
+
+module.exports = {"default":{"settings":"Réglages","audioInput":"Entrée son","videoInput":"Caméra","saveSettings":"Sauvegarder les réglages","instructionsButton":"Instructions","instruction1":"Des questions vont être affichées à l'écran. Lisez la question à haute voix puis répondez et/ou buzzez","instruction2":"Vous avez tout votre temps, vous contrôlez le passage à la question suivante.","buzz":"buzz","nextQuestion":"question suivante","previousQuestion":"question précédente","letsGo":"C'est parti!","next":"Suivant","thankYou":"Merci d'avoir participé!","restartMessage":"Redémarrage automatique dans {{time}} secondes","title":"Titre"}}
 
 /***/ })
 /******/ ]);

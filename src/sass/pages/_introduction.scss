@@ -1,0 +1,13 @@
+#introduction {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .introduction-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex-grow: 1;
+        flex-shrink: 0;
+    }
+}

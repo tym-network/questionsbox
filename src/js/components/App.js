@@ -1,11 +1,13 @@
 import React from 'react';
-import fs from 'fs';
 import i18next from 'i18next';
+const fs = require('fs');
 // import MediaStreamRecorder from 'msr';
 // import blobUtil from 'blob-util';
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
-import Settings from './Settings';
+import Utils from '../Utils';
+import DataSettings from './DataSettings';
+import DeviceSettings from './DeviceSettings';
 import LocalePicker from './LocalePicker';
 import PreviewVideo from './PreviewVideo';
 import Introduction from './Introduction';
@@ -14,7 +16,8 @@ import MainViewer from './MainViewer';
 export default class App extends React.Component {
 
     steps = [
-        'settings',
+        'data-settings',
+        'device-settings',
         'locale',
         'preview-video',
         'introduction',
@@ -28,10 +31,13 @@ export default class App extends React.Component {
         super(props);
 
         this.state = {
-            step: 'settings',
+            step: 'data-settings',
             locale: 'en',
-            currentAudioInputId: '',
-            currentVideoInputId: '',
+            configuration: {
+                audioInputDeviceId: '',
+                videoInputDeviceId: '',
+                title: 'Questions Box'
+            },
             cameraResolution: null,
             questions: {},
             stream: null
@@ -41,6 +47,7 @@ export default class App extends React.Component {
         this.isFlipped = this.isFlipped.bind(this);
         this.goToNextStep = this.goToNextStep.bind(this);
         this.setCurrentInput = this.setCurrentInput.bind(this);
+        this.setTitle = this.setTitle.bind(this);
         this.setLocale = this.setLocale.bind(this);
         this.setResolution = this.setResolution.bind(this);
         this.startRecording = this.startRecording.bind(this);
@@ -49,23 +56,47 @@ export default class App extends React.Component {
 
     componentDidMount() {
         this.loadQuestions();
+        this.loadConfiguration();
     }
 
     loadQuestions() {
-        // Read config file
-        fs.readFile('questions.json', (err, data) => {
-            if (err && err.code !== 'ENOENT') {
-                window.logger.error('Error while reading questions.json file', err)
+        Utils.readJsonFile('questions.json').then(data => {
+            // If only one language, use it for the interface
+            const locales = Object.keys(data);
+            if (locales.length === 1) {
+                this.setLocale(locales[0]);
             }
 
-            try {
-                data = JSON.parse(data);
-                this.setState({
-                    questions: data
-                });
-            } catch(err) {
-                window.logger.error('Unable to parse JSON data from questions.json');
+            this.setState({
+                questions: data
+            });
+        }, err => {
+            window.logger.error('Error while reading questions.json file', err)
+        });
+    }
+
+    loadConfiguration() {
+        // Read config file
+        Utils.readJsonFile('.data/config.json').then(data => {
+            const mergedConfiguration = Object.assign({}, this.state.configuration, data);
+
+            this.setState({
+                configuration: mergedConfiguration
+            });
+        }, err => {
+            window.logger.error('Error while reading .data/config.json file', err)
+        });
+    }
+
+    saveConfiguration() {
+        // Save to config.json file
+        fs.mkdir('.data', err => {
+            if (err && err.code !== 'EEXIST') {
+                window.logger.error('Failed to create ".data" dir ', err);
             }
+            fs.writeFile('.data/config.json', JSON.stringify(this.state.configuration, null, 4), (err) => {
+                err && window.logger.error(err);
+            });
         });
     }
 
@@ -80,12 +111,19 @@ export default class App extends React.Component {
     }
 
     nextStep(index) {
+        if (this.state.step === 'data-settings' || this.state.step === 'device-settings') {
+            this.saveConfiguration();
+        }
+
         if (index >= 0) {
             if (index + 1 >= this.steps.length) {
-                index = 0;
+                // Back to locale picker
+                index = 2;
+            } else {
+                index++;
             }
 
-            const nextStep = this.steps[index + 1];
+            const nextStep = this.steps[index];
             if (this.shouldShowNextStep(nextStep)) {
                 this.frontBack = this.frontBack === 'front' ? 'back' : 'front';
                 this.setState({
@@ -101,7 +139,6 @@ export default class App extends React.Component {
         if (nextStep === 'locale') {
             const locales =  Object.keys(this.state.questions);
             if (locales.length === 1) {
-                this.setLocale(locales[0]);
                 return false;
             }
             return true;
@@ -111,14 +148,29 @@ export default class App extends React.Component {
 
     setCurrentInput(type, id, cb) {
         if (type === 'audio') {
+            const newConfiguration = Object.assign({}, this.state.configuration, {
+                audioInputDeviceId: id
+            });
             this.setState({
-                currentAudioInputId: id
+                configuration: newConfiguration
             }, cb);
         } else if (type === 'video') {
+            const newConfiguration = Object.assign({}, this.state.configuration, {
+                videoInputDeviceId: id
+            });
             this.setState({
-                currentVideoInputId: id
+                configuration: newConfiguration
             }, cb);
         }
+    }
+
+    setTitle(title) {
+        const newConfiguration = Object.assign({}, this.state.configuration, {
+            title
+        });
+        this.setState({
+            configuration: newConfiguration
+        });
     }
 
     setResolution(resolution, cb) {
@@ -140,9 +192,9 @@ export default class App extends React.Component {
 
     startRecording() {
         const mediaConstraints = {
-            audio: {deviceId: {exact: this.state.currentAudioInputId}},
+            audio: {deviceId: {exact: this.state.configuration.audioInputDeviceId}},
             video: {
-                deviceId: {exact: this.state.currentVideoInputId},
+                deviceId: {exact: this.state.configuration.videoInputDeviceId},
                 width: {exact: this.state.cameraResolution.width},
                 height: {exact: this.state.cameraResolution.height}
             }
@@ -210,13 +262,6 @@ export default class App extends React.Component {
         }
     }
 
-    logger(name) {
-        return () => {
-            const t = console;
-            t.log('EVENT', name);
-        };
-    }
-
     render() {
         let wrapperClasses = null;
         const timeoutFlip = 1000;
@@ -227,15 +272,28 @@ export default class App extends React.Component {
 
         let currentComponent;
         switch (this.state.step) {
-            case 'settings':
+            case 'data-settings':
                 currentComponent = (
                     <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <Settings
+                        <DataSettings
                             className={`fade fade-${status}`}
                             goToNextStep={this.goToNextStep}
                             frontBack={this.frontBack}
-                            currentAudioInputId={this.state.currentAudioInputId}
-                            currentVideoInputId={this.state.currentVideoInputId}
+                            title={this.state.configuration.title}
+                            setTitle={this.setTitle}
+                        />
+                    </CSSTransition>
+                );
+                break;
+            case 'device-settings':
+                currentComponent = (
+                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
+                        <DeviceSettings
+                            className={`fade fade-${status}`}
+                            goToNextStep={this.goToNextStep}
+                            frontBack={this.frontBack}
+                            currentAudioInputId={this.state.configuration.audioInputDeviceId}
+                            currentVideoInputId={this.state.configuration.videoInputDeviceId}
                             resolution={this.state.cameraResolution}
                             setCurrentInput={this.setCurrentInput}
                             setResolution={this.setResolution}
@@ -275,6 +333,7 @@ export default class App extends React.Component {
                         <Introduction
                             frontBack={this.frontBack}
                             goToNextStep={this.goToNextStep}
+                            title={this.state.configuration.title}
                         />
                     </CSSTransition>
                 );

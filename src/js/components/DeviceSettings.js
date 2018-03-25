@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
-const fs = require('fs');
 
 import VideoOutput from './VideoOutput';
 import Utils from '../Utils';
 
-export default class Settings extends React.PureComponent {
+export default class DeviceSettings extends React.PureComponent {
 
     static propTypes = {
         frontBack: PropTypes.string.isRequired,
@@ -29,7 +28,7 @@ export default class Settings extends React.PureComponent {
         }
 
         this.listDevices = this.listDevices.bind(this);
-        this.loadFromConfigFile = this.loadFromConfigFile.bind(this);
+        this.startVideo = this.startVideo.bind(this);
         this.determineResolution = this.determineResolution.bind(this);
         this.testResolution = this.testResolution.bind(this);
         this.setCurrentInput = this.setCurrentInput.bind(this);
@@ -39,7 +38,7 @@ export default class Settings extends React.PureComponent {
     componentWillMount() {
         navigator.mediaDevices.enumerateDevices()
             .then(this.listDevices)
-            .then(this.loadFromConfigFile)
+            .then(this.startVideo)
             .catch(function(err) {
                 window.logger.error('Error while enumerating devices', err);
             });
@@ -67,28 +66,22 @@ export default class Settings extends React.PureComponent {
             audioInputs,
             videoInputs
         });
+
+        return true;
     }
 
-    loadFromConfigFile() {
-        // Read config file
-        fs.readFile('.data/config.json', (err, data) => {
-            if (err && err.code !== 'ENOENT') {
-                window.logger.error('Error while reading config file', err)
-            }
-
-            try {
-                data = JSON.parse(data);
-                if (this.state.audioInputs.find(input => input.id === data.audioInputDeviceId)) {
-                    this.setCurrentInput('audio', data.audioInputDeviceId || null);
-                }
-
-                if (this.state.videoInputs.find(input => input.id === data.videoInputDeviceId)) {
-                    this.setCurrentInput('video', data.videoInputDeviceId || null);
-                }
-            } catch(err) {
-                window.logger.error('Unable to parse JSON data from .data/config.json');
-            }
+    startVideo() {
+        // Select the first device to show
+        const audioInputExists = this.state.audioInputs.find(device => {
+            return device.id == this.props.currentAudioInputId
         });
+        const videoInputExists = this.state.videoInputs.find(device => {
+            return device.id == this.props.currentVideoInputId
+        });
+
+        if (audioInputExists && videoInputExists) {
+            this.determineResolution();
+        }
     }
 
     determineResolution() {
@@ -154,20 +147,6 @@ export default class Settings extends React.PureComponent {
         this.videoOutput && this.videoOutput.stop();
 
         this.props.goToNextStep();
-
-        // Save to config.json file
-        fs.mkdir('.data', err => {
-            var configFile = {
-                audioInputDeviceId: this.props.currentAudioInputId,
-                videoInputDeviceId: this.props.currentVideoInputId
-            };
-            if (err && err.code !== 'EEXIST') {
-                window.logger.error('Failed to create ".data" dir ', err);
-            }
-            fs.writeFile('.data/config.json', JSON.stringify(configFile, null, 4), (err) => {
-                err && window.logger.error(err);
-            });
-        });
     }
 
     setCurrentInput(mediaType, id) {
@@ -196,9 +175,9 @@ export default class Settings extends React.PureComponent {
     render() {
         const className = `${this.props.frontBack}`;
         return (
-            <section id="settings" className={className}>
+            <section id="device-settings" className={className}>
                 <div>
-                    <h1>{i18next.t('settings')}</h1>
+                    <h1>{i18next.t('settings')} (2/2)</h1>
                     <div className="settings-wrapper">
                         <div className="settings-wrapper-inputs">
                             <div className="select-input">

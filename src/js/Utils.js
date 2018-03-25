@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 export default class Utils {
     static standardResolutions = [
         {
@@ -83,5 +85,22 @@ export default class Utils {
                 timeout = setTimeout(later, wait)
             }
         }
+    }
+
+    static readJsonFile(fileName) {
+        return new Promise((res, rej) => {
+            fs.readFile(fileName, (err, data) => {
+                if (err && err.code !== 'ENOENT') {
+                    rej(err);
+                }
+
+                try {
+                    data = JSON.parse(data);
+                    res(data);
+                } catch(err) {
+                    rej(err);
+                }
+            });
+        });
     }
 }

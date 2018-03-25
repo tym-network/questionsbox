@@ -13,6 +13,7 @@
         "letsGo": "C'est parti!",
         "next": "Suivant",
         "thankYou": "Merci d'avoir participé!",
-        "restartMessage": "Redémarrage automatique dans {{time}} secondes"
+        "restartMessage": "Redémarrage automatique dans {{time}} secondes",
+        "title": "Titre"
     }
 }

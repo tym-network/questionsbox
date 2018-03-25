@@ -13,6 +13,7 @@
         "letsGo": "Let's go!",
         "next": "Next",
         "thankYou": "Thank you!",
-        "restartMessage": "The app will start again in {{time}} seconds"
+        "restartMessage": "The app will start again in {{time}} seconds",
+        "title": "Title"
     }
 }

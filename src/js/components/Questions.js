@@ -61,7 +61,7 @@ export default class Questions extends React.PureComponent {
 
     render() {
         return (
-            <div id="question" className="flex column center grow">
+            <div id="question">
                 <Question
                     question={this.props.questions[this.state.questionIndex]}
                 />

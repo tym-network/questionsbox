@@ -10,8 +10,8 @@ export default class Instructions extends React.PureComponent {
 
     render() {
         return (
-            <div id="instructions" className="flex column space-between">
-                <div className="flex column center grow">
+            <div id="instructions">
+                <div className="instructions-wrapper">
                     <div>
                         <p className="largeParagraph">{i18next.t('instruction1')}</p>
                         <p>{i18next.t('instruction2')}</p>

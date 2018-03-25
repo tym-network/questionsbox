@@ -8,17 +8,18 @@ export default class Introduction extends React.PureComponent {
 
     static propTypes = {
         frontBack: PropTypes.string.isRequired,
-        goToNextStep: PropTypes.func.isRequired
+        goToNextStep: PropTypes.func.isRequired,
+        title: PropTypes.string.isRequired
     };
 
     render() {
-        const classNames = `${this.props.frontBack} flex column space-between`;
+        const classNames = this.props.frontBack;
         return (
-            <div id="home" className={classNames}>
-                <div className="flex column center grow">
+            <div id="introduction" className={classNames}>
+                <div className="introduction-wrapper">
                     <div>
                         <span className="avatar"><img src={logo} alt="" /></span>
-                        <h1>Questions Box</h1>
+                        <h1>{this.props.title}</h1>
                     </div>
                 </div>
 
