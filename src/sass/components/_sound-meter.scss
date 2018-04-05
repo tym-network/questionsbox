@@ -1,0 +1,19 @@
+.sound-meter {
+    position: relative;
+    width: 100px;
+    height: 20px;
+    border-radius: 2px;
+    background: $lightgrey;
+    overflow: hidden;
+
+    .sound-meter-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: $green;
+        transform-origin: left;
+        transition: transform 0.05s ease-in-out;
+    }
+}

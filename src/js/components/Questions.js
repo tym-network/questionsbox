@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Question from './Question';
-import Utils from '../Utils';
+import { throttle } from '../utils/Utils';
 
 export default class Questions extends React.PureComponent {
 
@@ -19,8 +19,8 @@ export default class Questions extends React.PureComponent {
         }
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.previousQuestion = Utils.throttle(this.previousQuestion.bind(this), 1000);
-        this.nextQuestion = Utils.throttle(this.nextQuestion.bind(this), 1000);
+        this.previousQuestion = throttle(this.previousQuestion.bind(this), 1000);
+        this.nextQuestion = throttle(this.nextQuestion.bind(this), 1000);
     }
 
     componentDidMount() {

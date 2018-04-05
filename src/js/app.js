@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import i18next from 'i18next';
 import winston from 'winston';
+
+import withRecorder from './components/containers/WebRTCContainer.js';
 import App from './components/App.js';
 import '../sass/main.scss';
 
@@ -51,7 +53,10 @@ i18next.init(
         const wrapper = document.getElementById("app");
 
         if (wrapper) {
-            ReactDOM.render(<App />, wrapper);
+            const AppWithRecorder = withRecorder(App);
+            ReactDOM.render(
+                <AppWithRecorder />
+            , wrapper);
         }
     }
 );

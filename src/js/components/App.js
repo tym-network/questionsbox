@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import i18next from 'i18next';
 const fs = require('fs');
 // import MediaStreamRecorder from 'msr';
 // import blobUtil from 'blob-util';
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
-import Utils from '../Utils';
+import { readJsonFile } from '../utils/Utils';
 import DataSettings from './DataSettings';
 import DeviceSettings from './DeviceSettings';
 import LocalePicker from './LocalePicker';
@@ -27,9 +28,14 @@ export default class App extends React.Component {
     multiStreamRecorder;
     frontBack = 'front';
 
+    static propTypes = {
+        startRecording: PropTypes.func,
+        stopRecording: PropTypes.func,
+        stream: PropTypes.object
+    };
+
     constructor(props) {
         super(props);
-
         this.state = {
             step: 'data-settings',
             locale: 'en',
@@ -38,9 +44,7 @@ export default class App extends React.Component {
                 videoInputDeviceId: '',
                 title: 'Questions Box'
             },
-            cameraResolution: null,
-            questions: {},
-            stream: null
+            questions: {}
         }
 
         this.loadQuestions = this.loadQuestions.bind(this);
@@ -49,9 +53,6 @@ export default class App extends React.Component {
         this.setCurrentInput = this.setCurrentInput.bind(this);
         this.setTitle = this.setTitle.bind(this);
         this.setLocale = this.setLocale.bind(this);
-        this.setResolution = this.setResolution.bind(this);
-        this.startRecording = this.startRecording.bind(this);
-        this.stopRecording = this.stopRecording.bind(this);
     }
 
     componentDidMount() {
@@ -60,7 +61,7 @@ export default class App extends React.Component {
     }
 
     loadQuestions() {
-        Utils.readJsonFile('questions.json').then(data => {
+        readJsonFile('questions.json').then(data => {
             // If only one language, use it for the interface
             const locales = Object.keys(data);
             if (locales.length === 1) {
@@ -77,7 +78,7 @@ export default class App extends React.Component {
 
     loadConfiguration() {
         // Read config file
-        Utils.readJsonFile('.data/config.json').then(data => {
+        readJsonFile('.data/config.json').then(data => {
             const mergedConfiguration = Object.assign({}, this.state.configuration, data);
 
             this.setState({
@@ -173,12 +174,6 @@ export default class App extends React.Component {
         });
     }
 
-    setResolution(resolution, cb) {
-        this.setState({
-            cameraResolution: resolution
-        }, cb);
-    }
-
     setLocale(locale) {
         this.setState({
             locale
@@ -187,78 +182,6 @@ export default class App extends React.Component {
         // If possible, also change interface's locale
         if (window.locales.includes(locale)) {
             i18next.changeLanguage(locale);
-        }
-    }
-
-    startRecording() {
-        const mediaConstraints = {
-            audio: {deviceId: {exact: this.state.configuration.audioInputDeviceId}},
-            video: {
-                deviceId: {exact: this.state.configuration.videoInputDeviceId},
-                width: {exact: this.state.cameraResolution.width},
-                height: {exact: this.state.cameraResolution.height}
-            }
-        };
-
-        const onMediaError = function(e) {
-            window.logger.error('Media error while recording', e);
-        };
-
-        const onMediaSuccess = stream => {
-            this.setState({ stream });
-
-            // this.multiStreamRecorder = new MediaStreamRecorder.MultiStreamRecorder(stream);
-            // this.multiStreamRecorder.stream = stream;
-            // this.multiStreamRecorder.canvas = {
-            //     width: this.state.cameraResolution.width,
-            //     height: this.state.cameraResolution.height
-            // };
-            // this.multiStreamRecorder.video = this.video;
-            // this.multiStreamRecorder.ondataavailable = blobs => {
-            //     const videoName = + new Date();
-            //     try {
-            //         blobUtil.blobToBase64String(blobs.video).then(base64String => {
-            //             fs.writeFile('videos/' + videoName + '.webm', new Buffer(base64String, 'base64'), function(err){
-            //                 if (err) {
-            //                     window.logger.error('Failed to save video', videoName, err);
-            //                 } else {
-            //                     window.logger.info('File saved', videoName);
-            //                 }
-            //             });
-            //         }, err => {
-            //             window.logger.error('Failed to convert blob to base64', err);
-            //         });
-            //     } catch(e) {
-            //         window.logger.error(e);
-            //     }
-            // };
-
-            // const timeInterval = 20000;
-            // // get blob after specific time interval
-            // this.multiStreamRecorder.start(timeInterval);
-
-            this.video.play();
-        };
-
-        navigator.mediaDevices
-            .getUserMedia(mediaConstraints)
-            .then(onMediaSuccess)
-            .catch(onMediaError);
-    }
-
-    stopRecording() {
-        if (this.multiStreamRecorder) {
-            this.multiStreamRecorder.stop();
-            this.multiStreamRecorder = null;
-
-            if (this.state.stream) {
-                this.state.stream.getTracks().forEach(function(track) {
-                    track.stop();
-                });
-                this.setState({
-                    stream: null
-                });
-            }
         }
     }
 
@@ -276,7 +199,6 @@ export default class App extends React.Component {
                 currentComponent = (
                     <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
                         <DataSettings
-                            className={`fade fade-${status}`}
                             goToNextStep={this.goToNextStep}
                             frontBack={this.frontBack}
                             title={this.state.configuration.title}
@@ -289,14 +211,11 @@ export default class App extends React.Component {
                 currentComponent = (
                     <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
                         <DeviceSettings
-                            className={`fade fade-${status}`}
                             goToNextStep={this.goToNextStep}
                             frontBack={this.frontBack}
                             currentAudioInputId={this.state.configuration.audioInputDeviceId}
                             currentVideoInputId={this.state.configuration.videoInputDeviceId}
-                            resolution={this.state.cameraResolution}
                             setCurrentInput={this.setCurrentInput}
-                            setResolution={this.setResolution}
                         />
                     </CSSTransition>
                 );
@@ -317,12 +236,10 @@ export default class App extends React.Component {
                 currentComponent = (
                     <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
                         <PreviewVideo
-                            className={`fade fade-${status}`}
                             frontBack={this.frontBack}
                             goToNextStep={this.goToNextStep}
-                            startRecording={this.startRecording}
-                            stream={this.state.stream}
-                            resolution={this.state.cameraResolution}
+                            startRecording={this.props.startRecording}
+                            stream={this.props.stream}
                         />
                     </CSSTransition>
                 );
@@ -351,7 +268,7 @@ export default class App extends React.Component {
                             frontBack={this.frontBack}
                             goToNextStep={this.goToNextStep}
                             questions={this.state.questions[this.state.locale]}
-                            stopRecording={this.stopRecording}
+                            stopRecording={this.props.stopRecording}
                         />
                     </CSSTransition>
                 );
@@ -365,7 +282,9 @@ export default class App extends React.Component {
                         {currentComponent}
                     </TransitionGroup>
                 </div>
-                {this.state.stream && <video id="video-feedback" ref={ref => this.video = ref} muted="true" src={URL.createObjectURL(this.state.stream)}></video>}
+                {
+                    // {this.props.stream && <video id="video-feedback" ref={ref => this.video = ref} muted="true" src={URL.createObjectURL(this.props.stream)}></video>}
+                }
             </div>
         );
     }

@@ -1918,133 +1918,7 @@ function mixin (target) {
 
 
 /***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _fs = __webpack_require__(11);
-
-var _fs2 = _interopRequireDefault(_fs);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Utils = function () {
-    function Utils() {
-        _classCallCheck(this, Utils);
-    }
-
-    _createClass(Utils, null, [{
-        key: "throttle",
-        value: function throttle(callback, wait) {
-            var context = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this;
-
-            var timeout = null;
-            var callbackArgs = null;
-
-            var later = function later() {
-                timeout = null;
-            };
-
-            return function () {
-                if (!timeout) {
-                    callbackArgs = arguments;
-                    callback.apply(context, callbackArgs);
-                    timeout = setTimeout(later, wait);
-                }
-            };
-        }
-    }, {
-        key: "readJsonFile",
-        value: function readJsonFile(fileName) {
-            return new Promise(function (res, rej) {
-                _fs2.default.readFile(fileName, function (err, data) {
-                    if (err && err.code !== 'ENOENT') {
-                        rej(err);
-                    }
-
-                    try {
-                        data = JSON.parse(data);
-                        res(data);
-                    } catch (err) {
-                        rej(err);
-                    }
-                });
-            });
-        }
-    }]);
-
-    return Utils;
-}();
-
-Utils.standardResolutions = [{
-    "label": "4K(UHD)",
-    "width": 3840,
-    "height": 2160,
-    "ratio": "16:9"
-}, {
-    "label": "1080p(FHD)",
-    "width": 1920,
-    "height": 1080,
-    "ratio": "16:9"
-}, {
-    "label": "UXGA",
-    "width": 1600,
-    "height": 1200,
-    "ratio": "4:3"
-}, {
-    "label": "720p(HD)",
-    "width": 1280,
-    "height": 720,
-    "ratio": "16:9"
-}, {
-    "label": "SVGA",
-    "width": 800,
-    "height": 600,
-    "ratio": "4:3"
-}, {
-    "label": "VGA",
-    "width": 640,
-    "height": 480,
-    "ratio": "4:3"
-}, {
-    "label": "360p(nHD)",
-    "width": 640,
-    "height": 360,
-    "ratio": "16:9"
-}, {
-    "label": "CIF",
-    "width": 352,
-    "height": 288,
-    "ratio": "4:3"
-}, {
-    "label": "QVGA",
-    "width": 320,
-    "height": 240,
-    "ratio": "4:3"
-}, {
-    "label": "QCIF",
-    "width": 176,
-    "height": 144,
-    "ratio": "4:3"
-}, {
-    "label": "QQVGA",
-    "width": 160,
-    "height": 120,
-    "ratio": "4:3"
-}];
-exports.default = Utils;
-
-/***/ }),
+/* 23 */,
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5966,11 +5840,15 @@ var _winston = __webpack_require__(20);
 
 var _winston2 = _interopRequireDefault(_winston);
 
+var _WebRTCContainer = __webpack_require__(380);
+
+var _WebRTCContainer2 = _interopRequireDefault(_WebRTCContainer);
+
 var _App = __webpack_require__(342);
 
 var _App2 = _interopRequireDefault(_App);
 
-__webpack_require__(368);
+__webpack_require__(369);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5987,7 +5865,7 @@ window.logger = new _winston2.default.Logger({
 window.locales = ['en', 'fr'];
 var resources = {};
 window.locales.forEach(function (locale) {
-    resources[locale] = __webpack_require__(369)("./" + locale + '.json');
+    resources[locale] = __webpack_require__(370)("./" + locale + '.json');
 });
 
 // Disable right click
@@ -6013,7 +5891,8 @@ _i18next2.default.init({
     var wrapper = document.getElementById("app");
 
     if (wrapper) {
-        _reactDom2.default.render(_react2.default.createElement(_App2.default, null), wrapper);
+        var AppWithRecorder = (0, _WebRTCContainer2.default)(_App2.default);
+        _reactDom2.default.render(_react2.default.createElement(AppWithRecorder, null), wrapper);
     }
 });
 
@@ -28109,15 +27988,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(1);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _i18next = __webpack_require__(3);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
 var _reactTransitionGroup = __webpack_require__(34);
 
-var _Utils = __webpack_require__(23);
-
-var _Utils2 = _interopRequireDefault(_Utils);
+var _Utils = __webpack_require__(382);
 
 var _DataSettings = __webpack_require__(351);
 
@@ -28127,19 +28008,19 @@ var _DeviceSettings = __webpack_require__(352);
 
 var _DeviceSettings2 = _interopRequireDefault(_DeviceSettings);
 
-var _LocalePicker = __webpack_require__(354);
+var _LocalePicker = __webpack_require__(355);
 
 var _LocalePicker2 = _interopRequireDefault(_LocalePicker);
 
-var _PreviewVideo = __webpack_require__(357);
+var _PreviewVideo = __webpack_require__(358);
 
 var _PreviewVideo2 = _interopRequireDefault(_PreviewVideo);
 
-var _Introduction = __webpack_require__(358);
+var _Introduction = __webpack_require__(359);
 
 var _Introduction2 = _interopRequireDefault(_Introduction);
 
-var _MainViewer = __webpack_require__(360);
+var _MainViewer = __webpack_require__(361);
 
 var _MainViewer2 = _interopRequireDefault(_MainViewer);
 
@@ -28166,7 +28047,6 @@ var App = function (_React$Component) {
         _this.steps = ['data-settings', 'device-settings', 'locale', 'preview-video', 'introduction', 'main-viewer'];
         _this.frontBack = 'front';
 
-
         _this.state = {
             step: 'data-settings',
             locale: 'en',
@@ -28175,9 +28055,7 @@ var App = function (_React$Component) {
                 videoInputDeviceId: '',
                 title: 'Questions Box'
             },
-            cameraResolution: null,
-            questions: {},
-            stream: null
+            questions: {}
         };
 
         _this.loadQuestions = _this.loadQuestions.bind(_this);
@@ -28186,9 +28064,6 @@ var App = function (_React$Component) {
         _this.setCurrentInput = _this.setCurrentInput.bind(_this);
         _this.setTitle = _this.setTitle.bind(_this);
         _this.setLocale = _this.setLocale.bind(_this);
-        _this.setResolution = _this.setResolution.bind(_this);
-        _this.startRecording = _this.startRecording.bind(_this);
-        _this.stopRecording = _this.stopRecording.bind(_this);
         return _this;
     }
 
@@ -28203,7 +28078,7 @@ var App = function (_React$Component) {
         value: function loadQuestions() {
             var _this2 = this;
 
-            _Utils2.default.readJsonFile('questions.json').then(function (data) {
+            (0, _Utils.readJsonFile)('questions.json').then(function (data) {
                 // If only one language, use it for the interface
                 var locales = Object.keys(data);
                 if (locales.length === 1) {
@@ -28223,7 +28098,7 @@ var App = function (_React$Component) {
             var _this3 = this;
 
             // Read config file
-            _Utils2.default.readJsonFile('.data/config.json').then(function (data) {
+            (0, _Utils.readJsonFile)('.data/config.json').then(function (data) {
                 var mergedConfiguration = Object.assign({}, _this3.state.configuration, data);
 
                 _this3.setState({
@@ -28328,13 +28203,6 @@ var App = function (_React$Component) {
             });
         }
     }, {
-        key: 'setResolution',
-        value: function setResolution(resolution, cb) {
-            this.setState({
-                cameraResolution: resolution
-            }, cb);
-        }
-    }, {
         key: 'setLocale',
         value: function setLocale(locale) {
             this.setState({
@@ -28347,83 +28215,8 @@ var App = function (_React$Component) {
             }
         }
     }, {
-        key: 'startRecording',
-        value: function startRecording() {
-            var _this5 = this;
-
-            var mediaConstraints = {
-                audio: { deviceId: { exact: this.state.configuration.audioInputDeviceId } },
-                video: {
-                    deviceId: { exact: this.state.configuration.videoInputDeviceId },
-                    width: { exact: this.state.cameraResolution.width },
-                    height: { exact: this.state.cameraResolution.height }
-                }
-            };
-
-            var onMediaError = function onMediaError(e) {
-                window.logger.error('Media error while recording', e);
-            };
-
-            var onMediaSuccess = function onMediaSuccess(stream) {
-                _this5.setState({ stream: stream });
-
-                // this.multiStreamRecorder = new MediaStreamRecorder.MultiStreamRecorder(stream);
-                // this.multiStreamRecorder.stream = stream;
-                // this.multiStreamRecorder.canvas = {
-                //     width: this.state.cameraResolution.width,
-                //     height: this.state.cameraResolution.height
-                // };
-                // this.multiStreamRecorder.video = this.video;
-                // this.multiStreamRecorder.ondataavailable = blobs => {
-                //     const videoName = + new Date();
-                //     try {
-                //         blobUtil.blobToBase64String(blobs.video).then(base64String => {
-                //             fs.writeFile('videos/' + videoName + '.webm', new Buffer(base64String, 'base64'), function(err){
-                //                 if (err) {
-                //                     window.logger.error('Failed to save video', videoName, err);
-                //                 } else {
-                //                     window.logger.info('File saved', videoName);
-                //                 }
-                //             });
-                //         }, err => {
-                //             window.logger.error('Failed to convert blob to base64', err);
-                //         });
-                //     } catch(e) {
-                //         window.logger.error(e);
-                //     }
-                // };
-
-                // const timeInterval = 20000;
-                // // get blob after specific time interval
-                // this.multiStreamRecorder.start(timeInterval);
-
-                _this5.video.play();
-            };
-
-            navigator.mediaDevices.getUserMedia(mediaConstraints).then(onMediaSuccess).catch(onMediaError);
-        }
-    }, {
-        key: 'stopRecording',
-        value: function stopRecording() {
-            if (this.multiStreamRecorder) {
-                this.multiStreamRecorder.stop();
-                this.multiStreamRecorder = null;
-
-                if (this.state.stream) {
-                    this.state.stream.getTracks().forEach(function (track) {
-                        track.stop();
-                    });
-                    this.setState({
-                        stream: null
-                    });
-                }
-            }
-        }
-    }, {
         key: 'render',
         value: function render() {
-            var _this6 = this;
-
             var wrapperClasses = null;
             var timeoutFlip = 1000;
 
@@ -28438,7 +28231,6 @@ var App = function (_React$Component) {
                         _reactTransitionGroup.CSSTransition,
                         { key: this.state.step, classNames: 'flip', timeout: timeoutFlip },
                         _react2.default.createElement(_DataSettings2.default, {
-                            className: 'fade fade-' + status,
                             goToNextStep: this.goToNextStep,
                             frontBack: this.frontBack,
                             title: this.state.configuration.title,
@@ -28451,14 +28243,11 @@ var App = function (_React$Component) {
                         _reactTransitionGroup.CSSTransition,
                         { key: this.state.step, classNames: 'flip', timeout: timeoutFlip },
                         _react2.default.createElement(_DeviceSettings2.default, {
-                            className: 'fade fade-' + status,
                             goToNextStep: this.goToNextStep,
                             frontBack: this.frontBack,
                             currentAudioInputId: this.state.configuration.audioInputDeviceId,
                             currentVideoInputId: this.state.configuration.videoInputDeviceId,
-                            resolution: this.state.cameraResolution,
-                            setCurrentInput: this.setCurrentInput,
-                            setResolution: this.setResolution
+                            setCurrentInput: this.setCurrentInput
                         })
                     );
                     break;
@@ -28479,12 +28268,10 @@ var App = function (_React$Component) {
                         _reactTransitionGroup.CSSTransition,
                         { key: this.state.step, classNames: 'flip', timeout: timeoutFlip },
                         _react2.default.createElement(_PreviewVideo2.default, {
-                            className: 'fade fade-' + status,
                             frontBack: this.frontBack,
                             goToNextStep: this.goToNextStep,
-                            startRecording: this.startRecording,
-                            stream: this.state.stream,
-                            resolution: this.state.cameraResolution
+                            startRecording: this.props.startRecording,
+                            stream: this.props.stream
                         })
                     );
                     break;
@@ -28513,7 +28300,7 @@ var App = function (_React$Component) {
                             frontBack: this.frontBack,
                             goToNextStep: this.goToNextStep,
                             questions: this.state.questions[this.state.locale],
-                            stopRecording: this.stopRecording
+                            stopRecording: this.props.stopRecording
                         })
                     );
                     break;
@@ -28530,10 +28317,7 @@ var App = function (_React$Component) {
                         null,
                         currentComponent
                     )
-                ),
-                this.state.stream && _react2.default.createElement('video', { id: 'video-feedback', ref: function ref(_ref) {
-                        return _this6.video = _ref;
-                    }, muted: 'true', src: URL.createObjectURL(this.state.stream) })
+                )
             );
         }
     }]);
@@ -28541,6 +28325,11 @@ var App = function (_React$Component) {
     return App;
 }(_react2.default.Component);
 
+App.propTypes = {
+    startRecording: _propTypes2.default.func,
+    stopRecording: _propTypes2.default.func,
+    stream: _propTypes2.default.object
+};
 exports.default = App;
 
 /***/ }),
@@ -30062,9 +29851,13 @@ var _VideoOutput = __webpack_require__(353);
 
 var _VideoOutput2 = _interopRequireDefault(_VideoOutput);
 
-var _Utils = __webpack_require__(23);
+var _SoundMeter = __webpack_require__(354);
 
-var _Utils2 = _interopRequireDefault(_Utils);
+var _SoundMeter2 = _interopRequireDefault(_SoundMeter);
+
+var _WebRTCStreamContainer = __webpack_require__(383);
+
+var _WebRTCStreamContainer2 = _interopRequireDefault(_WebRTCStreamContainer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30073,6 +29866,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var VideoOutputWithStream = (0, _WebRTCStreamContainer2.default)(_VideoOutput2.default);
+var SoundMeterWithStream = (0, _WebRTCStreamContainer2.default)(_SoundMeter2.default);
 
 var DeviceSettings = function (_React$PureComponent) {
     _inherits(DeviceSettings, _React$PureComponent);
@@ -30084,16 +29880,10 @@ var DeviceSettings = function (_React$PureComponent) {
 
         _this.state = {
             audioInputs: [],
-            videoInputs: [],
-            showVideoOuput: false,
-            canSave: false
+            videoInputs: []
         };
 
         _this.listDevices = _this.listDevices.bind(_this);
-        _this.startVideo = _this.startVideo.bind(_this);
-        _this.determineResolution = _this.determineResolution.bind(_this);
-        _this.testResolution = _this.testResolution.bind(_this);
-        _this.setCurrentInput = _this.setCurrentInput.bind(_this);
         _this.onSave = _this.onSave.bind(_this);
         return _this;
     }
@@ -30101,15 +29891,19 @@ var DeviceSettings = function (_React$PureComponent) {
     _createClass(DeviceSettings, [{
         key: 'componentWillMount',
         value: function componentWillMount() {
-            navigator.mediaDevices.enumerateDevices().then(this.listDevices).then(this.startVideo).catch(function (err) {
+            navigator.mediaDevices.enumerateDevices().then(this.listDevices).catch(function (err) {
                 window.logger.error('Error while enumerating devices', err);
             });
         }
     }, {
         key: 'listDevices',
         value: function listDevices(deviceInfos) {
+            var _this2 = this;
+
             var audioInputs = [];
             var videoInputs = [];
+            var audioInputExists = false;
+            var videoInputExists = false;
 
             deviceInfos.forEach(function (deviceInfo) {
                 var device = {
@@ -30119,9 +29913,15 @@ var DeviceSettings = function (_React$PureComponent) {
                 if (deviceInfo.kind === 'audioinput') {
                     device.text = deviceInfo.label || 'microphone ' + (audioInputs.length + 1);
                     audioInputs.push(device);
+                    if (deviceInfo.deviceId === _this2.props.currentAudioInputId) {
+                        audioInputExists = true;
+                    }
                 } else if (deviceInfo.kind === 'videoinput') {
                     device.text = deviceInfo.label || 'camera ' + (videoInputs.length + 1);
                     videoInputs.push(device);
+                    if (deviceInfo.deviceId === _this2.props.currentVideoInputId) {
+                        videoInputExists = true;
+                    }
                 }
             });
 
@@ -30130,130 +29930,34 @@ var DeviceSettings = function (_React$PureComponent) {
                 videoInputs: videoInputs
             });
 
+            if (!audioInputExists && audioInputs.length > 0) {
+                this.props.setCurrentInput('audio', audioInputs[0].id);
+            }
+            if (!videoInputExists && videoInputs.length > 0) {
+                this.props.setCurrentInput('video', videoInputs[0].id);
+            }
+
             return true;
-        }
-    }, {
-        key: 'startVideo',
-        value: function startVideo() {
-            var _this2 = this;
-
-            // Select the first device to show
-            var audioInputExists = this.state.audioInputs.find(function (device) {
-                return device.id == _this2.props.currentAudioInputId;
-            });
-            var videoInputExists = this.state.videoInputs.find(function (device) {
-                return device.id == _this2.props.currentVideoInputId;
-            });
-
-            if (audioInputExists && videoInputExists) {
-                this.determineResolution();
-            }
-        }
-    }, {
-        key: 'determineResolution',
-        value: function determineResolution() {
-            // WebRTC won't give you the resolution of the camera, so we have to guess it
-            if (!this.props.currentVideoInputId) {
-                return;
-            }
-
-            // Recursive system to test each standard resolution one by one
-            this.testResolution(0);
-        }
-    }, {
-        key: 'handleResolutionSuccess',
-        value: function handleResolutionSuccess(resolution) {
-            var _this3 = this;
-
-            return function (stream) {
-                // Stream won't be used, discard it
-                if (stream) {
-                    stream.getTracks().forEach(function (track) {
-                        track.stop();
-                    });
-                }
-
-                _this3.props.setResolution(resolution, function () {
-                    // Resolution is set, display the result
-                    _this3.setState({
-                        showVideoOuput: true,
-                        canSave: true
-                    });
-                });
-            };
-        }
-    }, {
-        key: 'handleResolutionError',
-        value: function handleResolutionError(index) {
-            var _this4 = this;
-
-            return function () {
-                // This resolution doesn't work, try the next one
-                var newIndex = index + 1;
-                if (newIndex < _Utils2.default.standardResolutions.length) {
-                    _this4.testResolution(newIndex);
-                }
-            };
-        }
-    }, {
-        key: 'testResolution',
-        value: function testResolution(index) {
-            var resolution = _Utils2.default.standardResolutions[index];
-            var mediaConstraints = {
-                video: {
-                    deviceId: { exact: this.props.currentVideoInputId },
-                    width: { exact: resolution.width },
-                    height: { exact: resolution.height }
-                }
-            };
-
-            navigator.mediaDevices.getUserMedia(mediaConstraints).then(this.handleResolutionSuccess(resolution)).catch(this.handleResolutionError(index));
         }
     }, {
         key: 'onSave',
         value: function onSave() {
-            if (!this.state.canSave) {
-                return;
-            }
-
-            this.videoOutput && this.videoOutput.stop();
-
             this.props.goToNextStep();
-        }
-    }, {
-        key: 'setCurrentInput',
-        value: function setCurrentInput(mediaType, id) {
-            var _this5 = this;
-
-            this.setState({
-                showVideoOuput: false,
-                canSave: false
-            }, function () {
-                _this5.props.setCurrentInput(mediaType, id);
-
-                if (mediaType === 'video') {
-                    _this5.props.setResolution(null, function () {
-                        _this5.determineResolution();
-                    });
-                }
-            });
         }
     }, {
         key: 'onInputChanged',
         value: function onInputChanged(mediaType) {
-            var _this6 = this;
+            var _this3 = this;
 
             return function (e) {
                 var id = e.target.value;
 
-                _this6.setCurrentInput(mediaType, id);
+                _this3.props.setCurrentInput(mediaType, id);
             };
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this7 = this;
-
             var className = '' + this.props.frontBack;
             return _react2.default.createElement(
                 'section',
@@ -30325,24 +30029,20 @@ var DeviceSettings = function (_React$PureComponent) {
                         _react2.default.createElement(
                             'div',
                             { className: 'settings-wrapper-video' },
-                            function () {
-                                if (_this7.state.showVideoOuput) {
-                                    return _react2.default.createElement(_VideoOutput2.default, {
-                                        ref: function ref(_ref) {
-                                            return _this7.videoOutput = _ref;
-                                        },
-                                        audioInputId: _this7.props.currentAudioInputId,
-                                        videoInputId: _this7.props.currentVideoInputId,
-                                        resolution: _this7.props.resolution
-                                    });
-                                } else {
-                                    return _react2.default.createElement(
-                                        'div',
-                                        { className: 'video-placeholder' },
-                                        _react2.default.createElement('i', { className: 'icon-no-camera' })
-                                    );
+                            _react2.default.createElement(VideoOutputWithStream, {
+                                constraints: {
+                                    video: { deviceId: { exact: this.props.currentVideoInputId } }
                                 }
-                            }()
+                            })
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'settings-wrapper-audio' },
+                            _react2.default.createElement(SoundMeterWithStream, {
+                                constraints: {
+                                    audio: { deviceId: { exact: this.props.currentAudioInputId } }
+                                }
+                            })
                         )
                     )
                 ),
@@ -30354,8 +30054,7 @@ var DeviceSettings = function (_React$PureComponent) {
                         {
                             id: 'save-settings',
                             type: 'button',
-                            onClick: this.onSave,
-                            disabled: !this.state.canSave
+                            onClick: this.onSave
                         },
                         _i18next2.default.t('saveSettings')
                     )
@@ -30371,10 +30070,8 @@ DeviceSettings.propTypes = {
     frontBack: _propTypes2.default.string.isRequired,
     goToNextStep: _propTypes2.default.func.isRequired,
     setCurrentInput: _propTypes2.default.func.isRequired,
-    setResolution: _propTypes2.default.func.isRequired,
     currentAudioInputId: _propTypes2.default.string,
-    currentVideoInputId: _propTypes2.default.string,
-    resolution: _propTypes2.default.object
+    currentVideoInputId: _propTypes2.default.string
 };
 exports.default = DeviceSettings;
 
@@ -30410,112 +30107,60 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var VideoOutput = function (_React$PureComponent) {
     _inherits(VideoOutput, _React$PureComponent);
 
-    function VideoOutput(props) {
+    function VideoOutput() {
         _classCallCheck(this, VideoOutput);
 
-        var _this = _possibleConstructorReturn(this, (VideoOutput.__proto__ || Object.getPrototypeOf(VideoOutput)).call(this, props));
-
-        _this.state = {
-            error: null,
-            stream: null
-        };
-
-        _this.handleStream = _this.handleStream.bind(_this);
-        _this.handleStreamError = _this.handleStreamError.bind(_this);
-        _this.setStream = _this.setStream.bind(_this);
-        return _this;
+        return _possibleConstructorReturn(this, (VideoOutput.__proto__ || Object.getPrototypeOf(VideoOutput)).apply(this, arguments));
     }
 
     _createClass(VideoOutput, [{
-        key: 'componentWillMount',
-        value: function componentWillMount() {
-            this.setStream(this.props.audioInputId, this.props.videoInputId, this.props.resolution);
-        }
-    }, {
-        key: 'componentWillReceiveProps',
-        value: function componentWillReceiveProps(nextProps) {
-            this.setStream(nextProps.audioInputId, nextProps.videoInputId, nextProps.resolution);
-        }
-    }, {
-        key: 'handleStream',
-        value: function handleStream(stream) {
-            var _this2 = this;
-
-            this.setState({
-                error: null,
-                stream: stream
-            }, function () {
-                _this2.video && _this2.video.play();
-            });
-        }
-    }, {
-        key: 'handleStreamError',
-        value: function handleStreamError(err) {
-            window.logger.error('Can\'t display video input', err);
-
-            this.setState({
-                error: 'Selected devices can\'t be used'
-            });
-        }
-    }, {
-        key: 'setStream',
-        value: function setStream(audioInputId, videoInputId, resolution) {
-            if (!audioInputId || !videoInputId || !resolution) {
-                return;
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            if (this.video) {
+                this.video.play();
             }
-
-            var mediaConstraints = {
-                audio: { deviceId: { exact: audioInputId } },
-                video: {
-                    deviceId: { exact: videoInputId },
-                    width: { exact: resolution.width },
-                    height: { exact: resolution.height }
-                }
-            };
-
-            if (this.state.stream) {
-                this.state.stream.getTracks().forEach(function (track) {
-                    track.stop();
-                });
-                this.setState({
-                    stream: null
-                });
-            }
-
-            navigator.mediaDevices.getUserMedia(mediaConstraints).then(this.handleStream).catch(this.handleStreamError);
         }
     }, {
-        key: 'stop',
-        value: function stop() {
-            if (this.state.stream) {
-                this.state.stream.getTracks().forEach(function (track) {
-                    return track.stop();
-                });
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate() {
+            if (this.video) {
+                this.video.play();
             }
-
-            this.setState({
-                stream: null
-            });
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            if (this.video) {
+                this.video.pause();
+            }
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
+            var _this2 = this;
 
-            if (this.state.error) {
+            if (this.props.streamError) {
                 return _react2.default.createElement(
                     'div',
                     { className: 'error-message' },
-                    this.state.error
+                    'ERROR'
+                );
+            }
+
+            if (!this.props.stream) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'video-placeholder' },
+                    _react2.default.createElement('i', { className: 'icon-no-camera' })
                 );
             }
 
             return _react2.default.createElement('video', {
                 id: 'video-output',
                 ref: function ref(_ref) {
-                    return _this3.video = _ref;
+                    return _this2.video = _ref;
                 },
-                src: this.state.stream ? URL.createObjectURL(this.state.stream) : null,
+                src: this.props.stream ? URL.createObjectURL(this.props.stream) : null,
                 muted: 'true'
             });
         }
@@ -30525,14 +30170,132 @@ var VideoOutput = function (_React$PureComponent) {
 }(_react2.default.PureComponent);
 
 VideoOutput.propTypes = {
-    audioInputId: _propTypes2.default.string,
-    videoInputId: _propTypes2.default.string,
-    resolution: _propTypes2.default.object
+    stream: _propTypes2.default.object,
+    streamError: _propTypes2.default.object
 };
 exports.default = VideoOutput;
 
 /***/ }),
 /* 354 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(1);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _Utils = __webpack_require__(382);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SoundMeter = function (_React$PureComponent) {
+    _inherits(SoundMeter, _React$PureComponent);
+
+    function SoundMeter(props) {
+        _classCallCheck(this, SoundMeter);
+
+        var _this = _possibleConstructorReturn(this, (SoundMeter.__proto__ || Object.getPrototypeOf(SoundMeter)).call(this, props));
+
+        _this.state = {
+            volume: 0
+        };
+
+        _this.onAudioProcessThrottled = (0, _Utils.throttle)(_this.onAudioProcess.bind(_this), 50);
+        return _this;
+    }
+
+    _createClass(SoundMeter, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            this.listenToAudioChanges(this.props.stream);
+        }
+    }, {
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(newProps) {
+            this.listenToAudioChanges(newProps.stream);
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            if (this.script) {
+                this.script.onaudioprocess = null;
+            }
+        }
+    }, {
+        key: 'listenToAudioChanges',
+        value: function listenToAudioChanges(stream) {
+            if (!stream) {
+                return;
+            }
+
+            var audioContext = new AudioContext();
+            var script = audioContext.createScriptProcessor(2048, 1, 1);
+            this.script = script;
+
+            script.onaudioprocess = this.onAudioProcessThrottled;
+
+            var mic = audioContext.createMediaStreamSource(stream);
+            mic.connect(script);
+            // Necessary to make sample run, but should not be.
+            script.connect(audioContext.destination);
+        }
+    }, {
+        key: 'onAudioProcess',
+        value: function onAudioProcess(event) {
+            var input = event.inputBuffer.getChannelData(0);
+            var sum = 0.0;
+            var l = input.length;
+            for (var i = 0; i < l; ++i) {
+                sum += Math.abs(input[i]);
+            }
+
+            this.setState({
+                volume: sum / l * 2 // Increase volume by 2 to make it more "relevant"
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var style = {
+                transform: 'scaleX(' + Math.min(1, this.state.volume) + ')'
+            };
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'sound-meter' },
+                _react2.default.createElement('div', { className: 'sound-meter-bar', style: style })
+            );
+        }
+    }]);
+
+    return SoundMeter;
+}(_react2.default.PureComponent);
+
+SoundMeter.propTypes = {
+    stream: _propTypes2.default.object
+};
+exports.default = SoundMeter;
+
+/***/ }),
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30565,7 +30328,7 @@ function importAll(r) {
     r.keys().forEach(r);
 }
 
-importAll(__webpack_require__(355));
+importAll(__webpack_require__(356));
 
 var LocalePicker = function (_React$PureComponent) {
     _inherits(LocalePicker, _React$PureComponent);
@@ -30607,7 +30370,7 @@ var LocalePicker = function (_React$PureComponent) {
                     'div',
                     { className: 'flex row center align-center grow' },
                     this.props.locales.map(function (locale) {
-                        var flagImg = __webpack_require__(356)("./" + locale + '.svg');
+                        var flagImg = __webpack_require__(357)("./" + locale + '.svg');
                         return _react2.default.createElement(
                             'div',
                             { className: 'flag', key: locale, onClick: _this3.setLocale(locale) },
@@ -30629,283 +30392,6 @@ LocalePicker.propTypes = {
     setLocale: _propTypes2.default.func.isRequired
 };
 exports.default = LocalePicker;
-
-/***/ }),
-/* 355 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var map = {
-	"./ad.svg": 37,
-	"./ae.svg": 38,
-	"./af.svg": 39,
-	"./ag.svg": 40,
-	"./ai.svg": 41,
-	"./al.svg": 42,
-	"./am.svg": 43,
-	"./ao.svg": 44,
-	"./aq.svg": 45,
-	"./ar.svg": 46,
-	"./as.svg": 47,
-	"./at.svg": 48,
-	"./au.svg": 49,
-	"./aw.svg": 50,
-	"./ax.svg": 51,
-	"./az.svg": 52,
-	"./ba.svg": 53,
-	"./bb.svg": 54,
-	"./bd.svg": 55,
-	"./be.svg": 56,
-	"./bf.svg": 57,
-	"./bg.svg": 58,
-	"./bh.svg": 59,
-	"./bi.svg": 60,
-	"./bj.svg": 61,
-	"./bl.svg": 62,
-	"./bm.svg": 63,
-	"./bn.svg": 64,
-	"./bo.svg": 65,
-	"./bq.svg": 66,
-	"./br.svg": 67,
-	"./bs.svg": 68,
-	"./bt.svg": 69,
-	"./bv.svg": 70,
-	"./bw.svg": 71,
-	"./by.svg": 72,
-	"./bz.svg": 73,
-	"./ca.svg": 74,
-	"./cc.svg": 75,
-	"./cd.svg": 76,
-	"./cf.svg": 77,
-	"./cg.svg": 78,
-	"./ch.svg": 79,
-	"./ci.svg": 80,
-	"./ck.svg": 81,
-	"./cl.svg": 82,
-	"./cm.svg": 83,
-	"./cn.svg": 84,
-	"./co.svg": 85,
-	"./cr.svg": 86,
-	"./cu.svg": 87,
-	"./cv.svg": 88,
-	"./cw.svg": 89,
-	"./cx.svg": 90,
-	"./cy.svg": 91,
-	"./cz.svg": 92,
-	"./de.svg": 93,
-	"./dj.svg": 94,
-	"./dk.svg": 95,
-	"./dm.svg": 96,
-	"./do.svg": 97,
-	"./dz.svg": 98,
-	"./ec.svg": 99,
-	"./ee.svg": 100,
-	"./eg.svg": 101,
-	"./eh.svg": 102,
-	"./en.svg": 103,
-	"./er.svg": 104,
-	"./es.svg": 105,
-	"./et.svg": 106,
-	"./eu.svg": 107,
-	"./fi.svg": 108,
-	"./fj.svg": 109,
-	"./fk.svg": 110,
-	"./fm.svg": 111,
-	"./fo.svg": 112,
-	"./fr.svg": 113,
-	"./ga.svg": 114,
-	"./gb-eng.svg": 115,
-	"./gb-sct.svg": 116,
-	"./gb-wls.svg": 117,
-	"./gb.svg": 118,
-	"./gd.svg": 119,
-	"./ge.svg": 120,
-	"./gf.svg": 121,
-	"./gg.svg": 122,
-	"./gh.svg": 123,
-	"./gi.svg": 124,
-	"./gl.svg": 125,
-	"./gm.svg": 126,
-	"./gn.svg": 127,
-	"./gp.svg": 128,
-	"./gq.svg": 129,
-	"./gr.svg": 130,
-	"./gs.svg": 131,
-	"./gt.svg": 132,
-	"./gu.svg": 133,
-	"./gw.svg": 134,
-	"./gy.svg": 135,
-	"./hk.svg": 136,
-	"./hm.svg": 137,
-	"./hn.svg": 138,
-	"./hr.svg": 139,
-	"./ht.svg": 140,
-	"./hu.svg": 141,
-	"./id.svg": 142,
-	"./ie.svg": 143,
-	"./il.svg": 144,
-	"./im.svg": 145,
-	"./in.svg": 146,
-	"./io.svg": 147,
-	"./iq.svg": 148,
-	"./ir.svg": 149,
-	"./is.svg": 150,
-	"./it.svg": 151,
-	"./je.svg": 152,
-	"./jm.svg": 153,
-	"./jo.svg": 154,
-	"./jp.svg": 155,
-	"./ke.svg": 156,
-	"./kg.svg": 157,
-	"./kh.svg": 158,
-	"./ki.svg": 159,
-	"./km.svg": 160,
-	"./kn.svg": 161,
-	"./kp.svg": 162,
-	"./kr.svg": 163,
-	"./kw.svg": 164,
-	"./ky.svg": 165,
-	"./kz.svg": 166,
-	"./la.svg": 167,
-	"./lb.svg": 168,
-	"./lc.svg": 169,
-	"./li.svg": 170,
-	"./lk.svg": 171,
-	"./lr.svg": 172,
-	"./ls.svg": 173,
-	"./lt.svg": 174,
-	"./lu.svg": 175,
-	"./lv.svg": 176,
-	"./ly.svg": 177,
-	"./ma.svg": 178,
-	"./mc.svg": 179,
-	"./md.svg": 180,
-	"./me.svg": 181,
-	"./mf.svg": 182,
-	"./mg.svg": 183,
-	"./mh.svg": 184,
-	"./mk.svg": 185,
-	"./ml.svg": 186,
-	"./mm.svg": 187,
-	"./mn.svg": 188,
-	"./mo.svg": 189,
-	"./mp.svg": 190,
-	"./mq.svg": 191,
-	"./mr.svg": 192,
-	"./ms.svg": 193,
-	"./mt.svg": 194,
-	"./mu.svg": 195,
-	"./mv.svg": 196,
-	"./mw.svg": 197,
-	"./mx.svg": 198,
-	"./my.svg": 199,
-	"./mz.svg": 200,
-	"./na.svg": 201,
-	"./nc.svg": 202,
-	"./ne.svg": 203,
-	"./nf.svg": 204,
-	"./ng.svg": 205,
-	"./ni.svg": 206,
-	"./nl.svg": 207,
-	"./no.svg": 208,
-	"./np.svg": 209,
-	"./nr.svg": 210,
-	"./nu.svg": 211,
-	"./nz.svg": 212,
-	"./om.svg": 213,
-	"./pa.svg": 214,
-	"./pe.svg": 215,
-	"./pf.svg": 216,
-	"./pg.svg": 217,
-	"./ph.svg": 218,
-	"./pk.svg": 219,
-	"./pl.svg": 220,
-	"./pm.svg": 221,
-	"./pn.svg": 222,
-	"./pr.svg": 223,
-	"./ps.svg": 224,
-	"./pt.svg": 225,
-	"./pw.svg": 226,
-	"./py.svg": 227,
-	"./qa.svg": 228,
-	"./re.svg": 229,
-	"./ro.svg": 230,
-	"./rs.svg": 231,
-	"./ru.svg": 232,
-	"./rw.svg": 233,
-	"./sa.svg": 234,
-	"./sb.svg": 235,
-	"./sc.svg": 236,
-	"./sd.svg": 237,
-	"./se.svg": 238,
-	"./sg.svg": 239,
-	"./sh.svg": 240,
-	"./si.svg": 241,
-	"./sj.svg": 242,
-	"./sk.svg": 243,
-	"./sl.svg": 244,
-	"./sm.svg": 245,
-	"./sn.svg": 246,
-	"./so.svg": 247,
-	"./sr.svg": 248,
-	"./ss.svg": 249,
-	"./st.svg": 250,
-	"./sv.svg": 251,
-	"./sx.svg": 252,
-	"./sy.svg": 253,
-	"./sz.svg": 254,
-	"./tc.svg": 255,
-	"./td.svg": 256,
-	"./tf.svg": 257,
-	"./tg.svg": 258,
-	"./th.svg": 259,
-	"./tj.svg": 260,
-	"./tk.svg": 261,
-	"./tl.svg": 262,
-	"./tm.svg": 263,
-	"./tn.svg": 264,
-	"./to.svg": 265,
-	"./tr.svg": 266,
-	"./tt.svg": 267,
-	"./tv.svg": 268,
-	"./tw.svg": 269,
-	"./tz.svg": 270,
-	"./ua.svg": 271,
-	"./ug.svg": 272,
-	"./um.svg": 273,
-	"./us.svg": 274,
-	"./uy.svg": 275,
-	"./uz.svg": 276,
-	"./va.svg": 277,
-	"./vc.svg": 278,
-	"./ve.svg": 279,
-	"./vg.svg": 280,
-	"./vi.svg": 281,
-	"./vn.svg": 282,
-	"./vu.svg": 283,
-	"./wf.svg": 284,
-	"./ws.svg": 285,
-	"./ye.svg": 286,
-	"./yt.svg": 287,
-	"./za.svg": 288,
-	"./zm.svg": 289,
-	"./zw.svg": 290,
-	"./zz.svg": 291
-};
-function webpackContext(req) {
-	return __webpack_require__(webpackContextResolve(req));
-};
-function webpackContextResolve(req) {
-	var id = map[req];
-	if(!(id + 1)) // check for number or string
-		throw new Error("Cannot find module '" + req + "'.");
-	return id;
-};
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = 355;
 
 /***/ }),
 /* 356 */
@@ -31188,6 +30674,283 @@ webpackContext.id = 356;
 /* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var map = {
+	"./ad.svg": 37,
+	"./ae.svg": 38,
+	"./af.svg": 39,
+	"./ag.svg": 40,
+	"./ai.svg": 41,
+	"./al.svg": 42,
+	"./am.svg": 43,
+	"./ao.svg": 44,
+	"./aq.svg": 45,
+	"./ar.svg": 46,
+	"./as.svg": 47,
+	"./at.svg": 48,
+	"./au.svg": 49,
+	"./aw.svg": 50,
+	"./ax.svg": 51,
+	"./az.svg": 52,
+	"./ba.svg": 53,
+	"./bb.svg": 54,
+	"./bd.svg": 55,
+	"./be.svg": 56,
+	"./bf.svg": 57,
+	"./bg.svg": 58,
+	"./bh.svg": 59,
+	"./bi.svg": 60,
+	"./bj.svg": 61,
+	"./bl.svg": 62,
+	"./bm.svg": 63,
+	"./bn.svg": 64,
+	"./bo.svg": 65,
+	"./bq.svg": 66,
+	"./br.svg": 67,
+	"./bs.svg": 68,
+	"./bt.svg": 69,
+	"./bv.svg": 70,
+	"./bw.svg": 71,
+	"./by.svg": 72,
+	"./bz.svg": 73,
+	"./ca.svg": 74,
+	"./cc.svg": 75,
+	"./cd.svg": 76,
+	"./cf.svg": 77,
+	"./cg.svg": 78,
+	"./ch.svg": 79,
+	"./ci.svg": 80,
+	"./ck.svg": 81,
+	"./cl.svg": 82,
+	"./cm.svg": 83,
+	"./cn.svg": 84,
+	"./co.svg": 85,
+	"./cr.svg": 86,
+	"./cu.svg": 87,
+	"./cv.svg": 88,
+	"./cw.svg": 89,
+	"./cx.svg": 90,
+	"./cy.svg": 91,
+	"./cz.svg": 92,
+	"./de.svg": 93,
+	"./dj.svg": 94,
+	"./dk.svg": 95,
+	"./dm.svg": 96,
+	"./do.svg": 97,
+	"./dz.svg": 98,
+	"./ec.svg": 99,
+	"./ee.svg": 100,
+	"./eg.svg": 101,
+	"./eh.svg": 102,
+	"./en.svg": 103,
+	"./er.svg": 104,
+	"./es.svg": 105,
+	"./et.svg": 106,
+	"./eu.svg": 107,
+	"./fi.svg": 108,
+	"./fj.svg": 109,
+	"./fk.svg": 110,
+	"./fm.svg": 111,
+	"./fo.svg": 112,
+	"./fr.svg": 113,
+	"./ga.svg": 114,
+	"./gb-eng.svg": 115,
+	"./gb-sct.svg": 116,
+	"./gb-wls.svg": 117,
+	"./gb.svg": 118,
+	"./gd.svg": 119,
+	"./ge.svg": 120,
+	"./gf.svg": 121,
+	"./gg.svg": 122,
+	"./gh.svg": 123,
+	"./gi.svg": 124,
+	"./gl.svg": 125,
+	"./gm.svg": 126,
+	"./gn.svg": 127,
+	"./gp.svg": 128,
+	"./gq.svg": 129,
+	"./gr.svg": 130,
+	"./gs.svg": 131,
+	"./gt.svg": 132,
+	"./gu.svg": 133,
+	"./gw.svg": 134,
+	"./gy.svg": 135,
+	"./hk.svg": 136,
+	"./hm.svg": 137,
+	"./hn.svg": 138,
+	"./hr.svg": 139,
+	"./ht.svg": 140,
+	"./hu.svg": 141,
+	"./id.svg": 142,
+	"./ie.svg": 143,
+	"./il.svg": 144,
+	"./im.svg": 145,
+	"./in.svg": 146,
+	"./io.svg": 147,
+	"./iq.svg": 148,
+	"./ir.svg": 149,
+	"./is.svg": 150,
+	"./it.svg": 151,
+	"./je.svg": 152,
+	"./jm.svg": 153,
+	"./jo.svg": 154,
+	"./jp.svg": 155,
+	"./ke.svg": 156,
+	"./kg.svg": 157,
+	"./kh.svg": 158,
+	"./ki.svg": 159,
+	"./km.svg": 160,
+	"./kn.svg": 161,
+	"./kp.svg": 162,
+	"./kr.svg": 163,
+	"./kw.svg": 164,
+	"./ky.svg": 165,
+	"./kz.svg": 166,
+	"./la.svg": 167,
+	"./lb.svg": 168,
+	"./lc.svg": 169,
+	"./li.svg": 170,
+	"./lk.svg": 171,
+	"./lr.svg": 172,
+	"./ls.svg": 173,
+	"./lt.svg": 174,
+	"./lu.svg": 175,
+	"./lv.svg": 176,
+	"./ly.svg": 177,
+	"./ma.svg": 178,
+	"./mc.svg": 179,
+	"./md.svg": 180,
+	"./me.svg": 181,
+	"./mf.svg": 182,
+	"./mg.svg": 183,
+	"./mh.svg": 184,
+	"./mk.svg": 185,
+	"./ml.svg": 186,
+	"./mm.svg": 187,
+	"./mn.svg": 188,
+	"./mo.svg": 189,
+	"./mp.svg": 190,
+	"./mq.svg": 191,
+	"./mr.svg": 192,
+	"./ms.svg": 193,
+	"./mt.svg": 194,
+	"./mu.svg": 195,
+	"./mv.svg": 196,
+	"./mw.svg": 197,
+	"./mx.svg": 198,
+	"./my.svg": 199,
+	"./mz.svg": 200,
+	"./na.svg": 201,
+	"./nc.svg": 202,
+	"./ne.svg": 203,
+	"./nf.svg": 204,
+	"./ng.svg": 205,
+	"./ni.svg": 206,
+	"./nl.svg": 207,
+	"./no.svg": 208,
+	"./np.svg": 209,
+	"./nr.svg": 210,
+	"./nu.svg": 211,
+	"./nz.svg": 212,
+	"./om.svg": 213,
+	"./pa.svg": 214,
+	"./pe.svg": 215,
+	"./pf.svg": 216,
+	"./pg.svg": 217,
+	"./ph.svg": 218,
+	"./pk.svg": 219,
+	"./pl.svg": 220,
+	"./pm.svg": 221,
+	"./pn.svg": 222,
+	"./pr.svg": 223,
+	"./ps.svg": 224,
+	"./pt.svg": 225,
+	"./pw.svg": 226,
+	"./py.svg": 227,
+	"./qa.svg": 228,
+	"./re.svg": 229,
+	"./ro.svg": 230,
+	"./rs.svg": 231,
+	"./ru.svg": 232,
+	"./rw.svg": 233,
+	"./sa.svg": 234,
+	"./sb.svg": 235,
+	"./sc.svg": 236,
+	"./sd.svg": 237,
+	"./se.svg": 238,
+	"./sg.svg": 239,
+	"./sh.svg": 240,
+	"./si.svg": 241,
+	"./sj.svg": 242,
+	"./sk.svg": 243,
+	"./sl.svg": 244,
+	"./sm.svg": 245,
+	"./sn.svg": 246,
+	"./so.svg": 247,
+	"./sr.svg": 248,
+	"./ss.svg": 249,
+	"./st.svg": 250,
+	"./sv.svg": 251,
+	"./sx.svg": 252,
+	"./sy.svg": 253,
+	"./sz.svg": 254,
+	"./tc.svg": 255,
+	"./td.svg": 256,
+	"./tf.svg": 257,
+	"./tg.svg": 258,
+	"./th.svg": 259,
+	"./tj.svg": 260,
+	"./tk.svg": 261,
+	"./tl.svg": 262,
+	"./tm.svg": 263,
+	"./tn.svg": 264,
+	"./to.svg": 265,
+	"./tr.svg": 266,
+	"./tt.svg": 267,
+	"./tv.svg": 268,
+	"./tw.svg": 269,
+	"./tz.svg": 270,
+	"./ua.svg": 271,
+	"./ug.svg": 272,
+	"./um.svg": 273,
+	"./us.svg": 274,
+	"./uy.svg": 275,
+	"./uz.svg": 276,
+	"./va.svg": 277,
+	"./vc.svg": 278,
+	"./ve.svg": 279,
+	"./vg.svg": 280,
+	"./vi.svg": 281,
+	"./vn.svg": 282,
+	"./vu.svg": 283,
+	"./wf.svg": 284,
+	"./ws.svg": 285,
+	"./ye.svg": 286,
+	"./yt.svg": 287,
+	"./za.svg": 288,
+	"./zm.svg": 289,
+	"./zw.svg": 290,
+	"./zz.svg": 291
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number or string
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 357;
+
+/***/ }),
+/* 358 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -31307,7 +31070,7 @@ PreviewVideo.propTypes = {
 exports.default = PreviewVideo;
 
 /***/ }),
-/* 358 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31339,7 +31102,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var logo = __webpack_require__(359);
+var logo = __webpack_require__(360);
 
 var Introduction = function (_React$PureComponent) {
     _inherits(Introduction, _React$PureComponent);
@@ -31399,13 +31162,13 @@ Introduction.propTypes = {
 exports.default = Introduction;
 
 /***/ }),
-/* 359 */
+/* 360 */
 /***/ (function(module, exports) {
 
 module.exports = "../img/logo-7139109f819ed7b70885a490f49565a6.png";
 
 /***/ }),
-/* 360 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31431,23 +31194,23 @@ var _fs = __webpack_require__(11);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _Buzzer = __webpack_require__(361);
+var _Buzzer = __webpack_require__(362);
 
 var _Buzzer2 = _interopRequireDefault(_Buzzer);
 
-var _Instructions = __webpack_require__(363);
+var _Instructions = __webpack_require__(364);
 
 var _Instructions2 = _interopRequireDefault(_Instructions);
 
-var _IntroVideo = __webpack_require__(364);
+var _IntroVideo = __webpack_require__(365);
 
 var _IntroVideo2 = _interopRequireDefault(_IntroVideo);
 
-var _Questions = __webpack_require__(365);
+var _Questions = __webpack_require__(366);
 
 var _Questions2 = _interopRequireDefault(_Questions);
 
-var _Thanks = __webpack_require__(367);
+var _Thanks = __webpack_require__(368);
 
 var _Thanks2 = _interopRequireDefault(_Thanks);
 
@@ -31643,7 +31406,7 @@ MainViewer.propTypes = {
 exports.default = MainViewer;
 
 /***/ }),
-/* 361 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31663,7 +31426,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _buzz = __webpack_require__(362);
+var _buzz = __webpack_require__(363);
 
 var _buzz2 = _interopRequireDefault(_buzz);
 
@@ -31728,13 +31491,13 @@ MainViewer.propTypes = {
 exports.default = MainViewer;
 
 /***/ }),
-/* 362 */
+/* 363 */
 /***/ (function(module, exports) {
 
 module.exports = "../sound/buzz-d158413028a0af782a187617e98a4a09.ogg";
 
 /***/ }),
-/* 363 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31846,7 +31609,7 @@ Instructions.propTypes = {
 exports.default = Instructions;
 
 /***/ }),
-/* 364 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31927,7 +31690,7 @@ IntroVideo.propTypes = {
 exports.default = IntroVideo;
 
 /***/ }),
-/* 365 */
+/* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31947,13 +31710,11 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _Question = __webpack_require__(366);
+var _Question = __webpack_require__(367);
 
 var _Question2 = _interopRequireDefault(_Question);
 
-var _Utils = __webpack_require__(23);
-
-var _Utils2 = _interopRequireDefault(_Utils);
+var _Utils = __webpack_require__(382);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31976,8 +31737,8 @@ var Questions = function (_React$PureComponent) {
         };
 
         _this.handleKeyDown = _this.handleKeyDown.bind(_this);
-        _this.previousQuestion = _Utils2.default.throttle(_this.previousQuestion.bind(_this), 1000);
-        _this.nextQuestion = _Utils2.default.throttle(_this.nextQuestion.bind(_this), 1000);
+        _this.previousQuestion = (0, _Utils.throttle)(_this.previousQuestion.bind(_this), 1000);
+        _this.nextQuestion = (0, _Utils.throttle)(_this.nextQuestion.bind(_this), 1000);
         return _this;
     }
 
@@ -32045,7 +31806,7 @@ Questions.propTypes = {
 exports.default = Questions;
 
 /***/ }),
-/* 366 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32102,7 +31863,7 @@ Question.propTypes = {
 exports.default = Question;
 
 /***/ }),
-/* 367 */
+/* 368 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32192,18 +31953,18 @@ Thanks.propTypes = {
 exports.default = Thanks;
 
 /***/ }),
-/* 368 */
+/* 369 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 369 */
+/* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en.json": 370,
-	"./fr.json": 371
+	"./en.json": 371,
+	"./fr.json": 372
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -32219,19 +31980,571 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 369;
-
-/***/ }),
-/* 370 */
-/***/ (function(module, exports) {
-
-module.exports = {"default":{"settings":"Settings","audioInput":"Audio input","videoInput":"Camera","saveSettings":"Save settings","instructionsButton":"Instructions","instruction1":"Questions will be displayed on the screen. Read them out loud then answer and/or hit the buzzer","instruction2":"Take all your time, you are the one controlling when the next question is displayed.","buzz":"buzz","nextQuestion":"next question","previousQuestion":"previous question","letsGo":"Let's go!","next":"Next","thankYou":"Thank you!","restartMessage":"The app will start again in {{time}} seconds","title":"Title"}}
+webpackContext.id = 370;
 
 /***/ }),
 /* 371 */
 /***/ (function(module, exports) {
 
+module.exports = {"default":{"settings":"Settings","audioInput":"Audio input","videoInput":"Camera","saveSettings":"Save settings","instructionsButton":"Instructions","instruction1":"Questions will be displayed on the screen. Read them out loud then answer and/or hit the buzzer","instruction2":"Take all your time, you are the one controlling when the next question is displayed.","buzz":"buzz","nextQuestion":"next question","previousQuestion":"previous question","letsGo":"Let's go!","next":"Next","thankYou":"Thank you!","restartMessage":"The app will start again in {{time}} seconds","title":"Title"}}
+
+/***/ }),
+/* 372 */
+/***/ (function(module, exports) {
+
 module.exports = {"default":{"settings":"Réglages","audioInput":"Entrée son","videoInput":"Caméra","saveSettings":"Sauvegarder les réglages","instructionsButton":"Instructions","instruction1":"Des questions vont être affichées à l'écran. Lisez la question à haute voix puis répondez et/ou buzzez","instruction2":"Vous avez tout votre temps, vous contrôlez le passage à la question suivante.","buzz":"buzz","nextQuestion":"question suivante","previousQuestion":"question précédente","letsGo":"C'est parti!","next":"Suivant","thankYou":"Merci d'avoir participé!","restartMessage":"Redémarrage automatique dans {{time}} secondes","title":"Titre"}}
+
+/***/ }),
+/* 373 */,
+/* 374 */,
+/* 375 */,
+/* 376 */,
+/* 377 */,
+/* 378 */,
+/* 379 */,
+/* 380 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+exports.default = withRecorder;
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _WebRTCUtils = __webpack_require__(381);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+// import MediaStreamRecorder from 'msr';
+// import blobUtil from 'blob-util';
+
+function withRecorder(WrappedComponent) {
+    return function (_React$PureComponent) {
+        _inherits(WebRTCContainer, _React$PureComponent);
+
+        function WebRTCContainer(props) {
+            _classCallCheck(this, WebRTCContainer);
+
+            var _this = _possibleConstructorReturn(this, (WebRTCContainer.__proto__ || Object.getPrototypeOf(WebRTCContainer)).call(this, props));
+
+            _this.state = {
+                stream: null,
+                error: null,
+                audioInputDeviceId: null,
+                videoInputDeviceId: null
+            };
+
+            _this.setInputDevice = _this.setInputDevice.bind(_this);
+            _this.startRecording = _this.startRecording.bind(_this);
+            _this.stopRecording = _this.stopRecording.bind(_this);
+            return _this;
+        }
+
+        _createClass(WebRTCContainer, [{
+            key: 'setInputDevice',
+            value: function setInputDevice(type, id, cb) {
+                if (type === 'audio') {
+                    this.setState({
+                        audioInputDeviceId: id
+                    }, cb);
+                } else if (type === 'video') {
+                    this.setState({
+                        videoInputDeviceId: id
+                    }, cb);
+                }
+            }
+        }, {
+            key: 'startRecording',
+            value: function startRecording() {
+                var _this2 = this;
+
+                var mediaConstraints = {
+                    audio: { deviceId: { exact: this.state.configuration.audioInputDeviceId } },
+                    video: {
+                        deviceId: { exact: this.state.configuration.videoInputDeviceId }
+                    }
+                };
+
+                var onMediaError = function onMediaError(e) {
+                    window.logger.error('Media error while recording', e);
+                };
+
+                var onMediaSuccess = function onMediaSuccess(stream) {
+                    _this2.setState({ stream: stream });
+
+                    // this.multiStreamRecorder = new MediaStreamRecorder.MultiStreamRecorder(stream);
+                    // this.multiStreamRecorder.stream = stream;
+                    // this.multiStreamRecorder.canvas = {
+                    //     width: this.state.cameraResolution.width,
+                    //     height: this.state.cameraResolution.height
+                    // };
+                    // this.multiStreamRecorder.video = this.video;
+                    // this.multiStreamRecorder.ondataavailable = blobs => {
+                    //     const videoName = + new Date();
+                    //     try {
+                    //         blobUtil.blobToBase64String(blobs.video).then(base64String => {
+                    //             fs.writeFile('videos/' + videoName + '.webm', new Buffer(base64String, 'base64'), function(err){
+                    //                 if (err) {
+                    //                     window.logger.error('Failed to save video', videoName, err);
+                    //                 } else {
+                    //                     window.logger.info('File saved', videoName);
+                    //                 }
+                    //             });
+                    //         }, err => {
+                    //             window.logger.error('Failed to convert blob to base64', err);
+                    //         });
+                    //     } catch(e) {
+                    //         window.logger.error(e);
+                    //     }
+                    // };
+
+                    // const timeInterval = 20000;
+                    // // get blob after specific time interval
+                    // this.multiStreamRecorder.start(timeInterval);
+                };
+
+                (0, _WebRTCUtils.getStream)(mediaConstraints).then(onMediaSuccess).catch(onMediaError);
+            }
+        }, {
+            key: 'stopRecording',
+            value: function stopRecording() {
+                if (this.multiStreamRecorder) {
+                    this.multiStreamRecorder.stop();
+                    this.multiStreamRecorder = null;
+
+                    if (this.state.stream) {
+                        this.state.stream.getTracks().forEach(function (track) {
+                            track.stop();
+                        });
+                        this.setState({
+                            stream: null
+                        });
+                    }
+                }
+            }
+        }, {
+            key: 'render',
+            value: function render() {
+                return _react2.default.createElement(WrappedComponent, _extends({
+                    setInputDevice: this.setInputDevice,
+                    startRecording: this.startRecording,
+                    stopRecording: this.stopRecording,
+                    stream: this.state.stream
+                }, this.props));
+            }
+        }]);
+
+        return WebRTCContainer;
+    }(_react2.default.PureComponent);
+}
+
+/***/ }),
+/* 381 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.guessResolution = guessResolution;
+exports.getStream = getStream;
+var standardResolutions = exports.standardResolutions = [{
+    "label": "4K(UHD)",
+    "width": 3840,
+    "height": 2160,
+    "ratio": "16:9"
+}, {
+    "label": "1080p(FHD)",
+    "width": 1920,
+    "height": 1080,
+    "ratio": "16:9"
+}, {
+    "label": "UXGA",
+    "width": 1600,
+    "height": 1200,
+    "ratio": "4:3"
+}, {
+    "label": "720p(HD)",
+    "width": 1280,
+    "height": 720,
+    "ratio": "16:9"
+}, {
+    "label": "SVGA",
+    "width": 800,
+    "height": 600,
+    "ratio": "4:3"
+}, {
+    "label": "VGA",
+    "width": 640,
+    "height": 480,
+    "ratio": "4:3"
+}, {
+    "label": "360p(nHD)",
+    "width": 640,
+    "height": 360,
+    "ratio": "16:9"
+}, {
+    "label": "CIF",
+    "width": 352,
+    "height": 288,
+    "ratio": "4:3"
+}, {
+    "label": "QVGA",
+    "width": 320,
+    "height": 240,
+    "ratio": "4:3"
+}, {
+    "label": "QCIF",
+    "width": 176,
+    "height": 144,
+    "ratio": "4:3"
+}, {
+    "label": "QQVGA",
+    "width": 160,
+    "height": 120,
+    "ratio": "4:3"
+}];
+
+/**
+ * This function resolves the best possible resolution for current device as WebRTC doesn't provide such info for the moment
+ * This function isn't perfect, it only tests the most current resolutions until it finds one that is accepted
+ *
+ * @param {number} videoInputId
+ * @param {Object} options - "sessionStorage" Saves the resolution to the local storage "keepStream" Whether to keep the stream open and return it in the promise at the end or not
+ *
+ * @returns {Promise} Promise resolving with resolution (and stream is keepStream is true) or rejecting with an error message
+ */
+function guessResolution(videoInputId) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { sessionStorage: false, keepStream: false };
+
+    if (!videoInputId) {
+        return new Promise(function (res, rej) {
+            rej(new Error('Missing input ID'));
+        });
+    }
+
+    if (options.sessionStorage) {
+        try {
+            var resolution = JSON.parse(sessionStorage.getItem("resolution-" + videoInputId));
+            if (resolution) {
+                // Found the resolution in sessionStorage, return it
+                return new Promise(function (res) {
+                    res({
+                        resolution: resolution
+                    });
+                });
+            }
+        } catch (e) {
+            // Do nothing
+        }
+    }
+
+    // Recursive system to test each standard resolution one by one
+    return testResolution(videoInputId, 0, options);
+}
+
+function testResolution(videoInputId, index, options) {
+    var resolution = standardResolutions[index];
+    var mediaConstraints = {
+        video: {
+            deviceId: { exact: videoInputId },
+            width: { exact: resolution.width },
+            height: { exact: resolution.height }
+        }
+    };
+
+    return navigator.mediaDevices.getUserMedia(mediaConstraints).then(handleResolutionSuccess(videoInputId, resolution, options)).catch(handleResolutionError(videoInputId, index, options));
+}
+
+function handleResolutionSuccess(videoInputId, resolution, options) {
+    return function (stream) {
+        // Stream won't be used, discard it
+        if (stream && !options.keepStream) {
+            stream.getTracks().forEach(function (track) {
+                track.stop();
+            });
+        }
+
+        if (options.sessionStorage) {
+            try {
+                sessionStorage.setItem("resolution-" + videoInputId, JSON.stringify(resolution));
+            } catch (e) {
+                // Do nothing
+            }
+        }
+
+        return new Promise(function (res) {
+            var result = {
+                resolution: resolution
+            };
+
+            if (stream && options.keepStream) {
+                result.stream = stream;
+            }
+
+            res(result);
+        });
+    };
+}
+
+function handleResolutionError(videoInputId, index, options) {
+    return function () {
+        // This resolution doesn't work, try the next one
+        var newIndex = index + 1;
+        if (newIndex < standardResolutions.length) {
+            return testResolution(videoInputId, newIndex, options);
+        }
+
+        return new Promise(function (res, rej) {
+            rej(new Error('Unable to find a resolution'));
+        });
+    };
+}
+
+function getUserMedia(constraints) {
+    return navigator.mediaDevices.getUserMedia(constraints);
+}
+
+/**
+ * Get stream from constraints, with best resolution possible for video
+ * @param {Object} constraints - A MediaStreamConstraints object
+ */
+function getStream(constraints) {
+    if (constraints.video) {
+        // For video, guess the resolution first
+        return guessResolution(constraints.video.deviceId.exact, {
+            sessionStorage: true,
+            keepStream: true
+        }).then(function (result) {
+            if (result.stream) {
+                return result.stream;
+            } else {
+                var newConstraints = JSON.parse(JSON.stringify(constraints)); // clone
+                newConstraints.video.width = {
+                    exact: result.resolution.width
+                };
+                newConstraints.video.height = {
+                    exact: result.resolution.height
+                };
+                return getUserMedia(newConstraints);
+            }
+        });
+    } else {
+        return getUserMedia(constraints);
+    }
+}
+
+/***/ }),
+/* 382 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.throttle = throttle;
+exports.readJsonFile = readJsonFile;
+
+var _fs = __webpack_require__(11);
+
+var _fs2 = _interopRequireDefault(_fs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function throttle(callback, wait) {
+    var context = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this;
+
+    var timeout = null;
+    var callbackArgs = null;
+
+    var later = function later() {
+        timeout = null;
+    };
+
+    return function () {
+        if (!timeout) {
+            callbackArgs = arguments;
+            callback.apply(context, callbackArgs);
+            timeout = setTimeout(later, wait);
+        }
+    };
+}
+
+function readJsonFile(fileName) {
+    return new Promise(function (res, rej) {
+        _fs2.default.readFile(fileName, function (err, data) {
+            if (err && err.code !== 'ENOENT') {
+                rej(err);
+            }
+
+            try {
+                data = JSON.parse(data);
+                res(data);
+            } catch (err) {
+                rej(err);
+            }
+        });
+    });
+}
+
+/***/ }),
+/* 383 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+exports.default = withStream;
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(1);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _WebRTCUtils = __webpack_require__(381);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * HOC that handles stream creation based on constraints and gives the stream to its wrapped component
+ * @param {Object} WrappedComponent
+ */
+function withStream(WrappedComponent) {
+    var _class, _temp;
+
+    return _temp = _class = function (_React$PureComponent) {
+        _inherits(WebRTCStreamContainer, _React$PureComponent);
+
+        function WebRTCStreamContainer(props) {
+            _classCallCheck(this, WebRTCStreamContainer);
+
+            var _this = _possibleConstructorReturn(this, (WebRTCStreamContainer.__proto__ || Object.getPrototypeOf(WebRTCStreamContainer)).call(this, props));
+
+            _this.currentConstraints = {};
+
+
+            _this.state = {
+                stream: null,
+                error: null
+            };
+
+            _this.handleStream = _this.handleStream.bind(_this);
+            _this.handleStreamError = _this.handleStreamError.bind(_this);
+            return _this;
+        }
+
+        _createClass(WebRTCStreamContainer, [{
+            key: 'componentWillMount',
+            value: function componentWillMount() {
+                this.getStream(this.props.constraints);
+            }
+        }, {
+            key: 'componentWillReceiveProps',
+            value: function componentWillReceiveProps(nextProps) {
+                if (JSON.stringify(nextProps) != JSON.stringify(this.props)) {
+                    this.getStream(nextProps.constraints);
+                }
+            }
+        }, {
+            key: 'componentWillUnmount',
+            value: function componentWillUnmount() {
+                if (this.state.stream) {
+                    this.state.stream.getTracks().forEach(function (track) {
+                        track.stop();
+                    });
+                }
+            }
+        }, {
+            key: 'handleStream',
+            value: function handleStream(stream) {
+                this.setState({
+                    error: null,
+                    stream: stream
+                });
+            }
+        }, {
+            key: 'handleStreamError',
+            value: function handleStreamError(err) {
+                window.logger.error('Can\'t get stream with constraints', this.currentConstraints, err);
+
+                this.setState({
+                    error: err
+                });
+            }
+        }, {
+            key: 'getStream',
+            value: function getStream(constraints) {
+                if (this.state.stream) {
+                    this.state.stream.getTracks().forEach(function (track) {
+                        track.stop();
+                    });
+                    this.setState({
+                        stream: null
+                    });
+                }
+
+                this.currentConstraints = constraints;
+
+                (0, _WebRTCUtils.getStream)(constraints).then(this.handleStream, this.handleStreamError);
+            }
+        }, {
+            key: 'render',
+            value: function render() {
+                var _props = this.props,
+                    constraints = _props.constraints,
+                    passThroughProps = _objectWithoutProperties(_props, ['constraints']); // eslint-disable-line no-unused-vars
+
+                return _react2.default.createElement(WrappedComponent, _extends({
+                    stream: this.state.stream,
+                    streamError: this.state.error
+                }, passThroughProps));
+            }
+        }]);
+
+        return WebRTCStreamContainer;
+    }(_react2.default.PureComponent), _class.propTypes = {
+        constraints: _propTypes2.default.object.isRequired
+    }, _temp;
+}
 
 /***/ })
 /******/ ]);
