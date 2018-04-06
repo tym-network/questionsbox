@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {throttle} from '../utils/Utils';
+import {throttle} from '../../utils/Utils';
 
 export default class SoundMeter extends React.PureComponent {
 

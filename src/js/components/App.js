@@ -2,23 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
 const fs = require('fs');
-// import MediaStreamRecorder from 'msr';
-// import blobUtil from 'blob-util';
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { readJsonFile } from '../utils/Utils';
-import DataSettings from './DataSettings';
-import DeviceSettings from './DeviceSettings';
-import LocalePicker from './LocalePicker';
-import PreviewVideo from './PreviewVideo';
-import Introduction from './Introduction';
-import MainViewer from './MainViewer';
+import Customize from './pages/Customize';
+import Introduction from './pages/Introduction';
+import LocalePicker from './pages/LocalePicker';
+import MainViewer from './pages/MainViewer';
+import Menu from './pages/Menu';
+import PreviewVideo from './pages/PreviewVideo';
+import Settings from './pages/Settings';
 
 export default class App extends React.Component {
 
     steps = [
-        'data-settings',
-        'device-settings',
+        'menu',
+        'customize',
+        'settings',
         'locale',
         'preview-video',
         'introduction',
@@ -37,18 +37,20 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            step: 'data-settings',
+            step: 'menu',
             locale: 'en',
             configuration: {
                 audioInputDeviceId: '',
                 videoInputDeviceId: '',
                 title: 'Questions Box'
             },
-            questions: {}
+            questions: {},
+            saveConfigurationStatus: null
         }
 
-        this.loadQuestions = this.loadQuestions.bind(this);
+        this.saveConfiguration = this.saveConfiguration.bind(this);
         this.isFlipped = this.isFlipped.bind(this);
+        this.goToStep = this.goToStep.bind(this);
         this.goToNextStep = this.goToNextStep.bind(this);
         this.setCurrentInput = this.setCurrentInput.bind(this);
         this.setTitle = this.setTitle.bind(this);
@@ -91,12 +93,26 @@ export default class App extends React.Component {
 
     saveConfiguration() {
         // Save to config.json file
+        this.setState({
+            saveConfigurationStatus: 'saving'
+        });
         fs.mkdir('.data', err => {
             if (err && err.code !== 'EEXIST') {
                 window.logger.error('Failed to create ".data" dir ', err);
+                this.setState({
+                    saveConfigurationStatus: 'error'
+                });
             }
             fs.writeFile('.data/config.json', JSON.stringify(this.state.configuration, null, 4), (err) => {
-                err && window.logger.error(err);
+                if (err) {
+                    window.logger.error(err);
+                    this.setState({
+                        saveConfigurationStatus: 'error'
+                    });
+                }
+                this.setState({
+                    saveConfigurationStatus: 'saved'
+                });
             });
         });
     }
@@ -111,8 +127,26 @@ export default class App extends React.Component {
         this.nextStep(index);
     }
 
+    goToStep(step) {
+        let index = this.steps.indexOf(step);
+
+        // Reset save status
+        this.setState({
+            saveConfigurationStatus: null
+        });
+
+        if (this.shouldShowNextStep(step)) {
+            this.frontBack = this.frontBack === 'front' ? 'back' : 'front';
+            this.setState({
+                step: step
+            });
+        } else {
+            this.nextStep(index + 1);
+        }
+    }
+
     nextStep(index) {
-        if (this.state.step === 'data-settings' || this.state.step === 'device-settings') {
+        if (this.state.step === 'customize' || this.state.step === 'settings') {
             this.saveConfiguration();
         }
 
@@ -125,14 +159,7 @@ export default class App extends React.Component {
             }
 
             const nextStep = this.steps[index];
-            if (this.shouldShowNextStep(nextStep)) {
-                this.frontBack = this.frontBack === 'front' ? 'back' : 'front';
-                this.setState({
-                    step: nextStep
-                });
-            } else {
-                this.nextStep(index + 1);
-            }
+            this.goToStep(nextStep);
         }
     }
 
@@ -195,11 +222,23 @@ export default class App extends React.Component {
 
         let currentComponent;
         switch (this.state.step) {
-            case 'data-settings':
+            case 'menu':
                 currentComponent = (
                     <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <DataSettings
-                            goToNextStep={this.goToNextStep}
+                        <Menu
+                            goToStep={this.goToStep}
+                            frontBack={this.frontBack}
+                        />
+                    </CSSTransition>
+                );
+                break;
+            case 'customize':
+                currentComponent = (
+                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
+                        <Customize
+                            back={() => {this.goToStep('menu');}}
+                            save={this.saveConfiguration}
+                            saveStatus={this.state.saveConfigurationStatus}
                             frontBack={this.frontBack}
                             title={this.state.configuration.title}
                             setTitle={this.setTitle}
@@ -207,11 +246,13 @@ export default class App extends React.Component {
                     </CSSTransition>
                 );
                 break;
-            case 'device-settings':
+            case 'settings':
                 currentComponent = (
                     <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <DeviceSettings
-                            goToNextStep={this.goToNextStep}
+                        <Settings
+                            back={() => {this.goToStep('menu');}}
+                            save={this.saveConfiguration}
+                            saveStatus={this.state.saveConfigurationStatus}
                             frontBack={this.frontBack}
                             currentAudioInputId={this.state.configuration.audioInputDeviceId}
                             currentVideoInputId={this.state.configuration.videoInputDeviceId}

@@ -17,6 +17,24 @@ export function throttle(callback, wait, context = this) {
     }
 }
 
+
+// Source https://davidwalsh.name/javascript-debounce-function
+export function debounce(callback, wait, immediate) {
+    let timeout;
+
+    return function() {
+        const context = this, args = arguments;
+        const later = function() {
+            timeout = null;
+            if (!immediate) callback.apply(context, args);
+        };
+        const callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) callback.apply(context, args);
+    };
+}
+
 export function readJsonFile(fileName) {
     return new Promise((res, rej) => {
         fs.readFile(fileName, (err, data) => {

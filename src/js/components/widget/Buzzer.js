@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import buzzSound from '../../assets/sound/buzz.ogg';
+import buzzSound from '../../../assets/sound/buzz.ogg';
 
-export default class MainViewer extends React.PureComponent {
+export default class Buzzer extends React.PureComponent {
 
     static propTypes = {
         id: PropTypes.number.isRequired,

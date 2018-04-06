@@ -23,14 +23,16 @@ $size-sm: 768px;
 
 @import 'fonts/questions-box';
 
-@import 'components/sound-meter';
+@import 'widgets/back-button';
+@import 'widgets/sound-meter';
 
-@import 'pages/data-settings';
-@import 'pages/device-settings';
+@import 'pages/customize';
 @import 'pages/introduction';
 @import 'pages/locale-picker';
-@import 'pages/preview-video';
 @import 'pages/main-viewer';
+@import 'pages/menu';
+@import 'pages/preview-video';
+@import 'pages/settings';
 
 html {
     height: 100%;
@@ -149,7 +151,7 @@ button,
     background-color: transparent;
     border-radius: 4px;
     border: solid 1px $border;
-    color: $textColor !important;
+    color: $textColor;
     cursor: pointer;
     text-align: center;
     text-decoration: none;
@@ -157,39 +159,11 @@ button,
 
     &:hover {
         border-color: $blue;
-        color: $blue !important;
+        color: $blue;
     }
 
     &:disabled {
         opacity: 0;
-    }
-}
-
-.flex {
-    display: flex;
-
-    &.column {
-        flex-direction: column;
-    }
-
-    &.row {
-        flex-direction: row;
-    }
-
-    &.space-between {
-        justify-content: space-between;
-    }
-
-    &.center {
-        justify-content: center;
-    }
-
-    &.align-center {
-        align-items: center;
-    }
-
-    &.grow {
-        flex-grow: 1;
     }
 }
 
@@ -248,7 +222,7 @@ button,
     }
 }
 
-.front, .back {
+section.front, section.back {
     position: absolute;
     width: 100%;
     max-height: 100%;
@@ -264,12 +238,12 @@ button,
     overflow: scroll;
 }
 
-.front {
+section.front {
     z-index: 2;
     transform: translateY(-50%) rotateY(0deg);
 }
 
-.back {
+section.back {
     transform: translateY(-50%) rotateY(180deg);
     transition: background-color 0.2s ease-in-out;
 }

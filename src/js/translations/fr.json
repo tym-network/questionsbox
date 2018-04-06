@@ -14,6 +14,9 @@
         "next": "Suivant",
         "thankYou": "Merci d'avoir participé!",
         "restartMessage": "Redémarrage automatique dans {{time}} secondes",
-        "title": "Titre"
+        "title": "Titre",
+        "menu": "Menu",
+        "customize": "Personnaliser",
+        "start": "Commencer"
     }
 }

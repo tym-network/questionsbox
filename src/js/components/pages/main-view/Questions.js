@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Question from './Question';
-import { throttle } from '../utils/Utils';
+import { throttle } from '../../../utils/Utils';
 
 export default class Questions extends React.PureComponent {
 

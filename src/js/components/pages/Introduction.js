@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
 
-const logo = require('../../assets/img/logo.png');
+const logo = require('../../../assets/img/logo.png');
 
 export default class Introduction extends React.PureComponent {
 
@@ -15,7 +15,7 @@ export default class Introduction extends React.PureComponent {
     render() {
         const classNames = this.props.frontBack;
         return (
-            <div id="introduction" className={classNames}>
+            <section id="introduction" className={classNames}>
                 <div className="introduction-wrapper">
                     <div>
                         <span className="avatar"><img src={logo} alt="" /></span>
@@ -26,7 +26,7 @@ export default class Introduction extends React.PureComponent {
                 <footer>
                     <button id="see-instructions" onClick={this.props.goToNextStep}>{i18next.t('instructionsButton')}</button>
                 </footer>
-            </div>
+            </section>
         );
     }
 }

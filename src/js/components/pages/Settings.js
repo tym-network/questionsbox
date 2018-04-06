@@ -2,18 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
 
-import VideoOutput from './VideoOutput';
-import SoundMeter from './SoundMeter';
-import withStream from './containers/WebRTCStreamContainer';
+import BackButton from '../widget/BackButton';
+import SaveIndicator from '../widget/SaveIndicator';
+import SoundMeter from '../widget/SoundMeter';
+import VideoOutput from '../widget/VideoOutput';
+import withStream from '../containers/WebRTCStreamContainer';
 
 const VideoOutputWithStream = withStream(VideoOutput);
 const SoundMeterWithStream = withStream(SoundMeter);
 
-export default class DeviceSettings extends React.PureComponent {
+export default class Settings extends React.PureComponent {
 
     static propTypes = {
         frontBack: PropTypes.string.isRequired,
-        goToNextStep: PropTypes.func.isRequired,
+        save: PropTypes.func.isRequired,
+        saveStatus: PropTypes.string,
+        back: PropTypes.func.isRequired,
         setCurrentInput: PropTypes.func.isRequired,
         currentAudioInputId: PropTypes.string,
         currentVideoInputId: PropTypes.string,
@@ -28,7 +32,6 @@ export default class DeviceSettings extends React.PureComponent {
         }
 
         this.listDevices = this.listDevices.bind(this);
-        this.onSave = this.onSave.bind(this);
     }
 
     componentWillMount() {
@@ -80,24 +83,22 @@ export default class DeviceSettings extends React.PureComponent {
         return true;
     }
 
-    onSave() {
-        this.props.goToNextStep();
-    }
-
     onInputChanged(mediaType) {
         return e => {
             const id = e.target.value;
 
             this.props.setCurrentInput(mediaType, id);
+            this.props.save();
         }
     }
 
     render() {
         const className = `${this.props.frontBack}`;
         return (
-            <section id="device-settings" className={className}>
+            <section id="settings" className={className}>
+                <BackButton onClick={this.props.back} />
                 <div>
-                    <h1>{i18next.t('settings')} (2/2)</h1>
+                    <h1>{i18next.t('settings')}</h1>
                     <div className="settings-wrapper">
                         <div className="settings-wrapper-inputs">
                             <div className="select-input">
@@ -138,13 +139,7 @@ export default class DeviceSettings extends React.PureComponent {
                     </div>
                 </div>
                 <footer>
-                    <button
-                        id="save-settings"
-                        type="button"
-                        onClick={this.onSave}
-                    >
-                        {i18next.t('saveSettings')}
-                    </button>
+                    <SaveIndicator saveStatus={this.props.saveStatus} />
                 </footer>
             </section>
         );

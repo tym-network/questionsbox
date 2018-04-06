@@ -1,7 +1,8 @@
-#device-settings {
+#settings {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding-left: 80px;
 
     .settings-wrapper {
         display: flex;

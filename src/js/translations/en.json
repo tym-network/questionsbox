@@ -14,6 +14,9 @@
         "next": "Next",
         "thankYou": "Thank you!",
         "restartMessage": "The app will start again in {{time}} seconds",
-        "title": "Title"
+        "title": "Title",
+        "menu": "Menu",
+        "customize": "Customize",
+        "start": "Start"
     }
 }

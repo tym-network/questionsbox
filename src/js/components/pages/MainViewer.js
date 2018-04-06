@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import fs from 'fs';
 
-import Buzzer from './Buzzer';
-import Instructions from './Instructions';
-import IntroVideo from './IntroVideo';
-import Questions from './Questions';
-import Thanks from './Thanks';
+import Buzzer from '../widget/Buzzer';
+import Instructions from './main-view/Instructions';
+import IntroVideo from './main-view/IntroVideo';
+import Questions from './main-view/Questions';
+import Thanks from './main-view/Thanks';
 
 export default class MainViewer extends React.PureComponent {
 
@@ -169,12 +169,12 @@ export default class MainViewer extends React.PureComponent {
         ))
 
         return (
-            <div id="start" className={classNames} style={this.state.style}>
+            <section id="start" className={classNames} style={this.state.style}>
                 <TransitionGroup>
                     {currentComponent}
                 </TransitionGroup>
                 {buzzers}
-            </div>
+            </section>
         );
     }
 }

@@ -55,7 +55,7 @@ export default class PreviewVideo extends React.PureComponent {
     render() {
         const classNames = this.props.frontBack;
         return (
-            <div id="preview-video" ref={ref => this.previewVideo = ref} className={classNames} style={this.state.style}>
+            <section id="preview-video" ref={ref => this.previewVideo = ref} className={classNames} style={this.state.style}>
                 <video
                     ref={ref => this.video = ref}
                     src={this.props.stream ? URL.createObjectURL(this.props.stream) : null}
@@ -63,7 +63,7 @@ export default class PreviewVideo extends React.PureComponent {
                 >
                 </video>
                 <button onClick={this.props.goToNextStep}>{i18next.t('next')}</button>
-            </div>
+            </section>
         );
     }
 }
