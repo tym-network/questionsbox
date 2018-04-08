@@ -24,10 +24,16 @@ export default class SoundMeter extends React.PureComponent {
     }
 
     componentWillReceiveProps(newProps) {
+        if (this.audioContext) {
+            this.audioContext.close();
+        }
         this.listenToAudioChanges(newProps.stream);
     }
 
     componentWillUnmount() {
+        if (this.audioContext) {
+            this.audioContext.close();
+        }
         if (this.script) {
             this.script.onaudioprocess = null;
         }
@@ -38,16 +44,16 @@ export default class SoundMeter extends React.PureComponent {
             return;
         }
 
-        const audioContext = new AudioContext();
-        const script = audioContext.createScriptProcessor(2048, 1, 1);
+        this.audioContext = new AudioContext();
+        const script = this.audioContext.createScriptProcessor(2048, 1, 1);
         this.script = script;
 
         script.onaudioprocess = this.onAudioProcessThrottled;
 
-        const mic = audioContext.createMediaStreamSource(stream);
+        const mic = this.audioContext.createMediaStreamSource(stream);
         mic.connect(script);
         // Necessary to make sample run, but should not be.
-        script.connect(audioContext.destination);
+        script.connect(this.audioContext.destination);
     }
 
     onAudioProcess(event) {

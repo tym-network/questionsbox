@@ -32659,11 +32659,17 @@ var SoundMeter = function (_React$PureComponent) {
     }, {
         key: 'componentWillReceiveProps',
         value: function componentWillReceiveProps(newProps) {
+            if (this.audioContext) {
+                this.audioContext.close();
+            }
             this.listenToAudioChanges(newProps.stream);
         }
     }, {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {
+            if (this.audioContext) {
+                this.audioContext.close();
+            }
             if (this.script) {
                 this.script.onaudioprocess = null;
             }
@@ -32675,16 +32681,16 @@ var SoundMeter = function (_React$PureComponent) {
                 return;
             }
 
-            var audioContext = new AudioContext();
-            var script = audioContext.createScriptProcessor(2048, 1, 1);
+            this.audioContext = new AudioContext();
+            var script = this.audioContext.createScriptProcessor(2048, 1, 1);
             this.script = script;
 
             script.onaudioprocess = this.onAudioProcessThrottled;
 
-            var mic = audioContext.createMediaStreamSource(stream);
+            var mic = this.audioContext.createMediaStreamSource(stream);
             mic.connect(script);
             // Necessary to make sample run, but should not be.
-            script.connect(audioContext.destination);
+            script.connect(this.audioContext.destination);
         }
     }, {
         key: 'onAudioProcess',
