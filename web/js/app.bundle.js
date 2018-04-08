@@ -28069,6 +28069,7 @@ var App = function (_React$Component) {
         _this.setCurrentInput = _this.setCurrentInput.bind(_this);
         _this.setTitle = _this.setTitle.bind(_this);
         _this.setLocale = _this.setLocale.bind(_this);
+        _this.startRecording = _this.startRecording.bind(_this);
         return _this;
     } // Used to refresh menu if locale is updated
 
@@ -28170,7 +28171,7 @@ var App = function (_React$Component) {
                     step: step
                 });
             } else {
-                this.nextStep(index + 1);
+                this.nextStep(index);
             }
         }
     }, {
@@ -28245,6 +28246,11 @@ var App = function (_React$Component) {
             this.setState({
                 locale: locale
             });
+        }
+    }, {
+        key: 'startRecording',
+        value: function startRecording() {
+            this.props.startRecording(this.state.configuration.audioInputDeviceId, this.state.configuration.videoInputDeviceId);
         }
     }, {
         key: 'render',
@@ -28323,7 +28329,7 @@ var App = function (_React$Component) {
                         _react2.default.createElement(_PreviewVideo2.default, {
                             frontBack: this.frontBack,
                             goToNextStep: this.goToNextStep,
-                            startRecording: this.props.startRecording,
+                            startRecording: this.startRecording,
                             stream: this.props.stream
                         })
                     );
@@ -28381,6 +28387,7 @@ var App = function (_React$Component) {
 App.propTypes = {
     startRecording: _propTypes2.default.func,
     stopRecording: _propTypes2.default.func,
+    setInputDevice: _propTypes2.default.func,
     stream: _propTypes2.default.object
 };
 exports.default = App;
@@ -30434,39 +30441,23 @@ function withRecorder(WrappedComponent) {
 
             _this.state = {
                 stream: null,
-                error: null,
-                audioInputDeviceId: null,
-                videoInputDeviceId: null
+                error: null
             };
 
-            _this.setInputDevice = _this.setInputDevice.bind(_this);
             _this.startRecording = _this.startRecording.bind(_this);
             _this.stopRecording = _this.stopRecording.bind(_this);
             return _this;
         }
 
         _createClass(WebRTCContainer, [{
-            key: 'setInputDevice',
-            value: function setInputDevice(type, id, cb) {
-                if (type === 'audio') {
-                    this.setState({
-                        audioInputDeviceId: id
-                    }, cb);
-                } else if (type === 'video') {
-                    this.setState({
-                        videoInputDeviceId: id
-                    }, cb);
-                }
-            }
-        }, {
             key: 'startRecording',
-            value: function startRecording() {
+            value: function startRecording(audioInputDeviceId, videoInputDeviceId) {
                 var _this2 = this;
 
                 var mediaConstraints = {
-                    audio: { deviceId: { exact: this.state.configuration.audioInputDeviceId } },
+                    audio: { deviceId: { exact: audioInputDeviceId } },
                     video: {
-                        deviceId: { exact: this.state.configuration.videoInputDeviceId }
+                        deviceId: { exact: videoInputDeviceId }
                     }
                 };
 

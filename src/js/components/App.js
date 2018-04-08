@@ -33,6 +33,7 @@ export default class App extends React.Component {
     static propTypes = {
         startRecording: PropTypes.func,
         stopRecording: PropTypes.func,
+        setInputDevice: PropTypes.func,
         stream: PropTypes.object
     };
 
@@ -57,6 +58,7 @@ export default class App extends React.Component {
         this.setCurrentInput = this.setCurrentInput.bind(this);
         this.setTitle = this.setTitle.bind(this);
         this.setLocale = this.setLocale.bind(this);
+        this.startRecording = this.startRecording.bind(this);
     }
 
     componentDidMount() {
@@ -143,7 +145,7 @@ export default class App extends React.Component {
                 step: step
             });
         } else {
-            this.nextStep(index + 1);
+            this.nextStep(index);
         }
     }
 
@@ -215,6 +217,10 @@ export default class App extends React.Component {
         });
     }
 
+    startRecording() {
+        this.props.startRecording(this.state.configuration.audioInputDeviceId, this.state.configuration.videoInputDeviceId);
+    }
+
     render() {
         let wrapperClasses = null;
         const timeoutFlip = 1000;
@@ -283,7 +289,7 @@ export default class App extends React.Component {
                         <PreviewVideo
                             frontBack={this.frontBack}
                             goToNextStep={this.goToNextStep}
-                            startRecording={this.props.startRecording}
+                            startRecording={this.startRecording}
                             stream={this.props.stream}
                         />
                     </CSSTransition>

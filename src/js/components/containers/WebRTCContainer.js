@@ -14,33 +14,18 @@ export default function withRecorder(WrappedComponent) {
 
             this.state = {
                 stream: null,
-                error: null,
-                audioInputDeviceId: null,
-                videoInputDeviceId: null
+                error: null
             };
 
-            this.setInputDevice = this.setInputDevice.bind(this);
             this.startRecording = this.startRecording.bind(this);
             this.stopRecording = this.stopRecording.bind(this);
         }
 
-        setInputDevice(type, id, cb) {
-            if (type === 'audio') {
-                this.setState({
-                    audioInputDeviceId: id
-                }, cb);
-            } else if (type === 'video') {
-                this.setState({
-                    videoInputDeviceId: id
-                }, cb);
-            }
-        }
-
-        startRecording() {
+        startRecording(audioInputDeviceId, videoInputDeviceId) {
             const mediaConstraints = {
-                audio: {deviceId: {exact: this.state.configuration.audioInputDeviceId}},
+                audio: {deviceId: {exact: audioInputDeviceId}},
                 video: {
-                    deviceId: {exact: this.state.configuration.videoInputDeviceId}
+                    deviceId: {exact: videoInputDeviceId}
                 }
             };
 
