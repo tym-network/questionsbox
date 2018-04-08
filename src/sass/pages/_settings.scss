@@ -19,17 +19,11 @@
             flex-grow: 1;
         }
 
-        .settings-wrapper-video {
+        .settings-preview-video {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            margin-left: 20px;
-
-            @media (max-width: $size-sm) {
-                margin-top: 20px;
-                margin-left: 0;
-            }
         }
     }
 

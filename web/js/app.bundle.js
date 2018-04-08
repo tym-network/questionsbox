@@ -28048,6 +28048,7 @@ var App = function (_React$Component) {
 
         _this.steps = ['menu', 'customize', 'settings', 'locale', 'preview-video', 'introduction', 'main-viewer'];
         _this.frontBack = 'front';
+        _this.key = 1;
 
         _this.state = {
             step: 'menu',
@@ -28069,7 +28070,7 @@ var App = function (_React$Component) {
         _this.setTitle = _this.setTitle.bind(_this);
         _this.setLocale = _this.setLocale.bind(_this);
         return _this;
-    }
+    } // Used to refresh menu if locale is updated
 
     _createClass(App, [{
         key: 'componentDidMount',
@@ -28235,14 +28236,15 @@ var App = function (_React$Component) {
     }, {
         key: 'setLocale',
         value: function setLocale(locale) {
+            // If possible, also change interface's locale
+            if (window.locales.includes(locale)) {
+                this.key++; // Update Menu to take the new locale into consideration
+                _i18next2.default.changeLanguage(locale);
+            }
+
             this.setState({
                 locale: locale
             });
-
-            // If possible, also change interface's locale
-            if (window.locales.includes(locale)) {
-                _i18next2.default.changeLanguage(locale);
-            }
         }
     }, {
         key: 'render',
@@ -28263,6 +28265,7 @@ var App = function (_React$Component) {
                         _reactTransitionGroup.CSSTransition,
                         { key: this.state.step, classNames: 'flip', timeout: timeoutFlip },
                         _react2.default.createElement(_Menu2.default, {
+                            key: this.key,
                             goToStep: this.goToStep,
                             frontBack: this.frontBack
                         })
@@ -31252,6 +31255,15 @@ var Settings = function (_React$PureComponent) {
                             ),
                             _react2.default.createElement(
                                 'div',
+                                { className: 'settings-preview-audio' },
+                                _react2.default.createElement(SoundMeterWithStream, {
+                                    constraints: {
+                                        audio: { deviceId: { exact: this.props.currentAudioInputId } }
+                                    }
+                                })
+                            ),
+                            _react2.default.createElement(
+                                'div',
                                 { className: 'select-input' },
                                 _react2.default.createElement(
                                     'label',
@@ -31273,25 +31285,16 @@ var Settings = function (_React$PureComponent) {
                                         })
                                     )
                                 )
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'settings-preview-video' },
+                                _react2.default.createElement(VideoOutputWithStream, {
+                                    constraints: {
+                                        video: { deviceId: { exact: this.props.currentVideoInputId } }
+                                    }
+                                })
                             )
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'settings-wrapper-video' },
-                            _react2.default.createElement(VideoOutputWithStream, {
-                                constraints: {
-                                    video: { deviceId: { exact: this.props.currentVideoInputId } }
-                                }
-                            })
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'settings-wrapper-audio' },
-                            _react2.default.createElement(SoundMeterWithStream, {
-                                constraints: {
-                                    audio: { deviceId: { exact: this.props.currentAudioInputId } }
-                                }
-                            })
                         )
                     )
                 ),
@@ -32715,8 +32718,13 @@ var SoundMeter = function (_React$PureComponent) {
 
             return _react2.default.createElement(
                 'div',
-                { className: 'sound-meter' },
-                _react2.default.createElement('div', { className: 'sound-meter-bar', style: style })
+                { className: 'sound-meter-container' },
+                _react2.default.createElement('i', { className: 'icon-microphone' }),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'sound-meter' },
+                    _react2.default.createElement('div', { className: 'sound-meter-bar', style: style })
+                )
             );
         }
     }]);

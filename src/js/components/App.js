@@ -28,6 +28,8 @@ export default class App extends React.Component {
     multiStreamRecorder;
     frontBack = 'front';
 
+    key=1; // Used to refresh menu if locale is updated
+
     static propTypes = {
         startRecording: PropTypes.func,
         stopRecording: PropTypes.func,
@@ -202,14 +204,15 @@ export default class App extends React.Component {
     }
 
     setLocale(locale) {
+        // If possible, also change interface's locale
+        if (window.locales.includes(locale)) {
+            this.key++; // Update Menu to take the new locale into consideration
+            i18next.changeLanguage(locale);
+        }
+
         this.setState({
             locale
         });
-
-        // If possible, also change interface's locale
-        if (window.locales.includes(locale)) {
-            i18next.changeLanguage(locale);
-        }
     }
 
     render() {
@@ -226,6 +229,7 @@ export default class App extends React.Component {
                 currentComponent = (
                     <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
                         <Menu
+                            key={this.key}
                             goToStep={this.goToStep}
                             frontBack={this.frontBack}
                         />

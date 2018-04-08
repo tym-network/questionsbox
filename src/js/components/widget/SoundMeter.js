@@ -69,8 +69,11 @@ export default class SoundMeter extends React.PureComponent {
         };
 
         return (
-            <div className="sound-meter">
-                <div className="sound-meter-bar" style={style}></div>
+            <div className="sound-meter-container">
+                <i className="icon-microphone"></i>
+                <div className="sound-meter">
+                    <div className="sound-meter-bar" style={style}></div>
+                </div>
             </div>
         );
     }

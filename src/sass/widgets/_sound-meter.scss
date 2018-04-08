@@ -1,6 +1,19 @@
+.sound-meter-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .icon-microphone {
+        position: relative;
+        top: 2px;
+        margin-right: 4px;
+        font-size: 14px;
+    }
+}
+
 .sound-meter {
     position: relative;
-    width: 100px;
+    width: 100%;
     height: 20px;
     border-radius: 2px;
     background: $lightgrey;

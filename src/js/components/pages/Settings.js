@@ -111,6 +111,13 @@ export default class Settings extends React.PureComponent {
                                     </select>
                                 </div>
                             </div>
+                            <div className="settings-preview-audio">
+                                <SoundMeterWithStream
+                                    constraints={{
+                                        audio: { deviceId: {exact: this.props.currentAudioInputId} }
+                                    }}
+                                />
+                            </div>
                             <div className="select-input">
                                 <label htmlFor="video-input">{i18next.t('videoInput')}</label>
                                 <div className="select-wrapper">
@@ -121,20 +128,13 @@ export default class Settings extends React.PureComponent {
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        <div className="settings-wrapper-video">
-                            <VideoOutputWithStream
-                                constraints={{
-                                    video: { deviceId: {exact: this.props.currentVideoInputId} }
-                                }}
-                            />
-                        </div>
-                        <div className="settings-wrapper-audio">
-                            <SoundMeterWithStream
-                                constraints={{
-                                    audio: { deviceId: {exact: this.props.currentAudioInputId} }
-                                }}
-                            />
+                            <div className="settings-preview-video">
+                                <VideoOutputWithStream
+                                    constraints={{
+                                        video: { deviceId: {exact: this.props.currentVideoInputId} }
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
