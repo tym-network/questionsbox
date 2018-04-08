@@ -2,6 +2,8 @@
 $blue: rgb(0, 195, 255);
 $pink: rgb(241, 95, 193);
 $green: rgb(23, 191, 90);
+$orange: rgb(255, 168, 6);
+$red: rgb(250, 34, 34);
 $lightgrey: rgb(243, 243, 243);
 $lightmediumgrey: #a5a5a5;
 
@@ -24,6 +26,7 @@ $size-sm: 768px;
 @import 'fonts/questions-box';
 
 @import 'widgets/back-button';
+@import 'widgets/save-indicator';
 @import 'widgets/sound-meter';
 
 @import 'pages/customize';

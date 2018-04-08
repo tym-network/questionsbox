@@ -1,0 +1,28 @@
+.save-indicator-container {
+    display: flex;
+    justify-content: center;
+}
+
+.save-indicator {
+    display: flex;
+    flex-grow: 0;
+    justify-content: center;
+    align-items: center;
+    $height: 40px;
+    height: $height;
+    padding: 0 20px;
+    border-radius: $height/2;
+    color: white;
+
+    &.warn {
+        background-color: $orange;
+    }
+
+    &.ok {
+        background-color: $green;
+    }
+
+    &.error {
+        background-color: $red;
+    }
+}

@@ -29,6 +29,7 @@ export default class Customize extends React.PureComponent {
         const title = e.target.value;
 
         this.props.setTitle(title);
+        this.saveDebounced();
     }
 
     render() {
@@ -46,7 +47,7 @@ export default class Customize extends React.PureComponent {
                         onChange={this.onTitleChanged}
                     />
                 </div>
-                <footer>
+                <footer className="save-indicator-container">
                     <SaveIndicator saveStatus={this.props.saveStatus} />
                 </footer>
             </section>

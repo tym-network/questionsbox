@@ -138,7 +138,7 @@ export default class Settings extends React.PureComponent {
                         </div>
                     </div>
                 </div>
-                <footer>
+                <footer className="save-indicator-container">
                     <SaveIndicator saveStatus={this.props.saveStatus} />
                 </footer>
             </section>

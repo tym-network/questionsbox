@@ -66,6 +66,26 @@ button.back {
     background: #e6e6e6;
     color: black; }
 
+.save-indicator-container {
+  display: flex;
+  justify-content: center; }
+
+.save-indicator {
+  display: flex;
+  flex-grow: 0;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 20px;
+  color: white; }
+  .save-indicator.warn {
+    background-color: #ffa806; }
+  .save-indicator.ok {
+    background-color: #17bf5a; }
+  .save-indicator.error {
+    background-color: #fa2222; }
+
 .sound-meter {
   position: relative;
   width: 100px;

@@ -17,6 +17,9 @@
         "title": "Title",
         "menu": "Menu",
         "customize": "Customize",
-        "start": "Start"
+        "start": "Start",
+        "saving": "Saving",
+        "saved": "Saved",
+        "saveError": "Error while saving"
     }
 }

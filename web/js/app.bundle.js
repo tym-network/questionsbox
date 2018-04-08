@@ -30372,13 +30372,13 @@ webpackContext.id = 370;
 /* 371 */
 /***/ (function(module, exports) {
 
-module.exports = {"default":{"settings":"Settings","audioInput":"Audio input","videoInput":"Camera","saveSettings":"Save settings","instructionsButton":"Instructions","instruction1":"Questions will be displayed on the screen. Read them out loud then answer and/or hit the buzzer","instruction2":"Take all your time, you are the one controlling when the next question is displayed.","buzz":"buzz","nextQuestion":"next question","previousQuestion":"previous question","letsGo":"Let's go!","next":"Next","thankYou":"Thank you!","restartMessage":"The app will start again in {{time}} seconds","title":"Title","menu":"Menu","customize":"Customize","start":"Start"}}
+module.exports = {"default":{"settings":"Settings","audioInput":"Audio input","videoInput":"Camera","saveSettings":"Save settings","instructionsButton":"Instructions","instruction1":"Questions will be displayed on the screen. Read them out loud then answer and/or hit the buzzer","instruction2":"Take all your time, you are the one controlling when the next question is displayed.","buzz":"buzz","nextQuestion":"next question","previousQuestion":"previous question","letsGo":"Let's go!","next":"Next","thankYou":"Thank you!","restartMessage":"The app will start again in {{time}} seconds","title":"Title","menu":"Menu","customize":"Customize","start":"Start","saving":"Saving","saved":"Saved","saveError":"Error while saving"}}
 
 /***/ }),
 /* 372 */
 /***/ (function(module, exports) {
 
-module.exports = {"default":{"settings":"Réglages","audioInput":"Entrée son","videoInput":"Caméra","saveSettings":"Sauvegarder les réglages","instructionsButton":"Instructions","instruction1":"Des questions vont être affichées à l'écran. Lisez la question à haute voix puis répondez et/ou buzzez","instruction2":"Vous avez tout votre temps, vous contrôlez le passage à la question suivante.","buzz":"buzz","nextQuestion":"question suivante","previousQuestion":"question précédente","letsGo":"C'est parti!","next":"Suivant","thankYou":"Merci d'avoir participé!","restartMessage":"Redémarrage automatique dans {{time}} secondes","title":"Titre","menu":"Menu","customize":"Personnaliser","start":"Commencer"}}
+module.exports = {"default":{"settings":"Réglages","audioInput":"Entrée son","videoInput":"Caméra","saveSettings":"Sauvegarder les réglages","instructionsButton":"Instructions","instruction1":"Des questions vont être affichées à l'écran. Lisez la question à haute voix puis répondez et/ou buzzez","instruction2":"Vous avez tout votre temps, vous contrôlez le passage à la question suivante.","buzz":"buzz","nextQuestion":"question suivante","previousQuestion":"question précédente","letsGo":"C'est parti!","next":"Suivant","thankYou":"Merci d'avoir participé!","restartMessage":"Redémarrage automatique dans {{time}} secondes","title":"Titre","menu":"Menu","customize":"Personnaliser","start":"Commencer","saving":"Sauvegarde en cours","saved":"Sauvegardé","saveError":"Erreur pendant la sauvegarde"}}
 
 /***/ }),
 /* 373 */,
@@ -31016,6 +31016,7 @@ var Customize = function (_React$PureComponent) {
             var title = e.target.value;
 
             this.props.setTitle(title);
+            this.saveDebounced();
         }
     }, {
         key: 'render',
@@ -31047,7 +31048,7 @@ var Customize = function (_React$PureComponent) {
                 ),
                 _react2.default.createElement(
                     'footer',
-                    null,
+                    { className: 'save-indicator-container' },
                     _react2.default.createElement(_SaveIndicator2.default, { saveStatus: this.props.saveStatus })
                 )
             );
@@ -31296,7 +31297,7 @@ var Settings = function (_React$PureComponent) {
                 ),
                 _react2.default.createElement(
                     'footer',
-                    null,
+                    { className: 'save-indicator-container' },
                     _react2.default.createElement(_SaveIndicator2.default, { saveStatus: this.props.saveStatus })
                 )
             );
@@ -32802,6 +32803,10 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _i18next = __webpack_require__(3);
+
+var _i18next2 = _interopRequireDefault(_i18next);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -32809,8 +32814,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// import i18next from 'i18next';
 
 var SaveIndicator = function (_React$PureComponent) {
     _inherits(SaveIndicator, _React$PureComponent);
@@ -32824,27 +32827,34 @@ var SaveIndicator = function (_React$PureComponent) {
     _createClass(SaveIndicator, [{
         key: 'render',
         value: function render() {
+            var _this2 = this;
+
+            var statusText = void 0;
+            var statusClass = void 0;
             if (this.props.saveStatus === 'saving') {
-                return _react2.default.createElement(
-                    'span',
-                    null,
-                    'Saving'
-                );
+                statusText = _i18next2.default.t('saving');
+                statusClass = 'warn';
             } else if (this.props.saveStatus === 'saved') {
-                return _react2.default.createElement(
-                    'span',
-                    null,
-                    'Saved'
-                );
+                statusText = _i18next2.default.t('saved');
+                statusClass = 'ok';
             } else if (this.props.saveStatus === 'error') {
-                return _react2.default.createElement(
-                    'span',
-                    null,
-                    'Error while saving'
-                );
+                statusText = _i18next2.default.t('error');
+                statusClass = 'error';
             } else {
                 return null;
             }
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'save-indicator ' + statusClass, ref: function ref(_ref) {
+                        return _this2.saveIndicator = _ref;
+                    } },
+                _react2.default.createElement(
+                    'span',
+                    { className: 'save-indicator-text' },
+                    statusText
+                )
+            );
         }
     }]);
 

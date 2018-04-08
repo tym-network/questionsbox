@@ -17,6 +17,9 @@
         "title": "Titre",
         "menu": "Menu",
         "customize": "Personnaliser",
-        "start": "Commencer"
+        "start": "Commencer",
+        "saving": "Sauvegarde en cours",
+        "saved": "Sauvegardé",
+        "saveError": "Erreur pendant la sauvegarde"
     }
 }
