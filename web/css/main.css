@@ -167,17 +167,20 @@ button.back {
     height: 100%;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; }
+    flex-grow: 1;
+    flex-shrink: 0; }
   #start #instructions {
     height: 100%;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    flex-shrink: 0;
     justify-content: space-between; }
     #start #instructions .instructions-wrapper {
       display: flex;
       flex-direction: column;
       flex-grow: 1;
+      flex-shrink: 0;
       justify-content: center; }
     #start #instructions .largeParagraph {
       font-size: 16px;
@@ -237,6 +240,7 @@ button.back {
     flex-direction: column;
     justify-content: center;
     flex-grow: 1;
+    flex-shrink: 0;
     min-width: 400px; }
     #menu .menu-wrapper button {
       margin-bottom: 6px; }

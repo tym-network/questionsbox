@@ -28184,7 +28184,7 @@ var App = function (_React$Component) {
             if (index >= 0) {
                 if (index + 1 >= this.steps.length) {
                     // Back to locale picker
-                    index = 2;
+                    index = this.steps.indexOf('locale');
                 } else {
                     index++;
                 }
@@ -30418,6 +30418,14 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _msr = __webpack_require__(407);
+
+var _msr2 = _interopRequireDefault(_msr);
+
+var _blobUtil = __webpack_require__(408);
+
+var _blobUtil2 = _interopRequireDefault(_blobUtil);
+
 var _WebRTCUtils = __webpack_require__(381);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -30427,9 +30435,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-// import MediaStreamRecorder from 'msr';
-// import blobUtil from 'blob-util';
 
+var fs = __webpack_require__(11);
 function withRecorder(WrappedComponent) {
     return function (_React$PureComponent) {
         _inherits(WebRTCContainer, _React$PureComponent);
@@ -30468,35 +30475,30 @@ function withRecorder(WrappedComponent) {
                 var onMediaSuccess = function onMediaSuccess(stream) {
                     _this2.setState({ stream: stream });
 
-                    // this.multiStreamRecorder = new MediaStreamRecorder.MultiStreamRecorder(stream);
-                    // this.multiStreamRecorder.stream = stream;
-                    // this.multiStreamRecorder.canvas = {
-                    //     width: this.state.cameraResolution.width,
-                    //     height: this.state.cameraResolution.height
-                    // };
-                    // this.multiStreamRecorder.video = this.video;
-                    // this.multiStreamRecorder.ondataavailable = blobs => {
-                    //     const videoName = + new Date();
-                    //     try {
-                    //         blobUtil.blobToBase64String(blobs.video).then(base64String => {
-                    //             fs.writeFile('videos/' + videoName + '.webm', new Buffer(base64String, 'base64'), function(err){
-                    //                 if (err) {
-                    //                     window.logger.error('Failed to save video', videoName, err);
-                    //                 } else {
-                    //                     window.logger.info('File saved', videoName);
-                    //                 }
-                    //             });
-                    //         }, err => {
-                    //             window.logger.error('Failed to convert blob to base64', err);
-                    //         });
-                    //     } catch(e) {
-                    //         window.logger.error(e);
-                    //     }
-                    // };
+                    _this2.multiStreamRecorder = new _msr2.default.MultiStreamRecorder(stream);
+                    _this2.multiStreamRecorder.stream = stream;
+                    _this2.multiStreamRecorder.ondataavailable = function (blobs) {
+                        var videoName = +new Date();
+                        try {
+                            _blobUtil2.default.blobToBase64String(blobs.video).then(function (base64String) {
+                                fs.writeFile('videos/' + videoName + '.webm', new Buffer(base64String, 'base64'), function (err) {
+                                    if (err) {
+                                        window.logger.error('Failed to save video', videoName, err);
+                                    } else {
+                                        window.logger.info('File saved', videoName);
+                                    }
+                                });
+                            }, function (err) {
+                                window.logger.error('Failed to convert blob to base64', err);
+                            });
+                        } catch (e) {
+                            window.logger.error(e);
+                        }
+                    };
 
-                    // const timeInterval = 20000;
-                    // // get blob after specific time interval
-                    // this.multiStreamRecorder.start(timeInterval);
+                    var timeInterval = 20000;
+                    // get blob after specific time interval
+                    _this2.multiStreamRecorder.start(timeInterval);
                 };
 
                 (0, _WebRTCUtils.getStream)(mediaConstraints).then(onMediaSuccess).catch(onMediaError);
@@ -32870,6 +32872,3082 @@ SaveIndicator.propTypes = {
     saveStatus: _propTypes2.default.string
 };
 exports.default = SaveIndicator;
+
+/***/ }),
+/* 407 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Last time updated: 2016-07-03 8:51:35 AM UTC
+
+// links:
+// Open-Sourced: https://github.com/streamproc/MediaStreamRecorder
+// https://cdn.WebRTC-Experiment.com/MediaStreamRecorder.js
+// https://www.WebRTC-Experiment.com/MediaStreamRecorder.js
+// npm install msr
+
+//------------------------------------
+
+// Browsers Support::
+// Chrome (all versions) [ audio/video separately ]
+// Firefox ( >= 29 ) [ audio/video in single webm/mp4 container or only audio in ogg ]
+// Opera (all versions) [ same as chrome ]
+// Android (Chrome) [ only video ]
+// Android (Opera) [ only video ]
+// Android (Firefox) [ only video ]
+// Microsoft Edge (Only Audio & Gif)
+
+//------------------------------------
+// Muaz Khan     - www.MuazKhan.com
+// MIT License   - www.WebRTC-Experiment.com/licence
+//------------------------------------
+
+// ______________________
+// MediaStreamRecorder.js
+
+function MediaStreamRecorder(mediaStream) {
+    if (!mediaStream) {
+        throw 'MediaStream is mandatory.';
+    }
+
+    // void start(optional long timeSlice)
+    // timestamp to fire "ondataavailable"
+    this.start = function(timeSlice) {
+        var Recorder;
+
+        if (typeof MediaRecorder !== 'undefined') {
+            Recorder = MediaRecorderWrapper;
+        } else if (IsChrome || IsOpera || IsEdge) {
+            if (this.mimeType.indexOf('video') !== -1) {
+                Recorder = WhammyRecorder;
+            } else if (this.mimeType.indexOf('audio') !== -1) {
+                Recorder = StereoAudioRecorder;
+            }
+        }
+
+        // video recorder (in GIF format)
+        if (this.mimeType === 'image/gif') {
+            Recorder = GifRecorder;
+        }
+
+        // audio/wav is supported only via StereoAudioRecorder
+        // audio/pcm (int16) is supported only via StereoAudioRecorder
+        if (this.mimeType === 'audio/wav' || this.mimeType === 'audio/pcm') {
+            Recorder = StereoAudioRecorder;
+        }
+
+        // allows forcing StereoAudioRecorder.js on Edge/Firefox
+        if (this.recorderType) {
+            Recorder = this.recorderType;
+        }
+
+        mediaRecorder = new Recorder(mediaStream);
+        mediaRecorder.blobs = [];
+
+        var self = this;
+        mediaRecorder.ondataavailable = function(data) {
+            mediaRecorder.blobs.push(data);
+            self.ondataavailable(data);
+        };
+        mediaRecorder.onstop = this.onstop;
+        mediaRecorder.onStartedDrawingNonBlankFrames = this.onStartedDrawingNonBlankFrames;
+
+        // Merge all data-types except "function"
+        mediaRecorder = mergeProps(mediaRecorder, this);
+
+        mediaRecorder.start(timeSlice);
+    };
+
+    this.onStartedDrawingNonBlankFrames = function() {};
+    this.clearOldRecordedFrames = function() {
+        if (!mediaRecorder) {
+            return;
+        }
+
+        mediaRecorder.clearOldRecordedFrames();
+    };
+
+    this.stop = function() {
+        if (mediaRecorder) {
+            mediaRecorder.stop();
+        }
+    };
+
+    this.ondataavailable = function(blob) {
+        console.log('ondataavailable..', blob);
+    };
+
+    this.onstop = function(error) {
+        console.warn('stopped..', error);
+    };
+
+    this.save = function(file, fileName) {
+        if (!file) {
+            if (!mediaRecorder) {
+                return;
+            }
+
+            ConcatenateBlobs(mediaRecorder.blobs, mediaRecorder.blobs[0].type, function(concatenatedBlob) {
+                invokeSaveAsDialog(concatenatedBlob);
+            });
+            return;
+        }
+        invokeSaveAsDialog(file, fileName);
+    };
+
+    this.pause = function() {
+        if (!mediaRecorder) {
+            return;
+        }
+        mediaRecorder.pause();
+        console.log('Paused recording.', this.mimeType || mediaRecorder.mimeType);
+    };
+
+    this.resume = function() {
+        if (!mediaRecorder) {
+            return;
+        }
+        mediaRecorder.resume();
+        console.log('Resumed recording.', this.mimeType || mediaRecorder.mimeType);
+    };
+
+    // StereoAudioRecorder || WhammyRecorder || MediaRecorderWrapper || GifRecorder
+    this.recorderType = null;
+
+    // video/webm or audio/webm or audio/ogg or audio/wav
+    this.mimeType = 'video/webm';
+
+    // logs are enabled by default
+    this.disableLogs = false;
+
+    // Reference to "MediaRecorder.js"
+    var mediaRecorder;
+}
+
+// ______________________
+// MultiStreamRecorder.js
+
+function MultiStreamRecorder(mediaStream) {
+    if (!mediaStream) {
+        throw 'MediaStream is mandatory.';
+    }
+
+    var self = this;
+    var isMediaRecorder = isMediaRecorderCompatible();
+
+    this.stream = mediaStream;
+
+    // void start(optional long timeSlice)
+    // timestamp to fire "ondataavailable"
+    this.start = function(timeSlice) {
+        audioRecorder = new MediaStreamRecorder(mediaStream);
+        videoRecorder = new MediaStreamRecorder(mediaStream);
+
+        audioRecorder.mimeType = 'audio/ogg';
+        videoRecorder.mimeType = 'video/webm';
+
+        for (var prop in this) {
+            if (typeof this[prop] !== 'function') {
+                audioRecorder[prop] = videoRecorder[prop] = this[prop];
+            }
+        }
+
+        audioRecorder.ondataavailable = function(blob) {
+            if (!audioVideoBlobs[recordingInterval]) {
+                audioVideoBlobs[recordingInterval] = {};
+            }
+
+            audioVideoBlobs[recordingInterval].audio = blob;
+
+            if (audioVideoBlobs[recordingInterval].video && !audioVideoBlobs[recordingInterval].onDataAvailableEventFired) {
+                audioVideoBlobs[recordingInterval].onDataAvailableEventFired = true;
+                fireOnDataAvailableEvent(audioVideoBlobs[recordingInterval]);
+            }
+        };
+
+        videoRecorder.ondataavailable = function(blob) {
+            if (isMediaRecorder) {
+                return self.ondataavailable({
+                    video: blob,
+                    audio: blob
+                });
+            }
+
+            if (!audioVideoBlobs[recordingInterval]) {
+                audioVideoBlobs[recordingInterval] = {};
+            }
+
+            audioVideoBlobs[recordingInterval].video = blob;
+
+            if (audioVideoBlobs[recordingInterval].audio && !audioVideoBlobs[recordingInterval].onDataAvailableEventFired) {
+                audioVideoBlobs[recordingInterval].onDataAvailableEventFired = true;
+                fireOnDataAvailableEvent(audioVideoBlobs[recordingInterval]);
+            }
+        };
+
+        function fireOnDataAvailableEvent(blobs) {
+            recordingInterval++;
+            self.ondataavailable(blobs);
+        }
+
+        videoRecorder.onstop = audioRecorder.onstop = function(error) {
+            self.onstop(error);
+        };
+
+        if (!isMediaRecorder) {
+            // to make sure both audio/video are synced.
+            videoRecorder.onStartedDrawingNonBlankFrames = function() {
+                videoRecorder.clearOldRecordedFrames();
+                audioRecorder.start(timeSlice);
+            };
+            videoRecorder.start(timeSlice);
+        } else {
+            videoRecorder.start(timeSlice);
+        }
+    };
+
+    this.stop = function() {
+        if (audioRecorder) {
+            audioRecorder.stop();
+        }
+        if (videoRecorder) {
+            videoRecorder.stop();
+        }
+    };
+
+    this.ondataavailable = function(blob) {
+        console.log('ondataavailable..', blob);
+    };
+
+    this.onstop = function(error) {
+        console.warn('stopped..', error);
+    };
+
+    this.pause = function() {
+        if (audioRecorder) {
+            audioRecorder.pause();
+        }
+        if (videoRecorder) {
+            videoRecorder.pause();
+        }
+    };
+
+    this.resume = function() {
+        if (audioRecorder) {
+            audioRecorder.resume();
+        }
+        if (videoRecorder) {
+            videoRecorder.resume();
+        }
+    };
+
+    var audioRecorder;
+    var videoRecorder;
+
+    var audioVideoBlobs = {};
+    var recordingInterval = 0;
+}
+
+if (typeof MediaStreamRecorder !== 'undefined') {
+    MediaStreamRecorder.MultiStreamRecorder = MultiStreamRecorder;
+}
+
+// _____________________________
+// Cross-Browser-Declarations.js
+
+var browserFakeUserAgent = 'Fake/5.0 (FakeOS) AppleWebKit/123 (KHTML, like Gecko) Fake/12.3.4567.89 Fake/123.45';
+
+(function(that) {
+    if (typeof window !== 'undefined') {
+        return;
+    }
+
+    if (typeof window === 'undefined' && typeof global !== 'undefined') {
+        global.navigator = {
+            userAgent: browserFakeUserAgent,
+            getUserMedia: function() {}
+        };
+
+        /*global window:true */
+        that.window = global;
+    } else if (typeof window === 'undefined') {
+        // window = this;
+    }
+
+    if (typeof document === 'undefined') {
+        /*global document:true */
+        that.document = {};
+
+        document.createElement = document.captureStream = document.mozCaptureStream = function() {
+            return {};
+        };
+    }
+
+    if (typeof location === 'undefined') {
+        /*global location:true */
+        that.location = {
+            protocol: 'file:',
+            href: '',
+            hash: ''
+        };
+    }
+
+    if (typeof screen === 'undefined') {
+        /*global screen:true */
+        that.screen = {
+            width: 0,
+            height: 0
+        };
+    }
+})(typeof global !== 'undefined' ? global : window);
+
+// WebAudio API representer
+var AudioContext = window.AudioContext;
+
+if (typeof AudioContext === 'undefined') {
+    if (typeof webkitAudioContext !== 'undefined') {
+        /*global AudioContext:true */
+        AudioContext = webkitAudioContext;
+    }
+
+    if (typeof mozAudioContext !== 'undefined') {
+        /*global AudioContext:true */
+        AudioContext = mozAudioContext;
+    }
+}
+
+if (typeof window === 'undefined') {
+    /*jshint -W020 */
+    window = {};
+}
+
+// WebAudio API representer
+var AudioContext = window.AudioContext;
+
+if (typeof AudioContext === 'undefined') {
+    if (typeof webkitAudioContext !== 'undefined') {
+        /*global AudioContext:true */
+        AudioContext = webkitAudioContext;
+    }
+
+    if (typeof mozAudioContext !== 'undefined') {
+        /*global AudioContext:true */
+        AudioContext = mozAudioContext;
+    }
+}
+
+/*jshint -W079 */
+var URL = window.URL;
+
+if (typeof URL === 'undefined' && typeof webkitURL !== 'undefined') {
+    /*global URL:true */
+    URL = webkitURL;
+}
+
+if (typeof navigator !== 'undefined') {
+    if (typeof navigator.webkitGetUserMedia !== 'undefined') {
+        navigator.getUserMedia = navigator.webkitGetUserMedia;
+    }
+
+    if (typeof navigator.mozGetUserMedia !== 'undefined') {
+        navigator.getUserMedia = navigator.mozGetUserMedia;
+    }
+} else {
+    navigator = {
+        getUserMedia: function() {},
+        userAgent: browserFakeUserAgent
+    };
+}
+
+var IsEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveBlob || !!navigator.msSaveOrOpenBlob);
+
+var IsOpera = false;
+if (typeof opera !== 'undefined' && navigator.userAgent && navigator.userAgent.indexOf('OPR/') !== -1) {
+    IsOpera = true;
+}
+var IsChrome = !IsEdge && !IsEdge && !!navigator.webkitGetUserMedia;
+
+var MediaStream = window.MediaStream;
+
+if (typeof MediaStream === 'undefined' && typeof webkitMediaStream !== 'undefined') {
+    MediaStream = webkitMediaStream;
+}
+
+/*global MediaStream:true */
+if (typeof MediaStream !== 'undefined') {
+    if (!('getVideoTracks' in MediaStream.prototype)) {
+        MediaStream.prototype.getVideoTracks = function() {
+            if (!this.getTracks) {
+                return [];
+            }
+
+            var tracks = [];
+            this.getTracks.forEach(function(track) {
+                if (track.kind.toString().indexOf('video') !== -1) {
+                    tracks.push(track);
+                }
+            });
+            return tracks;
+        };
+
+        MediaStream.prototype.getAudioTracks = function() {
+            if (!this.getTracks) {
+                return [];
+            }
+
+            var tracks = [];
+            this.getTracks.forEach(function(track) {
+                if (track.kind.toString().indexOf('audio') !== -1) {
+                    tracks.push(track);
+                }
+            });
+            return tracks;
+        };
+    }
+
+    if (!('stop' in MediaStream.prototype)) {
+        MediaStream.prototype.stop = function() {
+            this.getAudioTracks().forEach(function(track) {
+                if (!!track.stop) {
+                    track.stop();
+                }
+            });
+
+            this.getVideoTracks().forEach(function(track) {
+                if (!!track.stop) {
+                    track.stop();
+                }
+            });
+        };
+    }
+}
+
+if (typeof location !== 'undefined') {
+    if (location.href.indexOf('file:') === 0) {
+        console.error('Please load this HTML file on HTTP or HTTPS.');
+    }
+}
+
+// Merge all other data-types except "function"
+
+function mergeProps(mergein, mergeto) {
+    for (var t in mergeto) {
+        if (typeof mergeto[t] !== 'function') {
+            mergein[t] = mergeto[t];
+        }
+    }
+    return mergein;
+}
+
+// "dropFirstFrame" has been added by Graham Roth
+// https://github.com/gsroth
+
+function dropFirstFrame(arr) {
+    arr.shift();
+    return arr;
+}
+
+/**
+ * @param {Blob} file - File or Blob object. This parameter is required.
+ * @param {string} fileName - Optional file name e.g. "Recorded-Video.webm"
+ * @example
+ * invokeSaveAsDialog(blob or file, [optional] fileName);
+ * @see {@link https://github.com/muaz-khan/RecordRTC|RecordRTC Source Code}
+ */
+function invokeSaveAsDialog(file, fileName) {
+    if (!file) {
+        throw 'Blob object is required.';
+    }
+
+    if (!file.type) {
+        try {
+            file.type = 'video/webm';
+        } catch (e) {}
+    }
+
+    var fileExtension = (file.type || 'video/webm').split('/')[1];
+
+    if (fileName && fileName.indexOf('.') !== -1) {
+        var splitted = fileName.split('.');
+        fileName = splitted[0];
+        fileExtension = splitted[1];
+    }
+
+    var fileFullName = (fileName || (Math.round(Math.random() * 9999999999) + 888888888)) + '.' + fileExtension;
+
+    if (typeof navigator.msSaveOrOpenBlob !== 'undefined') {
+        return navigator.msSaveOrOpenBlob(file, fileFullName);
+    } else if (typeof navigator.msSaveBlob !== 'undefined') {
+        return navigator.msSaveBlob(file, fileFullName);
+    }
+
+    var hyperlink = document.createElement('a');
+    hyperlink.href = URL.createObjectURL(file);
+    hyperlink.target = '_blank';
+    hyperlink.download = fileFullName;
+
+    if (!!navigator.mozGetUserMedia) {
+        hyperlink.onclick = function() {
+            (document.body || document.documentElement).removeChild(hyperlink);
+        };
+        (document.body || document.documentElement).appendChild(hyperlink);
+    }
+
+    var evt = new MouseEvent('click', {
+        view: window,
+        bubbles: true,
+        cancelable: true
+    });
+
+    hyperlink.dispatchEvent(evt);
+
+    if (!navigator.mozGetUserMedia) {
+        URL.revokeObjectURL(hyperlink.href);
+    }
+}
+
+function bytesToSize(bytes) {
+    var k = 1000;
+    var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) {
+        return '0 Bytes';
+    }
+    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10);
+    return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+}
+
+// ______________ (used to handle stuff like http://goo.gl/xmE5eg) issue #129
+// ObjectStore.js
+var ObjectStore = {
+    AudioContext: AudioContext
+};
+
+function isMediaRecorderCompatible() {
+    var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+    var isChrome = !!window.chrome && !isOpera;
+    var isFirefox = typeof window.InstallTrigger !== 'undefined';
+
+    if (isFirefox) {
+        return true;
+    }
+
+    if (!isChrome) {
+        return false;
+    }
+
+    var nVer = navigator.appVersion;
+    var nAgt = navigator.userAgent;
+    var fullVersion = '' + parseFloat(navigator.appVersion);
+    var majorVersion = parseInt(navigator.appVersion, 10);
+    var nameOffset, verOffset, ix;
+
+    if (isChrome) {
+        verOffset = nAgt.indexOf('Chrome');
+        fullVersion = nAgt.substring(verOffset + 7);
+    }
+
+    // trim the fullVersion string at semicolon/space if present
+    if ((ix = fullVersion.indexOf(';')) !== -1) {
+        fullVersion = fullVersion.substring(0, ix);
+    }
+
+    if ((ix = fullVersion.indexOf(' ')) !== -1) {
+        fullVersion = fullVersion.substring(0, ix);
+    }
+
+    majorVersion = parseInt('' + fullVersion, 10);
+
+    if (isNaN(majorVersion)) {
+        fullVersion = '' + parseFloat(navigator.appVersion);
+        majorVersion = parseInt(navigator.appVersion, 10);
+    }
+
+    return majorVersion >= 49;
+}
+
+// ______________ (used to handle stuff like http://goo.gl/xmE5eg) issue #129
+// ObjectStore.js
+var ObjectStore = {
+    AudioContext: window.AudioContext || window.webkitAudioContext
+};
+
+// ==================
+// MediaRecorder.js
+
+/**
+ * Implementation of https://dvcs.w3.org/hg/dap/raw-file/default/media-stream-capture/MediaRecorder.html
+ * The MediaRecorder accepts a mediaStream as input source passed from UA. When recorder starts,
+ * a MediaEncoder will be created and accept the mediaStream as input source.
+ * Encoder will get the raw data by track data changes, encode it by selected MIME Type, then store the encoded in EncodedBufferCache object.
+ * The encoded data will be extracted on every timeslice passed from Start function call or by RequestData function.
+ * Thread model:
+ * When the recorder starts, it creates a "Media Encoder" thread to read data from MediaEncoder object and store buffer in EncodedBufferCache object.
+ * Also extract the encoded data and create blobs on every timeslice passed from start function or RequestData function called by UA.
+ */
+
+function MediaRecorderWrapper(mediaStream) {
+    var self = this;
+
+    /**
+     * This method records MediaStream.
+     * @method
+     * @memberof MediaStreamRecorder
+     * @example
+     * recorder.record();
+     */
+    this.start = function(timeSlice, __disableLogs) {
+        if (!self.mimeType) {
+            self.mimeType = 'video/webm';
+        }
+
+        if (self.mimeType.indexOf('audio') !== -1) {
+            if (mediaStream.getVideoTracks().length && mediaStream.getAudioTracks().length) {
+                var stream;
+                if (!!navigator.mozGetUserMedia) {
+                    stream = new MediaStream();
+                    stream.addTrack(mediaStream.getAudioTracks()[0]);
+                } else {
+                    // webkitMediaStream
+                    stream = new MediaStream(mediaStream.getAudioTracks());
+                }
+                mediaStream = stream;
+            }
+        }
+
+        if (self.mimeType.indexOf('audio') !== -1) {
+            self.mimeType = IsChrome ? 'audio/webm' : 'audio/ogg';
+        }
+
+        self.dontFireOnDataAvailableEvent = false;
+
+        var recorderHints = {
+            mimeType: self.mimeType
+        };
+
+        if (!self.disableLogs && !__disableLogs) {
+            console.log('Passing following params over MediaRecorder API.', recorderHints);
+        }
+
+        if (mediaRecorder) {
+            // mandatory to make sure Firefox doesn't fails to record streams 3-4 times without reloading the page.
+            mediaRecorder = null;
+        }
+
+        if (IsChrome && !isMediaRecorderCompatible()) {
+            // to support video-only recording on stable
+            recorderHints = 'video/vp8';
+        }
+
+        // http://dxr.mozilla.org/mozilla-central/source/content/media/MediaRecorder.cpp
+        // https://wiki.mozilla.org/Gecko:MediaRecorder
+        // https://dvcs.w3.org/hg/dap/raw-file/default/media-stream-capture/MediaRecorder.html
+
+        // starting a recording session; which will initiate "Reading Thread"
+        // "Reading Thread" are used to prevent main-thread blocking scenarios
+        try {
+            mediaRecorder = new MediaRecorder(mediaStream, recorderHints);
+        } catch (e) {
+            // if someone passed NON_supported mimeType
+            // or if Firefox on Android
+            mediaRecorder = new MediaRecorder(mediaStream);
+        }
+
+        if ('canRecordMimeType' in mediaRecorder && mediaRecorder.canRecordMimeType(self.mimeType) === false) {
+            if (!self.disableLogs) {
+                console.warn('MediaRecorder API seems unable to record mimeType:', self.mimeType);
+            }
+        }
+
+        // i.e. stop recording when <video> is paused by the user; and auto restart recording 
+        // when video is resumed. E.g. yourStream.getVideoTracks()[0].muted = true; // it will auto-stop recording.
+        mediaRecorder.ignoreMutedMedia = self.ignoreMutedMedia || false;
+
+        var firedOnDataAvailableOnce = false;
+
+        // Dispatching OnDataAvailable Handler
+        mediaRecorder.ondataavailable = function(e) {
+            if (self.dontFireOnDataAvailableEvent) {
+                return;
+            }
+
+            // how to fix FF-corrupt-webm issues?
+            // should we leave this?          e.data.size < 26800
+            if (!e.data || !e.data.size || e.data.size < 26800 || firedOnDataAvailableOnce) {
+                return;
+            }
+
+            firedOnDataAvailableOnce = true;
+
+            var blob = self.getNativeBlob ? e.data : new Blob([e.data], {
+                type: self.mimeType || 'video/webm'
+            });
+
+            self.ondataavailable(blob);
+
+            self.dontFireOnDataAvailableEvent = true;
+
+            if (!!mediaRecorder) {
+                mediaRecorder.stop();
+                mediaRecorder = null;
+            }
+
+            // record next interval
+            self.start(timeSlice, '__disableLogs');
+        };
+
+        mediaRecorder.onerror = function(error) {
+            if (!self.disableLogs) {
+                if (error.name === 'InvalidState') {
+                    console.error('The MediaRecorder is not in a state in which the proposed operation is allowed to be executed.');
+                } else if (error.name === 'OutOfMemory') {
+                    console.error('The UA has exhaused the available memory. User agents SHOULD provide as much additional information as possible in the message attribute.');
+                } else if (error.name === 'IllegalStreamModification') {
+                    console.error('A modification to the stream has occurred that makes it impossible to continue recording. An example would be the addition of a Track while recording is occurring. User agents SHOULD provide as much additional information as possible in the message attribute.');
+                } else if (error.name === 'OtherRecordingError') {
+                    console.error('Used for an fatal error other than those listed above. User agents SHOULD provide as much additional information as possible in the message attribute.');
+                } else if (error.name === 'GenericError') {
+                    console.error('The UA cannot provide the codec or recording option that has been requested.', error);
+                } else {
+                    console.error('MediaRecorder Error', error);
+                }
+            }
+
+            // When the stream is "ended" set recording to 'inactive' 
+            // and stop gathering data. Callers should not rely on 
+            // exactness of the timeSlice value, especially 
+            // if the timeSlice value is small. Callers should 
+            // consider timeSlice as a minimum value
+
+            if (!!mediaRecorder && mediaRecorder.state !== 'inactive' && mediaRecorder.state !== 'stopped') {
+                mediaRecorder.stop();
+            }
+        };
+
+        // void start(optional long mTimeSlice)
+        // The interval of passing encoded data from EncodedBufferCache to onDataAvailable
+        // handler. "mTimeSlice < 0" means Session object does not push encoded data to
+        // onDataAvailable, instead, it passive wait the client side pull encoded data
+        // by calling requestData API.
+        try {
+            mediaRecorder.start(3.6e+6);
+        } catch (e) {
+            mediaRecorder = null;
+        }
+
+        setTimeout(function() {
+            if (!mediaRecorder) {
+                return;
+            }
+
+            if (mediaRecorder.state === 'recording') {
+                // "stop" method auto invokes "requestData"!
+                mediaRecorder.requestData();
+                // mediaRecorder.stop();
+            }
+        }, timeSlice);
+
+        // Start recording. If timeSlice has been provided, mediaRecorder will
+        // raise a dataavailable event containing the Blob of collected data on every timeSlice milliseconds.
+        // If timeSlice isn't provided, UA should call the RequestData to obtain the Blob data, also set the mTimeSlice to zero.
+    };
+
+    /**
+     * This method stops recording MediaStream.
+     * @param {function} callback - Callback function, that is used to pass recorded blob back to the callee.
+     * @method
+     * @memberof MediaStreamRecorder
+     * @example
+     * recorder.stop(function(blob) {
+     *     video.src = URL.createObjectURL(blob);
+     * });
+     */
+    this.stop = function(callback) {
+        if (!mediaRecorder) {
+            return;
+        }
+
+        // mediaRecorder.state === 'recording' means that media recorder is associated with "session"
+        // mediaRecorder.state === 'stopped' means that media recorder is detached from the "session" ... in this case; "session" will also be deleted.
+
+        if (mediaRecorder.state === 'recording') {
+            // "stop" method auto invokes "requestData"!
+            mediaRecorder.requestData();
+
+            setTimeout(function() {
+                self.dontFireOnDataAvailableEvent = true;
+                if (!!mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+                mediaRecorder = null;
+            }, 2000);
+        }
+    };
+
+    /**
+     * This method pauses the recording process.
+     * @method
+     * @memberof MediaStreamRecorder
+     * @example
+     * recorder.pause();
+     */
+    this.pause = function() {
+        if (!mediaRecorder) {
+            return;
+        }
+
+        if (mediaRecorder.state === 'recording') {
+            mediaRecorder.pause();
+        }
+    };
+
+    /**
+     * The recorded blobs are passed over this event.
+     * @event
+     * @memberof MediaStreamRecorder
+     * @example
+     * recorder.ondataavailable = function(data) {};
+     */
+    this.ondataavailable = function(blob) {
+        console.log('recorded-blob', blob);
+    };
+
+    /**
+     * This method resumes the recording process.
+     * @method
+     * @memberof MediaStreamRecorder
+     * @example
+     * recorder.resume();
+     */
+    this.resume = function() {
+        if (this.dontFireOnDataAvailableEvent) {
+            this.dontFireOnDataAvailableEvent = false;
+
+            var disableLogs = self.disableLogs;
+            self.disableLogs = true;
+            this.record();
+            self.disableLogs = disableLogs;
+            return;
+        }
+
+        if (!mediaRecorder) {
+            return;
+        }
+
+        if (mediaRecorder.state === 'paused') {
+            mediaRecorder.resume();
+        }
+    };
+
+    /**
+     * This method resets currently recorded data.
+     * @method
+     * @memberof MediaStreamRecorder
+     * @example
+     * recorder.clearRecordedData();
+     */
+    this.clearRecordedData = function() {
+        if (!mediaRecorder) {
+            return;
+        }
+
+        this.pause();
+
+        this.dontFireOnDataAvailableEvent = true;
+        this.stop();
+    };
+
+    // Reference to "MediaRecorder" object
+    var mediaRecorder;
+
+    function isMediaStreamActive() {
+        if ('active' in mediaStream) {
+            if (!mediaStream.active) {
+                return false;
+            }
+        } else if ('ended' in mediaStream) { // old hack
+            if (mediaStream.ended) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // this method checks if media stream is stopped
+    // or any track is ended.
+    (function looper() {
+        if (!mediaRecorder) {
+            return;
+        }
+
+        if (isMediaStreamActive() === false) {
+            self.stop();
+            return;
+        }
+
+        setTimeout(looper, 1000); // check every second
+    })();
+}
+
+if (typeof MediaStreamRecorder !== 'undefined') {
+    MediaStreamRecorder.MediaRecorderWrapper = MediaRecorderWrapper;
+}
+
+// ======================
+// StereoAudioRecorder.js
+
+function StereoAudioRecorder(mediaStream) {
+    // void start(optional long timeSlice)
+    // timestamp to fire "ondataavailable"
+    this.start = function(timeSlice) {
+        timeSlice = timeSlice || 1000;
+
+        mediaRecorder = new StereoAudioRecorderHelper(mediaStream, this);
+
+        mediaRecorder.record();
+
+        timeout = setInterval(function() {
+            mediaRecorder.requestData();
+        }, timeSlice);
+    };
+
+    this.stop = function() {
+        if (mediaRecorder) {
+            mediaRecorder.stop();
+            clearTimeout(timeout);
+        }
+    };
+
+    this.pause = function() {
+        if (!mediaRecorder) {
+            return;
+        }
+
+        mediaRecorder.pause();
+    };
+
+    this.resume = function() {
+        if (!mediaRecorder) {
+            return;
+        }
+
+        mediaRecorder.resume();
+    };
+
+    this.ondataavailable = function() {};
+
+    // Reference to "StereoAudioRecorder" object
+    var mediaRecorder;
+    var timeout;
+}
+
+if (typeof MediaStreamRecorder !== 'undefined') {
+    MediaStreamRecorder.StereoAudioRecorder = StereoAudioRecorder;
+}
+
+// ============================
+// StereoAudioRecorderHelper.js
+
+// source code from: http://typedarray.org/wp-content/projects/WebAudioRecorder/script.js
+
+function StereoAudioRecorderHelper(mediaStream, root) {
+
+    // variables    
+    var deviceSampleRate = 44100; // range: 22050 to 96000
+
+    if (!ObjectStore.AudioContextConstructor) {
+        ObjectStore.AudioContextConstructor = new ObjectStore.AudioContext();
+    }
+
+    // check device sample rate
+    deviceSampleRate = ObjectStore.AudioContextConstructor.sampleRate;
+
+    var leftchannel = [];
+    var rightchannel = [];
+    var scriptprocessornode;
+    var recording = false;
+    var recordingLength = 0;
+    var volume;
+    var audioInput;
+    var sampleRate = root.sampleRate || deviceSampleRate;
+
+    var mimeType = root.mimeType || 'audio/wav';
+    var isPCM = mimeType.indexOf('audio/pcm') > -1;
+
+    var context;
+
+    var numChannels = root.audioChannels || 2;
+
+    this.record = function() {
+        recording = true;
+        // reset the buffers for the new recording
+        leftchannel.length = rightchannel.length = 0;
+        recordingLength = 0;
+    };
+
+    this.requestData = function() {
+        if (isPaused) {
+            return;
+        }
+
+        if (recordingLength === 0) {
+            requestDataInvoked = false;
+            return;
+        }
+
+        requestDataInvoked = true;
+        // clone stuff
+        var internalLeftChannel = leftchannel.slice(0);
+        var internalRightChannel = rightchannel.slice(0);
+        var internalRecordingLength = recordingLength;
+
+        // reset the buffers for the new recording
+        leftchannel.length = rightchannel.length = [];
+        recordingLength = 0;
+        requestDataInvoked = false;
+
+        // we flat the left and right channels down
+        var leftBuffer = mergeBuffers(internalLeftChannel, internalRecordingLength);
+
+        var interleaved = leftBuffer;
+
+        // we interleave both channels together
+        if (numChannels === 2) {
+            var rightBuffer = mergeBuffers(internalRightChannel, internalRecordingLength); // bug fixed via #70,#71
+            interleaved = interleave(leftBuffer, rightBuffer);
+        }
+
+        if (isPCM) {
+            // our final binary blob
+            var blob = new Blob([convertoFloat32ToInt16(interleaved)], {
+                type: 'audio/pcm'
+            });
+
+            console.debug('audio recorded blob size:', bytesToSize(blob.size));
+            root.ondataavailable(blob);
+            return;
+        }
+
+        // we create our wav file
+        var buffer = new ArrayBuffer(44 + interleaved.length * 2);
+        var view = new DataView(buffer);
+
+        // RIFF chunk descriptor
+        writeUTFBytes(view, 0, 'RIFF');
+
+        // -8 (via #97)
+        view.setUint32(4, 44 + interleaved.length * 2 - 8, true);
+
+        writeUTFBytes(view, 8, 'WAVE');
+        // FMT sub-chunk
+        writeUTFBytes(view, 12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        // stereo (2 channels)
+        view.setUint16(22, numChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * numChannels * 2, true); // numChannels * 2 (via #71)
+        view.setUint16(32, numChannels * 2, true);
+        view.setUint16(34, 16, true);
+        // data sub-chunk
+        writeUTFBytes(view, 36, 'data');
+        view.setUint32(40, interleaved.length * 2, true);
+
+        // write the PCM samples
+        var lng = interleaved.length;
+        var index = 44;
+        var volume = 1;
+        for (var i = 0; i < lng; i++) {
+            view.setInt16(index, interleaved[i] * (0x7FFF * volume), true);
+            index += 2;
+        }
+
+        // our final binary blob
+        var blob = new Blob([view], {
+            type: 'audio/wav'
+        });
+
+        console.debug('audio recorded blob size:', bytesToSize(blob.size));
+
+        root.ondataavailable(blob);
+    };
+
+    this.stop = function() {
+        // we stop recording
+        recording = false;
+        this.requestData();
+
+        audioInput.disconnect();
+    };
+
+    function interleave(leftChannel, rightChannel) {
+        var length = leftChannel.length + rightChannel.length;
+        var result = new Float32Array(length);
+
+        var inputIndex = 0;
+
+        for (var index = 0; index < length;) {
+            result[index++] = leftChannel[inputIndex];
+            result[index++] = rightChannel[inputIndex];
+            inputIndex++;
+        }
+        return result;
+    }
+
+    function mergeBuffers(channelBuffer, recordingLength) {
+        var result = new Float32Array(recordingLength);
+        var offset = 0;
+        var lng = channelBuffer.length;
+        for (var i = 0; i < lng; i++) {
+            var buffer = channelBuffer[i];
+            result.set(buffer, offset);
+            offset += buffer.length;
+        }
+        return result;
+    }
+
+    function writeUTFBytes(view, offset, string) {
+        var lng = string.length;
+        for (var i = 0; i < lng; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+        }
+    }
+
+    function convertoFloat32ToInt16(buffer) {
+        var l = buffer.length;
+        var buf = new Int16Array(l)
+
+        while (l--) {
+            buf[l] = buffer[l] * 0xFFFF; //convert to 16 bit
+        }
+        return buf.buffer
+    }
+
+    // creates the audio context
+    var context = ObjectStore.AudioContextConstructor;
+
+    // creates a gain node
+    ObjectStore.VolumeGainNode = context.createGain();
+
+    var volume = ObjectStore.VolumeGainNode;
+
+    // creates an audio node from the microphone incoming stream
+    ObjectStore.AudioInput = context.createMediaStreamSource(mediaStream);
+
+    // creates an audio node from the microphone incoming stream
+    var audioInput = ObjectStore.AudioInput;
+
+    // connect the stream to the gain node
+    audioInput.connect(volume);
+
+    /* From the spec: This value controls how frequently the audioprocess event is
+    dispatched and how many sample-frames need to be processed each call.
+    Lower values for buffer size will result in a lower (better) latency.
+    Higher values will be necessary to avoid audio breakup and glitches 
+    Legal values are 256, 512, 1024, 2048, 4096, 8192, and 16384.*/
+    var bufferSize = root.bufferSize || 2048;
+    if (root.bufferSize === 0) {
+        bufferSize = 0;
+    }
+
+    if (context.createJavaScriptNode) {
+        scriptprocessornode = context.createJavaScriptNode(bufferSize, numChannels, numChannels);
+    } else if (context.createScriptProcessor) {
+        scriptprocessornode = context.createScriptProcessor(bufferSize, numChannels, numChannels);
+    } else {
+        throw 'WebAudio API has no support on this browser.';
+    }
+
+    bufferSize = scriptprocessornode.bufferSize;
+
+    console.debug('using audio buffer-size:', bufferSize);
+
+    var requestDataInvoked = false;
+
+    // sometimes "scriptprocessornode" disconnects from he destination-node
+    // and there is no exception thrown in this case.
+    // and obviously no further "ondataavailable" events will be emitted.
+    // below global-scope variable is added to debug such unexpected but "rare" cases.
+    window.scriptprocessornode = scriptprocessornode;
+
+    if (numChannels === 1) {
+        console.debug('All right-channels are skipped.');
+    }
+
+    var isPaused = false;
+
+    this.pause = function() {
+        isPaused = true;
+    };
+
+    this.resume = function() {
+        isPaused = false;
+    };
+
+    // http://webaudio.github.io/web-audio-api/#the-scriptprocessornode-interface
+    scriptprocessornode.onaudioprocess = function(e) {
+        if (!recording || requestDataInvoked || isPaused) {
+            return;
+        }
+
+        var left = e.inputBuffer.getChannelData(0);
+        leftchannel.push(new Float32Array(left));
+
+        if (numChannels === 2) {
+            var right = e.inputBuffer.getChannelData(1);
+            rightchannel.push(new Float32Array(right));
+        }
+        recordingLength += bufferSize;
+    };
+
+    volume.connect(scriptprocessornode);
+    scriptprocessornode.connect(context.destination);
+}
+
+if (typeof MediaStreamRecorder !== 'undefined') {
+    MediaStreamRecorder.StereoAudioRecorderHelper = StereoAudioRecorderHelper;
+}
+
+// ===================
+// WhammyRecorder.js
+
+function WhammyRecorder(mediaStream) {
+    // void start(optional long timeSlice)
+    // timestamp to fire "ondataavailable"
+    this.start = function(timeSlice) {
+        timeSlice = timeSlice || 1000;
+
+        mediaRecorder = new WhammyRecorderHelper(mediaStream, this);
+
+        for (var prop in this) {
+            if (typeof this[prop] !== 'function') {
+                mediaRecorder[prop] = this[prop];
+            }
+        }
+
+        mediaRecorder.record();
+
+        timeout = setInterval(function() {
+            mediaRecorder.requestData();
+        }, timeSlice);
+    };
+
+    this.stop = function() {
+        if (mediaRecorder) {
+            mediaRecorder.stop();
+            clearTimeout(timeout);
+        }
+    };
+
+    this.clearOldRecordedFrames = function() {
+        if (mediaRecorder) {
+            mediaRecorder.clearOldRecordedFrames();
+        }
+    };
+
+    this.pause = function() {
+        if (!mediaRecorder) {
+            return;
+        }
+
+        mediaRecorder.pause();
+    };
+
+    this.resume = function() {
+        if (!mediaRecorder) {
+            return;
+        }
+
+        mediaRecorder.resume();
+    };
+
+    this.ondataavailable = function() {};
+
+    // Reference to "WhammyRecorder" object
+    var mediaRecorder;
+    var timeout;
+}
+
+if (typeof MediaStreamRecorder !== 'undefined') {
+    MediaStreamRecorder.WhammyRecorder = WhammyRecorder;
+}
+
+// ==========================
+// WhammyRecorderHelper.js
+
+function WhammyRecorderHelper(mediaStream, root) {
+    this.record = function(timeSlice) {
+        if (!this.width) {
+            this.width = 320;
+        }
+        if (!this.height) {
+            this.height = 240;
+        }
+
+        if (this.video && this.video instanceof HTMLVideoElement) {
+            if (!this.width) {
+                this.width = video.videoWidth || video.clientWidth || 320;
+            }
+            if (!this.height) {
+                this.height = video.videoHeight || video.clientHeight || 240;
+            }
+        }
+
+        if (!this.video) {
+            this.video = {
+                width: this.width,
+                height: this.height
+            };
+        }
+
+        if (!this.canvas || !this.canvas.width || !this.canvas.height) {
+            this.canvas = {
+                width: this.width,
+                height: this.height
+            };
+        }
+
+        canvas.width = this.canvas.width;
+        canvas.height = this.canvas.height;
+
+        // setting defaults
+        if (this.video && this.video instanceof HTMLVideoElement) {
+            this.isHTMLObject = true;
+            video = this.video.cloneNode();
+        } else {
+            video = document.createElement('video');
+            video.src = URL.createObjectURL(mediaStream);
+
+            video.width = this.video.width;
+            video.height = this.video.height;
+        }
+
+        video.muted = true;
+        video.play();
+
+        lastTime = new Date().getTime();
+        whammy = new Whammy.Video(root.speed, root.quality);
+
+        console.log('canvas resolutions', canvas.width, '*', canvas.height);
+        console.log('video width/height', video.width || canvas.width, '*', video.height || canvas.height);
+
+        drawFrames();
+    };
+
+    this.clearOldRecordedFrames = function() {
+        whammy.frames = [];
+    };
+
+    var requestDataInvoked = false;
+    this.requestData = function() {
+        if (isPaused) {
+            return;
+        }
+
+        if (!whammy.frames.length) {
+            requestDataInvoked = false;
+            return;
+        }
+
+        requestDataInvoked = true;
+        // clone stuff
+        var internalFrames = whammy.frames.slice(0);
+
+        // reset the frames for the new recording
+
+        whammy.frames = dropBlackFrames(internalFrames, -1);
+
+        whammy.compile(function(whammyBlob) {
+            root.ondataavailable(whammyBlob);
+            console.debug('video recorded blob size:', bytesToSize(whammyBlob.size));
+        });
+
+        whammy.frames = [];
+
+        requestDataInvoked = false;
+    };
+
+    var isOnStartedDrawingNonBlankFramesInvoked = false;
+
+    function drawFrames() {
+        if (isPaused) {
+            lastTime = new Date().getTime();
+            setTimeout(drawFrames, 500);
+            return;
+        }
+
+        if (isStopDrawing) {
+            return;
+        }
+
+        if (requestDataInvoked) {
+            return setTimeout(drawFrames, 100);
+        }
+
+        var duration = new Date().getTime() - lastTime;
+        if (!duration) {
+            return drawFrames();
+        }
+
+        // via webrtc-experiment#206, by Jack i.e. @Seymourr
+        lastTime = new Date().getTime();
+
+        if (!self.isHTMLObject && video.paused) {
+            video.play(); // Android
+        }
+
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        if (!isStopDrawing) {
+            whammy.frames.push({
+                duration: duration,
+                image: canvas.toDataURL('image/webp')
+            });
+        }
+
+        if (!isOnStartedDrawingNonBlankFramesInvoked && !isBlankFrame(whammy.frames[whammy.frames.length - 1])) {
+            isOnStartedDrawingNonBlankFramesInvoked = true;
+            root.onStartedDrawingNonBlankFrames();
+        }
+
+        setTimeout(drawFrames, 10);
+    }
+
+    var isStopDrawing = false;
+
+    this.stop = function() {
+        isStopDrawing = true;
+        this.requestData();
+    };
+
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+
+    var video;
+    var lastTime;
+    var whammy;
+
+    var self = this;
+
+    function isBlankFrame(frame, _pixTolerance, _frameTolerance) {
+        var localCanvas = document.createElement('canvas');
+        localCanvas.width = canvas.width;
+        localCanvas.height = canvas.height;
+        var context2d = localCanvas.getContext('2d');
+
+        var sampleColor = {
+            r: 0,
+            g: 0,
+            b: 0
+        };
+        var maxColorDifference = Math.sqrt(
+            Math.pow(255, 2) +
+            Math.pow(255, 2) +
+            Math.pow(255, 2)
+        );
+        var pixTolerance = _pixTolerance && _pixTolerance >= 0 && _pixTolerance <= 1 ? _pixTolerance : 0;
+        var frameTolerance = _frameTolerance && _frameTolerance >= 0 && _frameTolerance <= 1 ? _frameTolerance : 0;
+
+        var matchPixCount, endPixCheck, maxPixCount;
+
+        var image = new Image();
+        image.src = frame.image;
+        context2d.drawImage(image, 0, 0, canvas.width, canvas.height);
+        var imageData = context2d.getImageData(0, 0, canvas.width, canvas.height);
+        matchPixCount = 0;
+        endPixCheck = imageData.data.length;
+        maxPixCount = imageData.data.length / 4;
+
+        for (var pix = 0; pix < endPixCheck; pix += 4) {
+            var currentColor = {
+                r: imageData.data[pix],
+                g: imageData.data[pix + 1],
+                b: imageData.data[pix + 2]
+            };
+            var colorDifference = Math.sqrt(
+                Math.pow(currentColor.r - sampleColor.r, 2) +
+                Math.pow(currentColor.g - sampleColor.g, 2) +
+                Math.pow(currentColor.b - sampleColor.b, 2)
+            );
+            // difference in color it is difference in color vectors (r1,g1,b1) <=> (r2,g2,b2)
+            if (colorDifference <= maxColorDifference * pixTolerance) {
+                matchPixCount++;
+            }
+        }
+
+        if (maxPixCount - matchPixCount <= maxPixCount * frameTolerance) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function dropBlackFrames(_frames, _framesToCheck, _pixTolerance, _frameTolerance) {
+        var localCanvas = document.createElement('canvas');
+        localCanvas.width = canvas.width;
+        localCanvas.height = canvas.height;
+        var context2d = localCanvas.getContext('2d');
+        var resultFrames = [];
+
+        var checkUntilNotBlack = _framesToCheck === -1;
+        var endCheckFrame = (_framesToCheck && _framesToCheck > 0 && _framesToCheck <= _frames.length) ?
+            _framesToCheck : _frames.length;
+        var sampleColor = {
+            r: 0,
+            g: 0,
+            b: 0
+        };
+        var maxColorDifference = Math.sqrt(
+            Math.pow(255, 2) +
+            Math.pow(255, 2) +
+            Math.pow(255, 2)
+        );
+        var pixTolerance = _pixTolerance && _pixTolerance >= 0 && _pixTolerance <= 1 ? _pixTolerance : 0;
+        var frameTolerance = _frameTolerance && _frameTolerance >= 0 && _frameTolerance <= 1 ? _frameTolerance : 0;
+        var doNotCheckNext = false;
+
+        for (var f = 0; f < endCheckFrame; f++) {
+            var matchPixCount, endPixCheck, maxPixCount;
+
+            if (!doNotCheckNext) {
+                var image = new Image();
+                image.src = _frames[f].image;
+                context2d.drawImage(image, 0, 0, canvas.width, canvas.height);
+                var imageData = context2d.getImageData(0, 0, canvas.width, canvas.height);
+                matchPixCount = 0;
+                endPixCheck = imageData.data.length;
+                maxPixCount = imageData.data.length / 4;
+
+                for (var pix = 0; pix < endPixCheck; pix += 4) {
+                    var currentColor = {
+                        r: imageData.data[pix],
+                        g: imageData.data[pix + 1],
+                        b: imageData.data[pix + 2]
+                    };
+                    var colorDifference = Math.sqrt(
+                        Math.pow(currentColor.r - sampleColor.r, 2) +
+                        Math.pow(currentColor.g - sampleColor.g, 2) +
+                        Math.pow(currentColor.b - sampleColor.b, 2)
+                    );
+                    // difference in color it is difference in color vectors (r1,g1,b1) <=> (r2,g2,b2)
+                    if (colorDifference <= maxColorDifference * pixTolerance) {
+                        matchPixCount++;
+                    }
+                }
+            }
+
+            if (!doNotCheckNext && maxPixCount - matchPixCount <= maxPixCount * frameTolerance) {
+                // console.log('removed black frame : ' + f + ' ; frame duration ' + _frames[f].duration);
+            } else {
+                // console.log('frame is passed : ' + f);
+                if (checkUntilNotBlack) {
+                    doNotCheckNext = true;
+                }
+                resultFrames.push(_frames[f]);
+            }
+        }
+
+        resultFrames = resultFrames.concat(_frames.slice(endCheckFrame));
+
+        if (resultFrames.length <= 0) {
+            // at least one last frame should be available for next manipulation
+            // if total duration of all frames will be < 1000 than ffmpeg doesn't work well...
+            resultFrames.push(_frames[_frames.length - 1]);
+        }
+
+        return resultFrames;
+    }
+
+    var isPaused = false;
+
+    this.pause = function() {
+        isPaused = true;
+    };
+
+    this.resume = function() {
+        isPaused = false;
+    };
+}
+
+if (typeof MediaStreamRecorder !== 'undefined') {
+    MediaStreamRecorder.WhammyRecorderHelper = WhammyRecorderHelper;
+}
+
+// --------------
+// GifRecorder.js
+
+function GifRecorder(mediaStream) {
+    if (typeof GIFEncoder === 'undefined') {
+        throw 'Please link: https://cdn.webrtc-experiment.com/gif-recorder.js';
+    }
+
+    // void start(optional long timeSlice)
+    // timestamp to fire "ondataavailable"
+    this.start = function(timeSlice) {
+        timeSlice = timeSlice || 1000;
+
+        var imageWidth = this.videoWidth || 320;
+        var imageHeight = this.videoHeight || 240;
+
+        canvas.width = video.width = imageWidth;
+        canvas.height = video.height = imageHeight;
+
+        // external library to record as GIF images
+        gifEncoder = new GIFEncoder();
+
+        // void setRepeat(int iter)
+        // Sets the number of times the set of GIF frames should be played.
+        // Default is 1; 0 means play indefinitely.
+        gifEncoder.setRepeat(0);
+
+        // void setFrameRate(Number fps)
+        // Sets frame rate in frames per second.
+        // Equivalent to setDelay(1000/fps).
+        // Using "setDelay" instead of "setFrameRate"
+        gifEncoder.setDelay(this.frameRate || this.speed || 200);
+
+        // void setQuality(int quality)
+        // Sets quality of color quantization (conversion of images to the
+        // maximum 256 colors allowed by the GIF specification).
+        // Lower values (minimum = 1) produce better colors,
+        // but slow processing significantly. 10 is the default,
+        // and produces good color mapping at reasonable speeds.
+        // Values greater than 20 do not yield significant improvements in speed.
+        gifEncoder.setQuality(this.quality || 1);
+
+        // Boolean start()
+        // This writes the GIF Header and returns false if it fails.
+        gifEncoder.start();
+
+        startTime = Date.now();
+
+        function drawVideoFrame(time) {
+            if (isPaused) {
+                setTimeout(drawVideoFrame, 500, time);
+                return;
+            }
+
+            lastAnimationFrame = requestAnimationFrame(drawVideoFrame);
+
+            if (typeof lastFrameTime === undefined) {
+                lastFrameTime = time;
+            }
+
+            // ~10 fps
+            if (time - lastFrameTime < 90) {
+                return;
+            }
+
+            if (video.paused) {
+                video.play(); // Android
+            }
+
+            context.drawImage(video, 0, 0, imageWidth, imageHeight);
+
+            gifEncoder.addFrame(context);
+
+            // console.log('Recording...' + Math.round((Date.now() - startTime) / 1000) + 's');
+            // console.log("fps: ", 1000 / (time - lastFrameTime));
+
+            lastFrameTime = time;
+        }
+
+        lastAnimationFrame = requestAnimationFrame(drawVideoFrame);
+
+        timeout = setTimeout(doneRecording, timeSlice);
+    };
+
+    function doneRecording() {
+        endTime = Date.now();
+
+        var gifBlob = new Blob([new Uint8Array(gifEncoder.stream().bin)], {
+            type: 'image/gif'
+        });
+        self.ondataavailable(gifBlob);
+
+        // todo: find a way to clear old recorded blobs
+        gifEncoder.stream().bin = [];
+    }
+
+    this.stop = function() {
+        if (lastAnimationFrame) {
+            cancelAnimationFrame(lastAnimationFrame);
+            clearTimeout(timeout);
+            doneRecording();
+        }
+    };
+
+    var isPaused = false;
+
+    this.pause = function() {
+        isPaused = true;
+    };
+
+    this.resume = function() {
+        isPaused = false;
+    };
+
+    this.ondataavailable = function() {};
+    this.onstop = function() {};
+
+    // Reference to itself
+    var self = this;
+
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+
+    var video = document.createElement('video');
+    video.muted = true;
+    video.autoplay = true;
+    video.src = URL.createObjectURL(mediaStream);
+    video.play();
+
+    var lastAnimationFrame = null;
+    var startTime, endTime, lastFrameTime;
+
+    var gifEncoder;
+    var timeout;
+}
+
+if (typeof MediaStreamRecorder !== 'undefined') {
+    MediaStreamRecorder.GifRecorder = GifRecorder;
+}
+
+// https://github.com/antimatter15/whammy/blob/master/LICENSE
+// _________
+// Whammy.js
+
+// todo: Firefox now supports webp for webm containers!
+// their MediaRecorder implementation works well!
+// should we provide an option to record via Whammy.js or MediaRecorder API is a better solution?
+
+/**
+ * Whammy is a standalone class used by {@link RecordRTC} to bring video recording in Chrome. It is written by {@link https://github.com/antimatter15|antimatter15}
+ * @summary A real time javascript webm encoder based on a canvas hack.
+ * @typedef Whammy
+ * @class
+ * @example
+ * var recorder = new Whammy().Video(15);
+ * recorder.add(context || canvas || dataURL);
+ * var output = recorder.compile();
+ */
+
+var Whammy = (function() {
+    // a more abstract-ish API
+
+    function WhammyVideo(duration, quality) {
+        this.frames = [];
+        if (!duration) {
+            duration = 1;
+        }
+        this.duration = 1000 / duration;
+        this.quality = quality || 0.8;
+    }
+
+    /**
+     * Pass Canvas or Context or image/webp(string) to {@link Whammy} encoder.
+     * @method
+     * @memberof Whammy
+     * @example
+     * recorder = new Whammy().Video(0.8, 100);
+     * recorder.add(canvas || context || 'image/webp');
+     * @param {string} frame - Canvas || Context || image/webp
+     * @param {number} duration - Stick a duration (in milliseconds)
+     */
+    WhammyVideo.prototype.add = function(frame, duration) {
+        if ('canvas' in frame) { //CanvasRenderingContext2D
+            frame = frame.canvas;
+        }
+
+        if ('toDataURL' in frame) {
+            frame = frame.toDataURL('image/webp', this.quality);
+        }
+
+        if (!(/^data:image\/webp;base64,/ig).test(frame)) {
+            throw 'Input must be formatted properly as a base64 encoded DataURI of type image/webp';
+        }
+        this.frames.push({
+            image: frame,
+            duration: duration || this.duration
+        });
+    };
+
+    function processInWebWorker(_function) {
+        var blob = URL.createObjectURL(new Blob([_function.toString(),
+            'this.onmessage =  function (e) {' + _function.name + '(e.data);}'
+        ], {
+            type: 'application/javascript'
+        }));
+
+        var worker = new Worker(blob);
+        URL.revokeObjectURL(blob);
+        return worker;
+    }
+
+    function whammyInWebWorker(frames) {
+        function ArrayToWebM(frames) {
+            var info = checkFrames(frames);
+            if (!info) {
+                return [];
+            }
+
+            var clusterMaxDuration = 30000;
+
+            var EBML = [{
+                'id': 0x1a45dfa3, // EBML
+                'data': [{
+                    'data': 1,
+                    'id': 0x4286 // EBMLVersion
+                }, {
+                    'data': 1,
+                    'id': 0x42f7 // EBMLReadVersion
+                }, {
+                    'data': 4,
+                    'id': 0x42f2 // EBMLMaxIDLength
+                }, {
+                    'data': 8,
+                    'id': 0x42f3 // EBMLMaxSizeLength
+                }, {
+                    'data': 'webm',
+                    'id': 0x4282 // DocType
+                }, {
+                    'data': 2,
+                    'id': 0x4287 // DocTypeVersion
+                }, {
+                    'data': 2,
+                    'id': 0x4285 // DocTypeReadVersion
+                }]
+            }, {
+                'id': 0x18538067, // Segment
+                'data': [{
+                    'id': 0x1549a966, // Info
+                    'data': [{
+                        'data': 1e6, //do things in millisecs (num of nanosecs for duration scale)
+                        'id': 0x2ad7b1 // TimecodeScale
+                    }, {
+                        'data': 'whammy',
+                        'id': 0x4d80 // MuxingApp
+                    }, {
+                        'data': 'whammy',
+                        'id': 0x5741 // WritingApp
+                    }, {
+                        'data': doubleToString(info.duration),
+                        'id': 0x4489 // Duration
+                    }]
+                }, {
+                    'id': 0x1654ae6b, // Tracks
+                    'data': [{
+                        'id': 0xae, // TrackEntry
+                        'data': [{
+                            'data': 1,
+                            'id': 0xd7 // TrackNumber
+                        }, {
+                            'data': 1,
+                            'id': 0x73c5 // TrackUID
+                        }, {
+                            'data': 0,
+                            'id': 0x9c // FlagLacing
+                        }, {
+                            'data': 'und',
+                            'id': 0x22b59c // Language
+                        }, {
+                            'data': 'V_VP8',
+                            'id': 0x86 // CodecID
+                        }, {
+                            'data': 'VP8',
+                            'id': 0x258688 // CodecName
+                        }, {
+                            'data': 1,
+                            'id': 0x83 // TrackType
+                        }, {
+                            'id': 0xe0, // Video
+                            'data': [{
+                                'data': info.width,
+                                'id': 0xb0 // PixelWidth
+                            }, {
+                                'data': info.height,
+                                'id': 0xba // PixelHeight
+                            }]
+                        }]
+                    }]
+                }]
+            }];
+
+            //Generate clusters (max duration)
+            var frameNumber = 0;
+            var clusterTimecode = 0;
+            while (frameNumber < frames.length) {
+
+                var clusterFrames = [];
+                var clusterDuration = 0;
+                do {
+                    clusterFrames.push(frames[frameNumber]);
+                    clusterDuration += frames[frameNumber].duration;
+                    frameNumber++;
+                } while (frameNumber < frames.length && clusterDuration < clusterMaxDuration);
+
+                var clusterCounter = 0;
+                var cluster = {
+                    'id': 0x1f43b675, // Cluster
+                    'data': getClusterData(clusterTimecode, clusterCounter, clusterFrames)
+                }; //Add cluster to segment
+                EBML[1].data.push(cluster);
+                clusterTimecode += clusterDuration;
+            }
+
+            return generateEBML(EBML);
+        }
+
+        function getClusterData(clusterTimecode, clusterCounter, clusterFrames) {
+            return [{
+                'data': clusterTimecode,
+                'id': 0xe7 // Timecode
+            }].concat(clusterFrames.map(function(webp) {
+                var block = makeSimpleBlock({
+                    discardable: 0,
+                    frame: webp.data.slice(4),
+                    invisible: 0,
+                    keyframe: 1,
+                    lacing: 0,
+                    trackNum: 1,
+                    timecode: Math.round(clusterCounter)
+                });
+                clusterCounter += webp.duration;
+                return {
+                    data: block,
+                    id: 0xa3
+                };
+            }));
+        }
+
+        // sums the lengths of all the frames and gets the duration
+
+        function checkFrames(frames) {
+            if (!frames[0]) {
+                postMessage({
+                    error: 'Something went wrong. Maybe WebP format is not supported in the current browser.'
+                });
+                return;
+            }
+
+            var width = frames[0].width,
+                height = frames[0].height,
+                duration = frames[0].duration;
+
+            for (var i = 1; i < frames.length; i++) {
+                duration += frames[i].duration;
+            }
+            return {
+                duration: duration,
+                width: width,
+                height: height
+            };
+        }
+
+        function numToBuffer(num) {
+            var parts = [];
+            while (num > 0) {
+                parts.push(num & 0xff);
+                num = num >> 8;
+            }
+            return new Uint8Array(parts.reverse());
+        }
+
+        function strToBuffer(str) {
+            return new Uint8Array(str.split('').map(function(e) {
+                return e.charCodeAt(0);
+            }));
+        }
+
+        function bitsToBuffer(bits) {
+            var data = [];
+            var pad = (bits.length % 8) ? (new Array(1 + 8 - (bits.length % 8))).join('0') : '';
+            bits = pad + bits;
+            for (var i = 0; i < bits.length; i += 8) {
+                data.push(parseInt(bits.substr(i, 8), 2));
+            }
+            return new Uint8Array(data);
+        }
+
+        function generateEBML(json) {
+            var ebml = [];
+            for (var i = 0; i < json.length; i++) {
+                var data = json[i].data;
+
+                if (typeof data === 'object') {
+                    data = generateEBML(data);
+                }
+
+                if (typeof data === 'number') {
+                    data = bitsToBuffer(data.toString(2));
+                }
+
+                if (typeof data === 'string') {
+                    data = strToBuffer(data);
+                }
+
+                var len = data.size || data.byteLength || data.length;
+                var zeroes = Math.ceil(Math.ceil(Math.log(len) / Math.log(2)) / 8);
+                var sizeToString = len.toString(2);
+                var padded = (new Array((zeroes * 7 + 7 + 1) - sizeToString.length)).join('0') + sizeToString;
+                var size = (new Array(zeroes)).join('0') + '1' + padded;
+
+                ebml.push(numToBuffer(json[i].id));
+                ebml.push(bitsToBuffer(size));
+                ebml.push(data);
+            }
+
+            return new Blob(ebml, {
+                type: 'video/webm'
+            });
+        }
+
+        function toBinStrOld(bits) {
+            var data = '';
+            var pad = (bits.length % 8) ? (new Array(1 + 8 - (bits.length % 8))).join('0') : '';
+            bits = pad + bits;
+            for (var i = 0; i < bits.length; i += 8) {
+                data += String.fromCharCode(parseInt(bits.substr(i, 8), 2));
+            }
+            return data;
+        }
+
+        function makeSimpleBlock(data) {
+            var flags = 0;
+
+            if (data.keyframe) {
+                flags |= 128;
+            }
+
+            if (data.invisible) {
+                flags |= 8;
+            }
+
+            if (data.lacing) {
+                flags |= (data.lacing << 1);
+            }
+
+            if (data.discardable) {
+                flags |= 1;
+            }
+
+            if (data.trackNum > 127) {
+                throw 'TrackNumber > 127 not supported';
+            }
+
+            var out = [data.trackNum | 0x80, data.timecode >> 8, data.timecode & 0xff, flags].map(function(e) {
+                return String.fromCharCode(e);
+            }).join('') + data.frame;
+
+            return out;
+        }
+
+        function parseWebP(riff) {
+            var VP8 = riff.RIFF[0].WEBP[0];
+
+            var frameStart = VP8.indexOf('\x9d\x01\x2a'); // A VP8 keyframe starts with the 0x9d012a header
+            for (var i = 0, c = []; i < 4; i++) {
+                c[i] = VP8.charCodeAt(frameStart + 3 + i);
+            }
+
+            var width, height, tmp;
+
+            //the code below is literally copied verbatim from the bitstream spec
+            tmp = (c[1] << 8) | c[0];
+            width = tmp & 0x3FFF;
+            tmp = (c[3] << 8) | c[2];
+            height = tmp & 0x3FFF;
+            return {
+                width: width,
+                height: height,
+                data: VP8,
+                riff: riff
+            };
+        }
+
+        function getStrLength(string, offset) {
+            return parseInt(string.substr(offset + 4, 4).split('').map(function(i) {
+                var unpadded = i.charCodeAt(0).toString(2);
+                return (new Array(8 - unpadded.length + 1)).join('0') + unpadded;
+            }).join(''), 2);
+        }
+
+        function parseRIFF(string) {
+            var offset = 0;
+            var chunks = {};
+
+            while (offset < string.length) {
+                var id = string.substr(offset, 4);
+                var len = getStrLength(string, offset);
+                var data = string.substr(offset + 4 + 4, len);
+                offset += 4 + 4 + len;
+                chunks[id] = chunks[id] || [];
+
+                if (id === 'RIFF' || id === 'LIST') {
+                    chunks[id].push(parseRIFF(data));
+                } else {
+                    chunks[id].push(data);
+                }
+            }
+            return chunks;
+        }
+
+        function doubleToString(num) {
+            return [].slice.call(
+                new Uint8Array((new Float64Array([num])).buffer), 0).map(function(e) {
+                return String.fromCharCode(e);
+            }).reverse().join('');
+        }
+
+        var webm = new ArrayToWebM(frames.map(function(frame) {
+            var webp = parseWebP(parseRIFF(atob(frame.image.slice(23))));
+            webp.duration = frame.duration;
+            return webp;
+        }));
+
+        postMessage(webm);
+    }
+
+    /**
+     * Encodes frames in WebM container. It uses WebWorkinvoke to invoke 'ArrayToWebM' method.
+     * @param {function} callback - Callback function, that is used to pass recorded blob back to the callee.
+     * @method
+     * @memberof Whammy
+     * @example
+     * recorder = new Whammy().Video(0.8, 100);
+     * recorder.compile(function(blob) {
+     *    // blob.size - blob.type
+     * });
+     */
+    WhammyVideo.prototype.compile = function(callback) {
+        var webWorker = processInWebWorker(whammyInWebWorker);
+
+        webWorker.onmessage = function(event) {
+            if (event.data.error) {
+                console.error(event.data.error);
+                return;
+            }
+            callback(event.data);
+        };
+
+        webWorker.postMessage(this.frames);
+    };
+
+    return {
+        /**
+         * A more abstract-ish API.
+         * @method
+         * @memberof Whammy
+         * @example
+         * recorder = new Whammy().Video(0.8, 100);
+         * @param {?number} speed - 0.8
+         * @param {?number} quality - 100
+         */
+        Video: WhammyVideo
+    };
+})();
+
+if (typeof MediaStreamRecorder !== 'undefined') {
+    MediaStreamRecorder.Whammy = Whammy;
+}
+
+// Last time updated at Nov 18, 2014, 08:32:23
+
+// Latest file can be found here: https://cdn.webrtc-experiment.com/ConcatenateBlobs.js
+
+// Muaz Khan    - www.MuazKhan.com
+// MIT License  - www.WebRTC-Experiment.com/licence
+// Source Code  - https://github.com/muaz-khan/ConcatenateBlobs
+// Demo         - https://www.WebRTC-Experiment.com/ConcatenateBlobs/
+
+// ___________________
+// ConcatenateBlobs.js
+
+// Simply pass array of blobs.
+// This javascript library will concatenate all blobs in single "Blob" object.
+
+(function() {
+    window.ConcatenateBlobs = function(blobs, type, callback) {
+        var buffers = [];
+
+        var index = 0;
+
+        function readAsArrayBuffer() {
+            if (!blobs[index]) {
+                return concatenateBuffers();
+            }
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                buffers.push(event.target.result);
+                index++;
+                readAsArrayBuffer();
+            };
+            reader.readAsArrayBuffer(blobs[index]);
+        }
+
+        readAsArrayBuffer();
+
+        function concatenateBuffers() {
+            var byteLength = 0;
+            buffers.forEach(function(buffer) {
+                byteLength += buffer.byteLength;
+            });
+
+            var tmp = new Uint16Array(byteLength);
+            var lastOffset = 0;
+            buffers.forEach(function(buffer) {
+                // BYTES_PER_ELEMENT == 2 for Uint16Array
+                var reusableByteLength = buffer.byteLength;
+                if (reusableByteLength % 2 != 0) {
+                    buffer = buffer.slice(0, reusableByteLength - 1)
+                }
+                tmp.set(new Uint16Array(buffer), lastOffset);
+                lastOffset += reusableByteLength;
+            });
+
+            var blob = new Blob([tmp.buffer], {
+                type: type
+            });
+
+            callback(blob);
+        }
+    };
+})();
+
+// https://github.com/streamproc/MediaStreamRecorder/issues/42
+if (true /* && !!module.exports*/ ) {
+    module.exports = MediaStreamRecorder;
+}
+
+if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function() {
+        return MediaStreamRecorder;
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+}
+
+
+/***/ }),
+/* 408 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/* jshint -W079 */
+var Blob = __webpack_require__(409);
+var Promise = __webpack_require__(410);
+
+//
+// PRIVATE
+//
+
+// From http://stackoverflow.com/questions/14967647/ (continues on next line)
+// encode-decode-image-with-base64-breaks-image (2013-04-21)
+function binaryStringToArrayBuffer(binary) {
+  var length = binary.length;
+  var buf = new ArrayBuffer(length);
+  var arr = new Uint8Array(buf);
+  var i = -1;
+  while (++i < length) {
+    arr[i] = binary.charCodeAt(i);
+  }
+  return buf;
+}
+
+// Can't find original post, but this is close
+// http://stackoverflow.com/questions/6965107/ (continues on next line)
+// converting-between-strings-and-arraybuffers
+function arrayBufferToBinaryString(buffer) {
+  var binary = '';
+  var bytes = new Uint8Array(buffer);
+  var length = bytes.byteLength;
+  var i = -1;
+  while (++i < length) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return binary;
+}
+
+// doesn't download the image more than once, because
+// browsers aren't dumb. uses the cache
+function loadImage(src, crossOrigin) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image();
+    if (crossOrigin) {
+      img.crossOrigin = crossOrigin;
+    }
+    img.onload = function () {
+      resolve(img);
+    };
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+function imgToCanvas(img) {
+  var canvas = document.createElement('canvas');
+
+  canvas.width = img.width;
+  canvas.height = img.height;
+
+  // copy the image contents to the canvas
+  var context = canvas.getContext('2d');
+  context.drawImage(
+    img,
+    0, 0,
+    img.width, img.height,
+    0, 0,
+    img.width, img.height);
+
+  return canvas;
+}
+
+//
+// PUBLIC
+//
+
+/**
+ * Shim for
+ * [new Blob()]{@link https://developer.mozilla.org/en-US/docs/Web/API/Blob.Blob}
+ * to support
+ * [older browsers that use the deprecated <code>BlobBuilder</code> API]{@link http://caniuse.com/blob}.
+ *
+ * @param {Array} parts - content of the <code>Blob</code>
+ * @param {Object} options - usually just <code>{type: myContentType}</code>
+ * @returns {Blob}
+ */
+function createBlob(parts, options) {
+  options = options || {};
+  if (typeof options === 'string') {
+    options = {type: options}; // do you a solid here
+  }
+  return new Blob(parts, options);
+}
+
+/**
+ * Shim for
+ * [URL.createObjectURL()]{@link https://developer.mozilla.org/en-US/docs/Web/API/URL.createObjectURL}
+ * to support browsers that only have the prefixed
+ * <code>webkitURL</code> (e.g. Android <4.4).
+ * @param {Blob} blob
+ * @returns {string} url
+ */
+function createObjectURL(blob) {
+  return (window.URL || window.webkitURL).createObjectURL(blob);
+}
+
+/**
+ * Shim for
+ * [URL.revokeObjectURL()]{@link https://developer.mozilla.org/en-US/docs/Web/API/URL.revokeObjectURL}
+ * to support browsers that only have the prefixed
+ * <code>webkitURL</code> (e.g. Android <4.4).
+ * @param {string} url
+ */
+function revokeObjectURL(url) {
+  return (window.URL || window.webkitURL).revokeObjectURL(url);
+}
+
+/**
+ * Convert a <code>Blob</code> to a binary string. Returns a Promise.
+ *
+ * @param {Blob} blob
+ * @returns {Promise} Promise that resolves with the binary string
+ */
+function blobToBinaryString(blob) {
+  return new Promise(function (resolve, reject) {
+    var reader = new FileReader();
+    var hasBinaryString = typeof reader.readAsBinaryString === 'function';
+    reader.onloadend = function (e) {
+      var result = e.target.result || '';
+      if (hasBinaryString) {
+        return resolve(result);
+      }
+      resolve(arrayBufferToBinaryString(result));
+    };
+    reader.onerror = reject;
+    if (hasBinaryString) {
+      reader.readAsBinaryString(blob);
+    } else {
+      reader.readAsArrayBuffer(blob);
+    }
+  });
+}
+
+/**
+ * Convert a base64-encoded string to a <code>Blob</code>. Returns a Promise.
+ * @param {string} base64
+ * @param {string|undefined} type - the content type (optional)
+ * @returns {Promise} Promise that resolves with the <code>Blob</code>
+ */
+function base64StringToBlob(base64, type) {
+  return Promise.resolve().then(function () {
+    var parts = [binaryStringToArrayBuffer(atob(base64))];
+    return type ? createBlob(parts, {type: type}) : createBlob(parts);
+  });
+}
+
+/**
+ * Convert a binary string to a <code>Blob</code>. Returns a Promise.
+ * @param {string} binary
+ * @param {string|undefined} type - the content type (optional)
+ * @returns {Promise} Promise that resolves with the <code>Blob</code>
+ */
+function binaryStringToBlob(binary, type) {
+  return Promise.resolve().then(function () {
+    return base64StringToBlob(btoa(binary), type);
+  });
+}
+
+/**
+ * Convert a <code>Blob</code> to a binary string. Returns a Promise.
+ * @param {Blob} blob
+ * @returns {Promise} Promise that resolves with the binary string
+ */
+function blobToBase64String(blob) {
+  return blobToBinaryString(blob).then(function (binary) {
+    return btoa(binary);
+  });
+}
+
+/**
+ * Convert a data URL string
+ * (e.g. <code>'data:image/png;base64,iVBORw0KG...'</code>)
+ * to a <code>Blob</code>. Returns a Promise.
+ * @param {string} dataURL
+ * @returns {Promise} Promise that resolves with the <code>Blob</code>
+ */
+function dataURLToBlob(dataURL) {
+  return Promise.resolve().then(function () {
+    var type = dataURL.match(/data:([^;]+)/)[1];
+    var base64 = dataURL.replace(/^[^,]+,/, '');
+
+    var buff = binaryStringToArrayBuffer(atob(base64));
+    return createBlob([buff], {type: type});
+  });
+}
+
+/**
+ * Convert a <code>Blob</code> to a data URL string
+ * (e.g. <code>'data:image/png;base64,iVBORw0KG...'</code>).
+ * Returns a Promise.
+ * @param {Blob} blob
+ * @returns {Promise} Promise that resolves with the data URL string
+ */
+function blobToDataURL(blob) {
+  return blobToBase64String(blob).then(function (base64String) {
+    return 'data:' + blob.type + ';base64,' + base64String;
+  });
+}
+
+/**
+ * Convert an image's <code>src</code> URL to a data URL by loading the image and painting
+ * it to a <code>canvas</code>. Returns a Promise.
+ *
+ * <p/>Note: this will coerce the image to the desired content type, and it
+ * will only paint the first frame of an animated GIF.
+ *
+ * @param {string} src
+ * @param {string|undefined} type - the content type (optional, defaults to 'image/png')
+ * @param {string|undefined} crossOrigin - for CORS-enabled images, set this to
+ *                                         'Anonymous' to avoid "tainted canvas" errors
+ * @param {number|undefined} quality - a number between 0 and 1 indicating image quality
+ *                                     if the requested type is 'image/jpeg' or 'image/webp'
+ * @returns {Promise} Promise that resolves with the data URL string
+ */
+function imgSrcToDataURL(src, type, crossOrigin, quality) {
+  type = type || 'image/png';
+
+  return loadImage(src, crossOrigin).then(function (img) {
+    return imgToCanvas(img);
+  }).then(function (canvas) {
+    return canvas.toDataURL(type, quality);
+  });
+}
+
+/**
+ * Convert a <code>canvas</code> to a <code>Blob</code>. Returns a Promise.
+ * @param {string} canvas
+ * @param {string|undefined} type - the content type (optional, defaults to 'image/png')
+ * @param {number|undefined} quality - a number between 0 and 1 indicating image quality
+ *                                     if the requested type is 'image/jpeg' or 'image/webp'
+ * @returns {Promise} Promise that resolves with the <code>Blob</code>
+ */
+function canvasToBlob(canvas, type, quality) {
+  return Promise.resolve().then(function () {
+    if (typeof canvas.toBlob === 'function') {
+      return new Promise(function (resolve) {
+        canvas.toBlob(resolve, type, quality);
+      });
+    }
+    return dataURLToBlob(canvas.toDataURL(type, quality));
+  });
+}
+
+/**
+ * Convert an image's <code>src</code> URL to a <code>Blob</code> by loading the image and painting
+ * it to a <code>canvas</code>. Returns a Promise.
+ *
+ * <p/>Note: this will coerce the image to the desired content type, and it
+ * will only paint the first frame of an animated GIF.
+ *
+ * @param {string} src
+ * @param {string|undefined} type - the content type (optional, defaults to 'image/png')
+ * @param {string|undefined} crossOrigin - for CORS-enabled images, set this to
+ *                                         'Anonymous' to avoid "tainted canvas" errors
+ * @param {number|undefined} quality - a number between 0 and 1 indicating image quality
+ *                                     if the requested type is 'image/jpeg' or 'image/webp'
+ * @returns {Promise} Promise that resolves with the <code>Blob</code>
+ */
+function imgSrcToBlob(src, type, crossOrigin, quality) {
+  type = type || 'image/png';
+
+  return loadImage(src, crossOrigin).then(function (img) {
+    return imgToCanvas(img);
+  }).then(function (canvas) {
+    return canvasToBlob(canvas, type, quality);
+  });
+}
+
+/**
+ * Convert an <code>ArrayBuffer</code> to a <code>Blob</code>. Returns a Promise.
+ *
+ * @param {ArrayBuffer} buffer
+ * @param {string|undefined} type - the content type (optional)
+ * @returns {Promise} Promise that resolves with the <code>Blob</code>
+ */
+function arrayBufferToBlob(buffer, type) {
+  return Promise.resolve().then(function () {
+    return createBlob([buffer], type);
+  });
+}
+
+/**
+ * Convert a <code>Blob</code> to an <code>ArrayBuffer</code>. Returns a Promise.
+ * @param {Blob} blob
+ * @returns {Promise} Promise that resolves with the <code>ArrayBuffer</code>
+ */
+function blobToArrayBuffer(blob) {
+  return new Promise(function (resolve, reject) {
+    var reader = new FileReader();
+    reader.onloadend = function (e) {
+      var result = e.target.result || new ArrayBuffer(0);
+      resolve(result);
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(blob);
+  });
+}
+
+module.exports = {
+  createBlob         : createBlob,
+  createObjectURL    : createObjectURL,
+  revokeObjectURL    : revokeObjectURL,
+  imgSrcToBlob       : imgSrcToBlob,
+  imgSrcToDataURL    : imgSrcToDataURL,
+  canvasToBlob       : canvasToBlob,
+  dataURLToBlob      : dataURLToBlob,
+  blobToDataURL      : blobToDataURL,
+  blobToBase64String : blobToBase64String,
+  base64StringToBlob : base64StringToBlob,
+  binaryStringToBlob : binaryStringToBlob,
+  blobToBinaryString : blobToBinaryString,
+  arrayBufferToBlob  : arrayBufferToBlob,
+  blobToArrayBuffer  : blobToArrayBuffer
+};
+
+
+/***/ }),
+/* 409 */
+/***/ (function(module, exports) {
+
+/**
+ * Create a blob builder even when vendor prefixes exist
+ */
+
+var BlobBuilder = global.BlobBuilder
+  || global.WebKitBlobBuilder
+  || global.MSBlobBuilder
+  || global.MozBlobBuilder;
+
+/**
+ * Check if Blob constructor is supported
+ */
+
+var blobSupported = (function() {
+  try {
+    var a = new Blob(['hi']);
+    return a.size === 2;
+  } catch(e) {
+    return false;
+  }
+})();
+
+/**
+ * Check if Blob constructor supports ArrayBufferViews
+ * Fails in Safari 6, so we need to map to ArrayBuffers there.
+ */
+
+var blobSupportsArrayBufferView = blobSupported && (function() {
+  try {
+    var b = new Blob([new Uint8Array([1,2])]);
+    return b.size === 2;
+  } catch(e) {
+    return false;
+  }
+})();
+
+/**
+ * Check if BlobBuilder is supported
+ */
+
+var blobBuilderSupported = BlobBuilder
+  && BlobBuilder.prototype.append
+  && BlobBuilder.prototype.getBlob;
+
+/**
+ * Helper function that maps ArrayBufferViews to ArrayBuffers
+ * Used by BlobBuilder constructor and old browsers that didn't
+ * support it in the Blob constructor.
+ */
+
+function mapArrayBufferViews(ary) {
+  for (var i = 0; i < ary.length; i++) {
+    var chunk = ary[i];
+    if (chunk.buffer instanceof ArrayBuffer) {
+      var buf = chunk.buffer;
+
+      // if this is a subarray, make a copy so we only
+      // include the subarray region from the underlying buffer
+      if (chunk.byteLength !== buf.byteLength) {
+        var copy = new Uint8Array(chunk.byteLength);
+        copy.set(new Uint8Array(buf, chunk.byteOffset, chunk.byteLength));
+        buf = copy.buffer;
+      }
+
+      ary[i] = buf;
+    }
+  }
+}
+
+function BlobBuilderConstructor(ary, options) {
+  options = options || {};
+
+  var bb = new BlobBuilder();
+  mapArrayBufferViews(ary);
+
+  for (var i = 0; i < ary.length; i++) {
+    bb.append(ary[i]);
+  }
+
+  return (options.type) ? bb.getBlob(options.type) : bb.getBlob();
+};
+
+function BlobConstructor(ary, options) {
+  mapArrayBufferViews(ary);
+  return new Blob(ary, options || {});
+};
+
+module.exports = (function() {
+  if (blobSupported) {
+    return blobSupportsArrayBufferView ? global.Blob : BlobConstructor;
+  } else if (blobBuilderSupported) {
+    return BlobBuilderConstructor;
+  } else {
+    return undefined;
+  }
+})();
+
+
+/***/ }),
+/* 410 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = typeof Promise === 'function' ? Promise : __webpack_require__(411);
+
+
+/***/ }),
+/* 411 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var immediate = __webpack_require__(412);
+
+/* istanbul ignore next */
+function INTERNAL() {}
+
+var handlers = {};
+
+var REJECTED = ['REJECTED'];
+var FULFILLED = ['FULFILLED'];
+var PENDING = ['PENDING'];
+/* istanbul ignore else */
+if (!process.browser) {
+  // in which we actually take advantage of JS scoping
+  var UNHANDLED = ['UNHANDLED'];
+}
+
+module.exports = Promise;
+
+function Promise(resolver) {
+  if (typeof resolver !== 'function') {
+    throw new TypeError('resolver must be a function');
+  }
+  this.state = PENDING;
+  this.queue = [];
+  this.outcome = void 0;
+  /* istanbul ignore else */
+  if (!process.browser) {
+    this.handled = UNHANDLED;
+  }
+  if (resolver !== INTERNAL) {
+    safelyResolveThenable(this, resolver);
+  }
+}
+
+Promise.prototype.finally = function (callback) {
+  if (typeof callback !== 'function') {
+    return this;
+  }
+  var p = this.constructor;
+  return this.then(resolve, reject);
+
+  function resolve(value) {
+    function yes () {
+      return value;
+    }
+    return p.resolve(callback()).then(yes);
+  }
+  function reject(reason) {
+    function no () {
+      throw reason;
+    }
+    return p.resolve(callback()).then(no);
+  }
+};
+Promise.prototype.catch = function (onRejected) {
+  return this.then(null, onRejected);
+};
+Promise.prototype.then = function (onFulfilled, onRejected) {
+  if (typeof onFulfilled !== 'function' && this.state === FULFILLED ||
+    typeof onRejected !== 'function' && this.state === REJECTED) {
+    return this;
+  }
+  var promise = new this.constructor(INTERNAL);
+  /* istanbul ignore else */
+  if (!process.browser) {
+    if (this.handled === UNHANDLED) {
+      this.handled = null;
+    }
+  }
+  if (this.state !== PENDING) {
+    var resolver = this.state === FULFILLED ? onFulfilled : onRejected;
+    unwrap(promise, resolver, this.outcome);
+  } else {
+    this.queue.push(new QueueItem(promise, onFulfilled, onRejected));
+  }
+
+  return promise;
+};
+function QueueItem(promise, onFulfilled, onRejected) {
+  this.promise = promise;
+  if (typeof onFulfilled === 'function') {
+    this.onFulfilled = onFulfilled;
+    this.callFulfilled = this.otherCallFulfilled;
+  }
+  if (typeof onRejected === 'function') {
+    this.onRejected = onRejected;
+    this.callRejected = this.otherCallRejected;
+  }
+}
+QueueItem.prototype.callFulfilled = function (value) {
+  handlers.resolve(this.promise, value);
+};
+QueueItem.prototype.otherCallFulfilled = function (value) {
+  unwrap(this.promise, this.onFulfilled, value);
+};
+QueueItem.prototype.callRejected = function (value) {
+  handlers.reject(this.promise, value);
+};
+QueueItem.prototype.otherCallRejected = function (value) {
+  unwrap(this.promise, this.onRejected, value);
+};
+
+function unwrap(promise, func, value) {
+  immediate(function () {
+    var returnValue;
+    try {
+      returnValue = func(value);
+    } catch (e) {
+      return handlers.reject(promise, e);
+    }
+    if (returnValue === promise) {
+      handlers.reject(promise, new TypeError('Cannot resolve promise with itself'));
+    } else {
+      handlers.resolve(promise, returnValue);
+    }
+  });
+}
+
+handlers.resolve = function (self, value) {
+  var result = tryCatch(getThen, value);
+  if (result.status === 'error') {
+    return handlers.reject(self, result.value);
+  }
+  var thenable = result.value;
+
+  if (thenable) {
+    safelyResolveThenable(self, thenable);
+  } else {
+    self.state = FULFILLED;
+    self.outcome = value;
+    var i = -1;
+    var len = self.queue.length;
+    while (++i < len) {
+      self.queue[i].callFulfilled(value);
+    }
+  }
+  return self;
+};
+handlers.reject = function (self, error) {
+  self.state = REJECTED;
+  self.outcome = error;
+  /* istanbul ignore else */
+  if (!process.browser) {
+    if (self.handled === UNHANDLED) {
+      immediate(function () {
+        if (self.handled === UNHANDLED) {
+          process.emit('unhandledRejection', error, self);
+        }
+      });
+    }
+  }
+  var i = -1;
+  var len = self.queue.length;
+  while (++i < len) {
+    self.queue[i].callRejected(error);
+  }
+  return self;
+};
+
+function getThen(obj) {
+  // Make sure we only access the accessor once as required by the spec
+  var then = obj && obj.then;
+  if (obj && (typeof obj === 'object' || typeof obj === 'function') && typeof then === 'function') {
+    return function appyThen() {
+      then.apply(obj, arguments);
+    };
+  }
+}
+
+function safelyResolveThenable(self, thenable) {
+  // Either fulfill, reject or reject with error
+  var called = false;
+  function onError(value) {
+    if (called) {
+      return;
+    }
+    called = true;
+    handlers.reject(self, value);
+  }
+
+  function onSuccess(value) {
+    if (called) {
+      return;
+    }
+    called = true;
+    handlers.resolve(self, value);
+  }
+
+  function tryToUnwrap() {
+    thenable(onSuccess, onError);
+  }
+
+  var result = tryCatch(tryToUnwrap);
+  if (result.status === 'error') {
+    onError(result.value);
+  }
+}
+
+function tryCatch(func, value) {
+  var out = {};
+  try {
+    out.value = func(value);
+    out.status = 'success';
+  } catch (e) {
+    out.status = 'error';
+    out.value = e;
+  }
+  return out;
+}
+
+Promise.resolve = resolve;
+function resolve(value) {
+  if (value instanceof this) {
+    return value;
+  }
+  return handlers.resolve(new this(INTERNAL), value);
+}
+
+Promise.reject = reject;
+function reject(reason) {
+  var promise = new this(INTERNAL);
+  return handlers.reject(promise, reason);
+}
+
+Promise.all = all;
+function all(iterable) {
+  var self = this;
+  if (Object.prototype.toString.call(iterable) !== '[object Array]') {
+    return this.reject(new TypeError('must be an array'));
+  }
+
+  var len = iterable.length;
+  var called = false;
+  if (!len) {
+    return this.resolve([]);
+  }
+
+  var values = new Array(len);
+  var resolved = 0;
+  var i = -1;
+  var promise = new this(INTERNAL);
+
+  while (++i < len) {
+    allResolver(iterable[i], i);
+  }
+  return promise;
+  function allResolver(value, i) {
+    self.resolve(value).then(resolveFromAll, function (error) {
+      if (!called) {
+        called = true;
+        handlers.reject(promise, error);
+      }
+    });
+    function resolveFromAll(outValue) {
+      values[i] = outValue;
+      if (++resolved === len && !called) {
+        called = true;
+        handlers.resolve(promise, values);
+      }
+    }
+  }
+}
+
+Promise.race = race;
+function race(iterable) {
+  var self = this;
+  if (Object.prototype.toString.call(iterable) !== '[object Array]') {
+    return this.reject(new TypeError('must be an array'));
+  }
+
+  var len = iterable.length;
+  var called = false;
+  if (!len) {
+    return this.resolve([]);
+  }
+
+  var i = -1;
+  var promise = new this(INTERNAL);
+
+  while (++i < len) {
+    resolver(iterable[i]);
+  }
+  return promise;
+  function resolver(value) {
+    self.resolve(value).then(function (response) {
+      if (!called) {
+        called = true;
+        handlers.resolve(promise, response);
+      }
+    }, function (error) {
+      if (!called) {
+        called = true;
+        handlers.reject(promise, error);
+      }
+    });
+  }
+}
+
+
+/***/ }),
+/* 412 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var Mutation = global.MutationObserver || global.WebKitMutationObserver;
+
+var scheduleDrain;
+
+if (process.browser) {
+  if (Mutation) {
+    var called = 0;
+    var observer = new Mutation(nextTick);
+    var element = global.document.createTextNode('');
+    observer.observe(element, {
+      characterData: true
+    });
+    scheduleDrain = function () {
+      element.data = (called = ++called % 2);
+    };
+  } else if (!global.setImmediate && typeof global.MessageChannel !== 'undefined') {
+    var channel = new global.MessageChannel();
+    channel.port1.onmessage = nextTick;
+    scheduleDrain = function () {
+      channel.port2.postMessage(0);
+    };
+  } else if ('document' in global && 'onreadystatechange' in global.document.createElement('script')) {
+    scheduleDrain = function () {
+
+      // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+      // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+      var scriptEl = global.document.createElement('script');
+      scriptEl.onreadystatechange = function () {
+        nextTick();
+
+        scriptEl.onreadystatechange = null;
+        scriptEl.parentNode.removeChild(scriptEl);
+        scriptEl = null;
+      };
+      global.document.documentElement.appendChild(scriptEl);
+    };
+  } else {
+    scheduleDrain = function () {
+      setTimeout(nextTick, 0);
+    };
+  }
+} else {
+  scheduleDrain = function () {
+    process.nextTick(nextTick);
+  };
+}
+
+var draining;
+var queue = [];
+//named nextTick for less confusing stack traces
+function nextTick() {
+  draining = true;
+  var i, oldQueue;
+  var len = queue.length;
+  while (len) {
+    oldQueue = queue;
+    queue = [];
+    i = -1;
+    while (++i < len) {
+      oldQueue[i]();
+    }
+    len = queue.length;
+  }
+  draining = false;
+}
+
+module.exports = immediate;
+function immediate(task) {
+  if (queue.push(task) === 1 && !draining) {
+    scheduleDrain();
+  }
+}
+
 
 /***/ })
 /******/ ]);
