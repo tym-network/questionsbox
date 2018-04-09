@@ -157,7 +157,7 @@ export default class App extends React.Component {
         if (index >= 0) {
             if (index + 1 >= this.steps.length) {
                 // Back to locale picker
-                index = 2;
+                index = this.steps.indexOf('locale');
             } else {
                 index++;
             }
