@@ -58,7 +58,7 @@ export default function withRecorder(WrappedComponent) {
                     }
                 };
 
-                const timeInterval = 20000;
+                const timeInterval = 600000;
                 // get blob after specific time interval
                 this.multiStreamRecorder.start(timeInterval);
             };
