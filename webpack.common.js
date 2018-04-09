@@ -1,5 +1,6 @@
 const path = require('path');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CleanObsoleteChunks = require('webpack-clean-obsolete-chunks');
 
 const extractSass = new ExtractTextPlugin({
     filename: "css/[name].css"
@@ -86,7 +87,8 @@ module.exports = {
         ]
     },
     plugins: [
-        extractSass
+        extractSass,
+        new CleanObsoleteChunks()
     ],
     resolve: {
         symlinks: true

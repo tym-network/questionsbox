@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "main": "web/html/app.html",
   "scripts": {
-    "build": "webpack",
-    "watch": "webpack --watch"
+    "build": "webpack --config webpack.dev.js",
+    "build:prod": "webpack --config webpack.prod.js",
+    "watch": "webpack --watch --config webpack.dev.js"
   },
   "window": {
     "title": "Questions Box",
@@ -37,10 +38,14 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.6",
     "node-sass": "^4.7.2",
+    "nw-builder": "^3.5.1",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "sass-loader": "^6.0.6",
-    "webpack": "^3.10.0"
+    "uglifyjs-webpack-plugin": "^1.2.4",
+    "webpack": "^3.10.0",
+    "webpack-clean-obsolete-chunks": "^0.4.0",
+    "webpack-merge": "^4.1.2"
   }
 }
