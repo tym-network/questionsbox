@@ -1,7 +1,7 @@
 {
   "name": "questions-box",
   "version": "0.0.1",
-  "main": "web/html/app.html",
+  "main": "web/html/index.html",
   "scripts": {
     "build": "webpack --config webpack.dev.js",
     "build:prod": "webpack --config webpack.prod.js",
@@ -28,6 +28,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^0.28.9",
     "eslint": "^4.15.0",
     "eslint-config-airbnb": "^16.1.0",
@@ -37,6 +38,7 @@
     "eslint-plugin-react": "^7.5.1",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.6",
+    "html-webpack-plugin": "^3.2.0",
     "node-sass": "^4.7.2",
     "nw-builder": "^3.5.1",
     "prop-types": "^15.6.0",

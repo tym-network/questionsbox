@@ -1,6 +1,10 @@
+const webpack = require('webpack');
 const NwBuilder = require('nw-builder');
+
+const webpackConfiguration = require('./../webpack.prod.js');
+
 const nw = new NwBuilder({
-    files: './**/**', // use the glob format
+    files: ['./web/**/**', './package.json', './questions.json'], // use the glob format
     platforms: ['osx64', 'win', 'linux'],
     flavor: 'normal',
     appName: 'QuestionsBox',
@@ -11,9 +15,26 @@ const nw = new NwBuilder({
 
 nw.on('log', console.log);
 
-nw.build().then(function () {
-    console.log('Build complete');
-}).catch(function (error) {
-    console.log('Error while building');
-    console.error(error);
+
+const compiler = webpack(webpackConfiguration);
+
+// Build the source code
+compiler.run((err, stats) => {
+    if (err || stats.hasErrors()) {
+        console.log('Error while building source code (Webpack)');
+        console.error(err, stats);
+    } else {
+        // Start building the code into a NW app
+        console.log('Source code build (Webpack)!');
+        buildNW();
+    }
 });
+
+function buildNW() {
+    nw.build().then(function () {
+        console.log('Build complete');
+    }).catch(function (error) {
+        console.log('Error while building');
+        console.error(error);
+    });
+}

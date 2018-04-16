@@ -1,6 +1,7 @@
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanObsoleteChunks = require('webpack-clean-obsolete-chunks');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const extractSass = new ExtractTextPlugin({
     filename: "css/[name].css"
@@ -87,6 +88,11 @@ module.exports = {
         ]
     },
     plugins: [
+        new HtmlWebpackPlugin({
+            title: 'QuestionsBox',
+            filename: 'html/index.html',
+            template: 'src/index.html'
+        }),
         extractSass,
         new CleanObsoleteChunks()
     ],

@@ -6,6 +6,10 @@ credits.html
 minidump_stackwalk
 payload
 
+# build
+build/
+cache/
+
 # Data (config file)
 .data/
 
