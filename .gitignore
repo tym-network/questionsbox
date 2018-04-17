@@ -1,14 +1,5 @@
-# nwjs
-nwjc
-nwjs.app
-chromedriver
-credits.html
-minidump_stackwalk
-payload
-
-# build
-build/
-cache/
+# Web (should be build by Webpack)
+web
 
 # Data (config file)
 .data/
