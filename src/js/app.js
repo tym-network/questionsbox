@@ -43,7 +43,7 @@ i18next.init(
         whitelist: window.locales,
         ns: 'default',
         defaultNS: 'default',
-        resources: resources,
+        resources: resources
     }, function(err) {
         if (err) {
             window.logger.err('Unable to fetch translations', err);

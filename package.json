@@ -1,17 +1,16 @@
 {
   "name": "questions-box",
   "version": "0.0.1",
-  "main": "web/html/index.html",
+  "main": "web/js/main.js",
   "scripts": {
-    "build": "webpack --config webpack.dev.js",
-    "build:prod": "webpack --config webpack.prod.js",
-    "watch": "webpack --watch --config webpack.dev.js"
-  },
-  "window": {
-    "title": "Questions Box",
-    "toolbar": true,
-    "frame": true,
-    "fullscreen": false
+    "start": "electron .",
+    "build": "concurrently \"npm run build-main\" \"npm run build-renderer:dev\"",
+    "build-main": "webpack --config webpack.main.js",
+    "build-renderer:dev": "webpack --config webpack.dev.js",
+    "build-renderer:prod": "webpack --config webpack.prod.js",
+    "watch": "concurrently \"npm run watch-main\" \"npm run watch-renderer\"",
+    "watch-main": "webpack --watch --config webpack.main.js",
+    "watch-renderer": "webpack --watch --config webpack.dev.js"
   },
   "dependencies": {
     "blob-util": "^1.3.0",
@@ -29,7 +28,9 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "clean-webpack-plugin": "^0.1.19",
+    "concurrently": "^3.5.1",
     "css-loader": "^0.28.9",
+    "electron": "^1.8.4",
     "eslint": "^4.15.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-loader": "^1.9.0",
@@ -40,7 +41,6 @@
     "file-loader": "^1.1.6",
     "html-webpack-plugin": "^3.2.0",
     "node-sass": "^4.7.2",
-    "nw-builder": "^3.5.1",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
