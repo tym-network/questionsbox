@@ -9,3 +9,6 @@ error.json
 
 # Dependencies
 node_modules/
+
+# Build
+build/

@@ -1,6 +1,8 @@
 {
   "name": "questions-box",
+  "description": "Create a set of questions and record your friends answering them",
   "version": "0.0.1",
+  "author": "Théotime Loiseau <contac@theotimeloiseau.com>",
   "main": "web/js/main.js",
   "scripts": {
     "start": "electron .",
@@ -31,6 +33,7 @@
     "concurrently": "^3.5.1",
     "css-loader": "^0.28.9",
     "electron": "^1.8.4",
+    "electron-builder": "^20.8.1",
     "eslint": "^4.15.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-loader": "^1.9.0",
