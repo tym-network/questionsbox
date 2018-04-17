@@ -1,6 +1,6 @@
 const fs = require('fs');
 import React from 'react';
-import MediaStreamRecorder from 'msr';
+import RecordRTC from 'recordrtc';
 import blobUtil from 'blob-util';
 
 import { getStream } from '../../utils/WebRTCUtils';
@@ -36,13 +36,27 @@ export default function withRecorder(WrappedComponent) {
 
             const onMediaSuccess = stream => {
                 this.setState({ stream });
+                const options = {
+                    mimeType: 'video/webm;codecs=vp9',
+                    type: 'video'
+                };
+                this.recordRTC = RecordRTC(stream, options);
+                this.recordRTC.startRecording();
+            };
 
-                this.multiStreamRecorder = new MediaStreamRecorder.MultiStreamRecorder(stream);
-                this.multiStreamRecorder.stream = stream;
-                this.multiStreamRecorder.ondataavailable = blobs => {
+            getStream(mediaConstraints)
+                .then(onMediaSuccess)
+                .catch(onMediaError);
+        }
+
+        stopRecording() {
+            if (this.recordRTC) {
+                this.recordRTC.stopRecording(() => {
+                    const blobs = this.recordRTC.getBlob();
                     const videoName = + new Date();
+
                     try {
-                        blobUtil.blobToBase64String(blobs.video).then(base64String => {
+                        blobUtil.blobToBase64String(blobs).then(base64String => {
                             fs.writeFile('videos/' + videoName + '.webm', new Buffer(base64String, 'base64'), function(err){
                                 if (err) {
                                     window.logger.error('Failed to save video', videoName, err);
@@ -56,31 +70,16 @@ export default function withRecorder(WrappedComponent) {
                     } catch(e) {
                         window.logger.error(e);
                     }
-                };
+                });
+            }
 
-                const timeInterval = 600000;
-                // get blob after specific time interval
-                this.multiStreamRecorder.start(timeInterval);
-            };
-
-            getStream(mediaConstraints)
-                .then(onMediaSuccess)
-                .catch(onMediaError);
-        }
-
-        stopRecording() {
-            if (this.multiStreamRecorder) {
-                this.multiStreamRecorder.stop();
-                this.multiStreamRecorder = null;
-
-                if (this.state.stream) {
-                    this.state.stream.getTracks().forEach(function(track) {
-                        track.stop();
-                    });
-                    this.setState({
-                        stream: null
-                    });
-                }
+            if (this.state.stream) {
+                this.state.stream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
+                this.setState({
+                    stream: null
+                });
             }
         }
 
