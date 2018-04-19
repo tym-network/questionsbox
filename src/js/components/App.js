@@ -67,17 +67,31 @@ export default class App extends React.Component {
         this.loadConfiguration();
     }
 
-    loadQuestions() {
-        readJsonFile('questions.json').then(data => {
-            // If only one language, use it for the interface
-            const locales = Object.keys(data);
-            if (locales.length === 1) {
-                this.setLocale(locales[0]);
-            }
+    setQuestions(questions) {
+        // If only one language, use it for the interface
+        const locales = Object.keys(questions);
+        if (locales.length === 1) {
+            this.setLocale(locales[0]);
+        }
 
-            this.setState({
-                questions: data
-            });
+        this.setState({
+            questions: questions
+        });
+    }
+
+    loadQuestions() {
+        readJsonFile(electron.remote.getGlobal('paths').questions).then(data => {
+            if (!data) {
+                // No data, use the default questions
+                readJsonFile('./default-questions.json').then(defaultQuestions => {
+                    this.setQuestions(defaultQuestions);
+                    fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(defaultQuestions, null, 4), () => {});
+                }, err => {
+                    window.logger.error('Unable to read default-questions.json', err)
+                });
+            } else {
+                this.setQuestions(data);
+            }
         }, err => {
             window.logger.error('Error while reading questions.json file', err)
         });

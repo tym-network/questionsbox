@@ -2,6 +2,7 @@ const fs = require('fs');
 import React from 'react';
 import RecordRTC from 'recordrtc';
 import blobUtil from 'blob-util';
+import electron from 'electron';
 
 import { getStream } from '../../utils/WebRTCUtils';
 
@@ -38,7 +39,8 @@ export default function withRecorder(WrappedComponent) {
                 this.setState({ stream });
                 const options = {
                     mimeType: 'video/webm;codecs=vp9',
-                    type: 'video'
+                    type: 'video',
+                    disableLogs: true
                 };
                 this.recordRTC = RecordRTC(stream, options);
                 this.recordRTC.startRecording();
@@ -57,7 +59,7 @@ export default function withRecorder(WrappedComponent) {
 
                     try {
                         blobUtil.blobToBase64String(blobs).then(base64String => {
-                            fs.writeFile('videos/' + videoName + '.webm', new Buffer(base64String, 'base64'), function(err){
+                            fs.writeFile(`${electron.remote.getGlobal('paths').videos}/${videoName}.webm`, new Buffer(base64String, 'base64'), function(err){
                                 if (err) {
                                     window.logger.error('Failed to save video', videoName, err);
                                 } else {

@@ -17,6 +17,7 @@ function createWindow() {
     }));
 
     const appPath = `${app.getPath('appData')}/QuestionsBox`;
+    const videoPath = `${appPath}/videos`;
 
     try {
         fs.mkdirSync(appPath);
@@ -25,10 +26,21 @@ function createWindow() {
             console.error(err);
         }
     }
+
+    try {
+        fs.mkdirSync(videoPath);
+    } catch (err) {
+        if (err.code !== 'EEXIST') {
+            console.error(err);
+        }
+    }
+
     global.paths = {
         'appData': appPath,
         'error': `${appPath}/error.json`,
-        'config': `${appPath}/config.json`
+        'config': `${appPath}/config.json`,
+        'videos': videoPath,
+        'questions': `${appPath}/questions.json`,
     };
 
     win.on('closed', () => {
