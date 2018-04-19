@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
 const fs = require('fs');
-import { CSSTransition, TransitionGroup } from 'react-transition-group'
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import electron from 'electron';
 
 import { readJsonFile } from '../utils/Utils';
 import Customize from './pages/Customize';
@@ -84,14 +85,14 @@ export default class App extends React.Component {
 
     loadConfiguration() {
         // Read config file
-        readJsonFile('.data/config.json').then(data => {
+        readJsonFile(electron.remote.getGlobal('paths').config).then(data => {
             const mergedConfiguration = Object.assign({}, this.state.configuration, data);
 
             this.setState({
                 configuration: mergedConfiguration
             });
         }, err => {
-            window.logger.error('Error while reading .data/config.json file', err)
+            window.logger.error('Error while reading config.json file', err)
         });
     }
 
@@ -100,23 +101,16 @@ export default class App extends React.Component {
         this.setState({
             saveConfigurationStatus: 'saving'
         });
-        fs.mkdir('.data', err => {
-            if (err && err.code !== 'EEXIST') {
-                window.logger.error('Failed to create ".data" dir ', err);
+        console.log(this.state.configuration);
+        fs.writeFile(electron.remote.getGlobal('paths').config, JSON.stringify(this.state.configuration, null, 4), (err) => {
+            if (err) {
+                window.logger.error(err);
                 this.setState({
                     saveConfigurationStatus: 'error'
                 });
             }
-            fs.writeFile('.data/config.json', JSON.stringify(this.state.configuration, null, 4), (err) => {
-                if (err) {
-                    window.logger.error(err);
-                    this.setState({
-                        saveConfigurationStatus: 'error'
-                    });
-                }
-                this.setState({
-                    saveConfigurationStatus: 'saved'
-                });
+            this.setState({
+                saveConfigurationStatus: 'saved'
             });
         });
     }

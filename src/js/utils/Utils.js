@@ -38,7 +38,9 @@ export function debounce(callback, wait, immediate) {
 export function readJsonFile(fileName) {
     return new Promise((res, rej) => {
         fs.readFile(fileName, (err, data) => {
-            if (err && err.code !== 'ENOENT') {
+            if (err && err.code === 'ENOENT') {
+                res(null);
+            } else if (err) {
                 rej(err);
             }
 

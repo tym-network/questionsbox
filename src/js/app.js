@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import i18next from 'i18next';
 import winston from 'winston';
+import electron from 'electron';
 
 import withRecorder from './components/containers/WebRTCContainer.js';
 import App from './components/App.js';
@@ -12,11 +13,11 @@ window.logger = new winston.Logger({
     level: 'warn',
     format: 'json',
     transports: [
-        new winston.transports.File({ filename: 'error.json' }),
+        new winston.transports.File({ filename: electron.remote.getGlobal('paths').error }),
         new winston.transports.Console({ format: 'simple', level: 'info' })
     ],
     exceptionHandlers: [
-        new winston.transports.File({ filename: 'error.json' }),
+        new winston.transports.File({ filename: electron.remote.getGlobal('paths').error }),
         new winston.transports.Console({ format: 'simple' })
     ],
     exitOnError: false
