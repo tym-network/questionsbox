@@ -87,8 +87,9 @@ export default class Settings extends React.PureComponent {
         return e => {
             const id = e.target.value;
 
-            this.props.setCurrentInput(mediaType, id);
-            this.props.save();
+            this.props.setCurrentInput(mediaType, id, () => {
+                this.props.save();
+            });
         }
     }
 
