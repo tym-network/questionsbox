@@ -51,6 +51,10 @@ function buildApp() {
             directories: {
                 output: 'build'
             },
+            files: [
+                'default-questions.json',
+                'web/**/*'
+            ],
             mac: {
                 category: 'public.app-category.entertainment',
                 target: 'dmg',

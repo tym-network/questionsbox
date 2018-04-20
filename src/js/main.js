@@ -37,10 +37,11 @@ function createWindow() {
 
     global.paths = {
         'appData': appPath,
+        'appPath': app.getAppPath(),
         'error': `${appPath}/error.json`,
         'config': `${appPath}/config.json`,
         'videos': videoPath,
-        'questions': `${appPath}/questions.json`,
+        'questions': `${appPath}/questions.json`
     };
 
     win.on('closed', () => {

@@ -83,7 +83,7 @@ export default class App extends React.Component {
         readJsonFile(electron.remote.getGlobal('paths').questions).then(data => {
             if (!data) {
                 // No data, use the default questions
-                readJsonFile('./default-questions.json').then(defaultQuestions => {
+                readJsonFile(`${electron.remote.getGlobal('paths').appPath}/default-questions.json`).then(defaultQuestions => {
                     this.setQuestions(defaultQuestions);
                     fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(defaultQuestions, null, 4), () => {});
                 }, err => {
@@ -115,7 +115,7 @@ export default class App extends React.Component {
         this.setState({
             saveConfigurationStatus: 'saving'
         });
-        console.log(this.state.configuration);
+
         fs.writeFile(electron.remote.getGlobal('paths').config, JSON.stringify(this.state.configuration, null, 4), (err) => {
             if (err) {
                 window.logger.error(err);
