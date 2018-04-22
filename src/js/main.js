@@ -26,8 +26,6 @@ let win;
 function createWindow() {
     win = new BrowserWindow({width: 800, height: 600})
 
-    win.webContents.openDevTools();
-
     win.loadURL(url.format({
         pathname: path.join(__dirname, '..', 'html', 'index.html'),
         protocol: 'file:',

@@ -77,6 +77,20 @@ If you want to create a release of your code, a node script is here to do it for
 
 This will build the source code for the main and the renderer, in production mode. It will then rely on [electron-builder](https://github.com/electron-userland/electron-builder) to package the app into an executable that is ready to be released. The release will be located in `./build`
 
+### Build for Linux on MacOS
+
+To build for Linux when you are on MacOS, please install `xz` by doing `brew install xz` (if you have Homebrew on your machine).
+
+If you have an issue with the .tar (`Process failed: tar failed`), you can install GNU-tar and link tar to GNU-tar because of an option not being available on MacOS tar:
+
+`brew install gnu-tar`
+
+Add `export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH" # Use GNUtar rather than tar` to your .bash_profile. Don't forget to `source` your bash_profile or to open a new terminal before running the build script.
+
+### Build for Windows on MacOS
+
+To build for Windows on MacOS, install wine and mono: `brew install mono` and `brew install wine`
+
 ## Features to come
 
 - Being able to change the questions directly inside the application

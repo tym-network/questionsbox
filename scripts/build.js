@@ -56,12 +56,22 @@ const mainCompilePromise = new Promise((res, rej) => {
 });
 
 Promise.all([rendererCompilePromise, mainCompilePromise]).then(() => {
-    buildApp();
+    const buildWindows = buildApp('windows');
+    const buildLinux = buildApp('linux');
+    const buildMac = buildApp('mac');
+
+    Promise.all([
+        buildWindows,
+        buildLinux,
+        buildMac
+    ]).then(() => {
+        console.log('App built for Windows, Linux and Mac');
+    });
 });
 
 
 // Build the app
-function buildApp() {
+function buildApp(platform) {
     builder.build({
         config: {
             appId: 'com.questionsbox',
@@ -85,9 +95,11 @@ function buildApp() {
                 target: [
                     'AppImage',
                     'deb'
-                ]
+                ],
+                category: 'Game'
             }
-        }
+        },
+        platform: platform
     }).then(() => {
         console.log('App built!');
     }).catch((error) => {
