@@ -20,6 +20,7 @@
         "start": "Start",
         "saving": "Saving",
         "saved": "Saved",
-        "saveError": "Error while saving"
+        "saveError": "Error while saving",
+        "videoFolder": "View videos"
     }
 }
