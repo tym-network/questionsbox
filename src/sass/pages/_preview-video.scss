@@ -18,8 +18,10 @@
 
 #preview-video {
     padding: 0;
+    min-height: initial;
 
     video {
+        display: block;
         width: 100%;
     }
 
