@@ -43,8 +43,8 @@ export default class Customize extends React.PureComponent {
 
         this.onTitleChanged = this.onTitleChanged.bind(this);
         this.openFileDialog = this.openFileDialog.bind(this);
-        this.onBuzzSoundChanged = this.onBuzzSoundChanged.bind(this);
-        this.removeBuzzSound = this.removeBuzzSound.bind(this);
+        this.onFilePathChanged = this.onFilePathChanged.bind(this);
+        this.clearFilePath = this.clearFilePath.bind(this);
         this.saveDebounced = debounce(this.props.save, 500);
     }
 
@@ -55,32 +55,34 @@ export default class Customize extends React.PureComponent {
         this.saveDebounced();
     }
 
-    openFileDialog() {
-        const file = remote.dialog.showOpenDialog({
-            filters: [{'name': 'sound', 'extensions': ['ogg', 'wav', 'mp3', 'webm']}],
-            properties: ['openFile']
-        });
+    openFileDialog(property, filters) {
+        return () => {
+            const file = remote.dialog.showOpenDialog({
+                filters: filters,
+                properties: ['openFile']
+            });
 
-        console.log(file);
-        if (file && file[0]) {
-            this.props.setConfigurationProperty('buzzSound', file[0]);
+            if (file && file[0]) {
+                this.props.setConfigurationProperty(property, file[0]);
+                this.saveDebounced();
+            }
+        };
+    }
+
+    onFilePathChanged(property) {
+        return e => {
+            const filePath = e.target.value;
+
+            this.props.setConfigurationProperty(property, filePath);
             this.saveDebounced();
-        }
+        };
     }
 
-    onBuzzSoundChanged(e) {
-        const filePath = e.target.value;
-
-        console.log('onBuzzSoundChanged');
-        console.log(filePath);
-        this.props.setConfigurationProperty('buzzSound', filePath);
-        this.saveDebounced();
-    }
-
-    removeBuzzSound() {
-        console.log('removeBuzzSound');
-        this.props.setConfigurationProperty('buzzSound', null);
-        this.saveDebounced();
+    clearFilePath(property) {
+        return () => {
+            this.props.setConfigurationProperty(property, null);
+            this.saveDebounced();
+        };
     }
 
     render() {
@@ -100,26 +102,64 @@ export default class Customize extends React.PureComponent {
                         />
                     </div>
                     <div>
+                        <label htmlFor="logo">{i18next.t('logoLabel')}</label>
+                        <div className="group">
+                            <input
+                                id="logo-path"
+                                className="file-path"
+                                type="text"
+                                value={this.props.configuration.logo || ''}
+                                placeholder={i18next.t('defaultLogo')}
+                                onChange={this.onFilePathChanged('logo')}
+                            />
+                            <button
+                                id="logo"
+                                type="button"
+                                className="file-picker"
+                                onClick={this.openFileDialog(
+                                    'logo',
+                                    [{'name': 'img', 'extensions': ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'svg', 'webp']}]
+                                )}
+                            >
+                                <i className="icon-folder"></i>{i18next.t('chooseFile')}
+                            </button>
+                            <button
+                                id="logo-remove"
+                                type="button"
+                                className="remove-file"
+                                onClick={this.clearFilePath('logo')}
+                            >
+                                <i className="icon-close-circled"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
                         <label htmlFor="buzz-sound">{i18next.t('buzzSound')}</label>
                         <div className="group">
                             <input
                                 id="buzz-sound-path"
+                                className="file-path"
                                 type="text"
                                 value={this.props.configuration.buzzSound || ''}
                                 placeholder={i18next.t('defaultSound')}
-                                onChange={this.onBuzzSoundChanged}
+                                onChange={this.onFilePathChanged('buzzSound')}
                             />
                             <button
                                 id="buzz-sound"
-                                type="file"
-                                onClick={this.openFileDialog}
+                                type="button"
+                                className="file-picker"
+                                onClick={this.openFileDialog(
+                                    'buzzSound',
+                                    [{'name': 'sound', 'extensions': ['ogg', 'wav', 'mp3', 'webm']}]
+                                )}
                             >
                                 <i className="icon-folder"></i>{i18next.t('chooseFile')}
                             </button>
                             <button
                                 id="buzz-sound-remove"
                                 type="button"
-                                onClick={this.removeBuzzSound}
+                                className="remove-file"
+                                onClick={this.clearFilePath('buzzSound')}
                             >
                                 <i className="icon-close-circled"></i>
                             </button>

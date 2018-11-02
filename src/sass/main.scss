@@ -232,19 +232,6 @@ button,
     transform-origin: 50% 50%;
     transition: opacity 1s ease, transform 1s ease, height 0.2s ease-in-out;
     transform-style: preserve-3d;
-
-    .avatar {
-        position: relative;
-        display: block;
-        margin-bottom: 1.5em;
-
-        img {
-            display: block;
-            max-height: 200px;
-            margin: 0 auto;
-            box-shadow: 0 0 0 1.5em #ffffff;
-        }
-    }
 }
 
 section.front, section.back {

@@ -328,6 +328,7 @@ export default class App extends React.Component {
                             frontBack={this.frontBack}
                             goToNextStep={this.goToNextStep}
                             title={this.state.configuration.title}
+                            logo={this.state.configuration.logo}
                         />
                     </CSSTransition>
                 );

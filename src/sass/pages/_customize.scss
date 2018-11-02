@@ -46,22 +46,17 @@
         }
     }
 
-    #buzz-sound {
+    .file-picker {
         i {
             margin-right: 4px;
         }
     }
 
-    #buzz-sound:focus + #buzz-sound-label {
-        border-color: $blue !important;
-        color: $blue !important;
-    }
-
-    #buzz-sound-path {
+    .file-path {
         text-transform: none;
     }
 
-    #buzz-sound-remove {
+    .remove-file {
         &:hover, &:focus {
             color: $red;
             border-color: $red;

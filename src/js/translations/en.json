@@ -24,6 +24,8 @@
         "videoFolder": "View videos",
         "defaultSound": "Default Sound",
         "buzzSound": "Buzz Sound",
-        "chooseFile": "Choose a file"
+        "chooseFile": "Choose a file",
+        "logoLabel": "Introduction page logo",
+        "defaultLogo": "Default Logo"
     }
 }

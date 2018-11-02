@@ -41,10 +41,6 @@ export default function withRecorder(WrappedComponent) {
             this.stopRecording = this.stopRecording.bind(this);
         }
 
-        componentWillUnmount() {
-            console.log('WillUnmount');
-        }
-
         startRecording(audioInputDeviceId, videoInputDeviceId) {
             const mediaConstraints = {
                 audio: {deviceId: {exact: audioInputDeviceId}},

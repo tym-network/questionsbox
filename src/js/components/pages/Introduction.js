@@ -27,7 +27,8 @@ export default class Introduction extends React.PureComponent {
     static propTypes = {
         frontBack: PropTypes.string.isRequired,
         goToNextStep: PropTypes.func.isRequired,
-        title: PropTypes.string.isRequired
+        title: PropTypes.string.isRequired,
+        logo: PropTypes.string
     };
 
     render() {
@@ -36,7 +37,7 @@ export default class Introduction extends React.PureComponent {
             <section id="introduction" className={classNames}>
                 <div className="introduction-wrapper">
                     <div>
-                        <span className="avatar"><img src={logo} alt="" /></span>
+                        <span className="avatar"><img src={this.props.logo || logo} alt="" /></span>
                         <h1>{this.props.title}</h1>
                     </div>
                 </div>

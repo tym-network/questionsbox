@@ -28,4 +28,17 @@
         flex-grow: 1;
         flex-shrink: 0;
     }
+
+    .avatar {
+        position: relative;
+        display: block;
+        margin-bottom: 10px;
+
+        img {
+            display: block;
+            max-width: 200px;
+            max-height: 200px;
+            margin: 0 auto;
+        }
+    }
 }
