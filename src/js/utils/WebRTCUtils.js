@@ -195,7 +195,7 @@ export function getStream(constraints) {
         // For video, guess the resolution first
         return guessResolution(constraints.video.deviceId.exact, {
             sessionStorage: true,
-            keepStream: true
+            keepStream: false
         }).then(result => {
             if (result.stream) {
                 return result.stream;
