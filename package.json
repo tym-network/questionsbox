@@ -4,6 +4,7 @@
   "version": "0.0.2",
   "author": "Théotime Loiseau <contac@theotimeloiseau.com>",
   "license": "GPL-3.0",
+  "homepage": "https://github.com/tym-network/questionsbox",
   "main": "web/js/main.js",
   "scripts": {
     "start": "electron .",
