@@ -24,7 +24,8 @@ export default class Buzzer extends React.PureComponent {
 
     static propTypes = {
         id: PropTypes.number.isRequired,
-        onEnd: PropTypes.func.isRequired
+        onEnd: PropTypes.func.isRequired,
+        buzzSound: PropTypes.string
     };
 
     constructor(props) {
@@ -49,7 +50,7 @@ export default class Buzzer extends React.PureComponent {
     render() {
         return (
             <audio className="buzzer" ref={ref => this.buzzer = ref}>
-                <source src={buzzSound} type="audio/ogg" />
+                <source src={this.props.buzzSound || buzzSound} />
             </audio>
         );
     }

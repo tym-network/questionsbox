@@ -21,6 +21,9 @@
         "saving": "Sauvegarde en cours",
         "saved": "Sauvegardé",
         "saveError": "Erreur pendant la sauvegarde",
-        "videoFolder": "Voir les vidéos"
+        "videoFolder": "Voir les vidéos",
+        "defaultSound": "Son par défaut",
+        "buzzSound": "Son du buzzer",
+        "chooseFile": "Choisir un fichier"
     }
 }

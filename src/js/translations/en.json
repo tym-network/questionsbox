@@ -21,6 +21,9 @@
         "saving": "Saving",
         "saved": "Saved",
         "saveError": "Error while saving",
-        "videoFolder": "View videos"
+        "videoFolder": "View videos",
+        "defaultSound": "Default Sound",
+        "buzzSound": "Buzz Sound",
+        "chooseFile": "Choose a file"
     }
 }

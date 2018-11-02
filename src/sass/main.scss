@@ -141,6 +141,10 @@ input {
     box-sizing: border-box;
     padding: 8px 20px 8px 8px;
     border: solid 1px $border;
+
+    &:focus {
+        border-color: $borderFocus;
+    }
 }
 
 .select-wrapper {
@@ -178,7 +182,7 @@ button,
     text-decoration: none;
     white-space: nowrap;
 
-    &:hover {
+    &:hover, &:focus {
         border-color: $blue;
         color: $blue;
     }

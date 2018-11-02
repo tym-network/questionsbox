@@ -19,6 +19,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
+import { remote } from 'electron';
 
 import { debounce } from '../../utils/Utils';
 
@@ -32,21 +33,53 @@ export default class Customize extends React.PureComponent {
         save: PropTypes.func.isRequired,
         saveStatus: PropTypes.string,
         back: PropTypes.func.isRequired,
-        setTitle: PropTypes.func.isRequired,
-        title: PropTypes.string
+        setConfigurationProperty: PropTypes.func.isRequired,
+        configuration: PropTypes.object,
+        buzzSound: PropTypes.string
     };
 
     constructor(props) {
         super(props);
 
         this.onTitleChanged = this.onTitleChanged.bind(this);
+        this.openFileDialog = this.openFileDialog.bind(this);
+        this.onBuzzSoundChanged = this.onBuzzSoundChanged.bind(this);
+        this.removeBuzzSound = this.removeBuzzSound.bind(this);
         this.saveDebounced = debounce(this.props.save, 500);
     }
 
     onTitleChanged(e) {
         const title = e.target.value;
 
-        this.props.setTitle(title);
+        this.props.setConfigurationProperty('title', title);
+        this.saveDebounced();
+    }
+
+    openFileDialog() {
+        const file = remote.dialog.showOpenDialog({
+            filters: [{'name': 'sound', 'extensions': ['ogg', 'wav', 'mp3', 'webm']}],
+            properties: ['openFile']
+        });
+
+        console.log(file);
+        if (file && file[0]) {
+            this.props.setConfigurationProperty('buzzSound', file[0]);
+            this.saveDebounced();
+        }
+    }
+
+    onBuzzSoundChanged(e) {
+        const filePath = e.target.value;
+
+        console.log('onBuzzSoundChanged');
+        console.log(filePath);
+        this.props.setConfigurationProperty('buzzSound', filePath);
+        this.saveDebounced();
+    }
+
+    removeBuzzSound() {
+        console.log('removeBuzzSound');
+        this.props.setConfigurationProperty('buzzSound', null);
         this.saveDebounced();
     }
 
@@ -55,15 +88,43 @@ export default class Customize extends React.PureComponent {
         return (
             <section id="customize" className={className}>
                 <BackButton onClick={this.props.back}/>
-                <div>
+                <div className="custom-form">
                     <h1>{i18next.t('customize')}</h1>
-                    <label htmlFor="title">{i18next.t('title')}</label>
-                    <input
-                        id="title"
-                        type="text"
-                        value={this.props.title}
-                        onChange={this.onTitleChanged}
-                    />
+                    <div>
+                        <label htmlFor="title">{i18next.t('title')}</label>
+                        <input
+                            id="title"
+                            type="text"
+                            value={this.props.configuration.title}
+                            onChange={this.onTitleChanged}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="buzz-sound">{i18next.t('buzzSound')}</label>
+                        <div className="group">
+                            <input
+                                id="buzz-sound-path"
+                                type="text"
+                                value={this.props.configuration.buzzSound || ''}
+                                placeholder={i18next.t('defaultSound')}
+                                onChange={this.onBuzzSoundChanged}
+                            />
+                            <button
+                                id="buzz-sound"
+                                type="file"
+                                onClick={this.openFileDialog}
+                            >
+                                <i className="icon-folder"></i>{i18next.t('chooseFile')}
+                            </button>
+                            <button
+                                id="buzz-sound-remove"
+                                type="button"
+                                onClick={this.removeBuzzSound}
+                            >
+                                <i className="icon-close-circled"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <footer className="save-indicator-container">
                     <SaveIndicator saveStatus={this.props.saveStatus} />

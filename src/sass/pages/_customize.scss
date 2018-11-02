@@ -21,4 +21,50 @@
     flex-direction: column;
     justify-content: space-between;
     padding-left: 80px;
+
+    .custom-form {
+        .group {
+            display: flex;
+            flex-direction: row;
+        }
+
+        button {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            line-height: normal;
+            margin: 0 0 0 4px;
+            padding: 0 10px;
+            border-radius: 0;
+            font-size: 12px;
+
+            i {
+                display: flex;
+                font-size: 20px;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    #buzz-sound {
+        i {
+            margin-right: 4px;
+        }
+    }
+
+    #buzz-sound:focus + #buzz-sound-label {
+        border-color: $blue !important;
+        color: $blue !important;
+    }
+
+    #buzz-sound-path {
+        text-transform: none;
+    }
+
+    #buzz-sound-remove {
+        &:hover, &:focus {
+            color: $red;
+            border-color: $red;
+        }
+    }
 }

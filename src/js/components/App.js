@@ -47,7 +47,7 @@ export default class App extends React.Component {
     multiStreamRecorder;
     frontBack = 'front';
 
-    key=1; // Used to refresh menu if locale is updated
+    key = 1; // Used to refresh menu if locale is updated
 
     static propTypes = {
         startRecording: PropTypes.func,
@@ -75,7 +75,7 @@ export default class App extends React.Component {
         this.goToStep = this.goToStep.bind(this);
         this.goToNextStep = this.goToNextStep.bind(this);
         this.setCurrentInput = this.setCurrentInput.bind(this);
-        this.setTitle = this.setTitle.bind(this);
+        this.setConfigurationProperty = this.setConfigurationProperty.bind(this);
         this.setLocale = this.setLocale.bind(this);
         this.startRecording = this.startRecording.bind(this);
     }
@@ -222,9 +222,9 @@ export default class App extends React.Component {
         }
     }
 
-    setTitle(title) {
+    setConfigurationProperty(property, value) {
         const newConfiguration = Object.assign({}, this.state.configuration, {
-            title
+            [property]: value
         });
         this.setState({
             configuration: newConfiguration
@@ -276,8 +276,8 @@ export default class App extends React.Component {
                             save={this.saveConfiguration}
                             saveStatus={this.state.saveConfigurationStatus}
                             frontBack={this.frontBack}
-                            title={this.state.configuration.title}
-                            setTitle={this.setTitle}
+                            configuration={this.state.configuration}
+                            setConfigurationProperty={this.setConfigurationProperty}
                         />
                     </CSSTransition>
                 );
@@ -345,6 +345,7 @@ export default class App extends React.Component {
                             frontBack={this.frontBack}
                             goToNextStep={this.goToNextStep}
                             questions={this.state.questions[this.state.locale]}
+                            configuration={this.state.configuration}
                             stopRecording={this.props.stopRecording}
                         />
                     </CSSTransition>

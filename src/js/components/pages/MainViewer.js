@@ -33,6 +33,9 @@ export default class MainViewer extends React.PureComponent {
         frontBack: PropTypes.string.isRequired,
         goToNextStep: PropTypes.func.isRequired,
         questions: PropTypes.arrayOf(PropTypes.string).isRequired,
+        configuration: PropTypes.shape({
+            buzzSound: PropTypes.string
+        }),
         stopRecording: PropTypes.func.isRequired
     };
 
@@ -182,6 +185,7 @@ export default class MainViewer extends React.PureComponent {
             <Buzzer
                 key={buzzerId}
                 id={buzzerId}
+                buzzSound={this.props.configuration.buzzSound}
                 onEnd={this.onBuzzerEnd}
             />
         ))
