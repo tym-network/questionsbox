@@ -62,4 +62,12 @@
             border-color: $red;
         }
     }
+
+    .customize-block {
+        margin-bottom: 16px;
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
 }

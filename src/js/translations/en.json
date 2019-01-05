@@ -26,6 +26,15 @@
         "buzzSound": "Buzz Sound",
         "chooseFile": "Choose a file",
         "logoLabel": "Introduction page logo",
-        "defaultLogo": "Default Logo"
+        "defaultLogo": "Default Logo",
+        "questionsList": "Questions list",
+        "editQuestions": "Edit questions",
+        "language": "Language",
+        "languages": "Languages",
+        "selectAll": "Select all",
+        "unselectAll": "Unselect all",
+        "questions": "Questions",
+        "addLanguage": "Add a language",
+        "addLanguageAction": "Add language"
     }
 }

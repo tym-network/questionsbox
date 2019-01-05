@@ -41,6 +41,8 @@ $borderFocus: darken($border, 20%);
 // Widths
 $size-sm: 768px;
 
+@import 'libraries/bootstrap.min.css';
+
 @import 'fonts/questions-box';
 
 @import 'widgets/back-button';
@@ -48,6 +50,7 @@ $size-sm: 768px;
 @import 'widgets/sound-meter';
 
 @import 'pages/customize';
+@import 'pages/customize-questions';
 @import 'pages/introduction';
 @import 'pages/locale-picker';
 @import 'pages/main-viewer';
@@ -109,6 +112,7 @@ label {
     display: block;
     margin: 6px 0 2px 0;
     font-size: 0.9em;
+    font-weight: normal;
     color: $border;
     text-align: left;
 }
@@ -141,6 +145,10 @@ input {
     box-sizing: border-box;
     padding: 8px 20px 8px 8px;
     border: solid 1px $border;
+
+    &[type="checkbox"] {
+        width: auto;
+    }
 
     &:focus {
         border-color: $borderFocus;
