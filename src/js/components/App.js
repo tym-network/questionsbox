@@ -79,6 +79,7 @@ export default class App extends React.Component {
         this.setCurrentInput = this.setCurrentInput.bind(this);
         this.setConfigurationProperty = this.setConfigurationProperty.bind(this);
         this.setLocale = this.setLocale.bind(this);
+        this.saveQuestions = this.saveQuestions.bind(this);
         this.startRecording = this.startRecording.bind(this);
     }
 
@@ -118,16 +119,16 @@ export default class App extends React.Component {
     }
 
     saveQuestions(questions) {
-        // TO DO -> Save to file
-        fs.writeFile(electron.remote.getGlobal('paths').config, JSON.stringify(questions, null, 4), (err) => {
-            if (err) {
-                window.logger.error(err);
-                // this.setState({
-                //     saveConfigurationStatus: 'error'
-                // });
-            }
-            this.setState({
-                questions: questions
+        return new Promise((res, rej) => {
+            fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(questions, null, 4), err => {
+                if (err) {
+                    window.logger.error(err);
+                    rej(err);
+                }
+                this.setState({
+                    questions: questions
+                });
+                res();
             });
         });
     }

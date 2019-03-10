@@ -18,7 +18,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-// import i18next from 'i18next';
+import i18next from 'i18next';
 
 import CustomizeQuestionsTextarea from './CustomizeQuestionsTextarea';
 
@@ -27,28 +27,69 @@ export default class CustomizeQuestionsEdit extends React.PureComponent {
     static propTypes = {
         question: PropTypes.object.isRequired,
         languagesSelected: PropTypes.arrayOf(PropTypes.string).isRequired,
-        index: PropTypes.number.isRequired
+        index: PropTypes.number.isRequired,
+        addQuestion: PropTypes.func.isRequired,
+        editQuestion: PropTypes.func.isRequired,
+        removeQuestion: PropTypes.func.isRequired
     };
+
+    constructor(props) {
+        super(props);
+
+        this.addQuestion = this.addQuestion.bind(this);
+        this.editQuestion = this.editQuestion.bind(this);
+        this.removeQuestion = this.removeQuestion.bind(this);
+    }
+
+    addQuestion() {
+        const { index, addQuestion } = this.props;
+        addQuestion(index);
+    }
+
+    editQuestion(locale) {
+        const { editQuestion, index } = this.props;
+
+        return value => {
+            editQuestion(locale, index, value);
+        };
+    }
+
+    removeQuestion() {
+        const { index, removeQuestion } = this.props;
+        removeQuestion(index);
+    }
 
     render() {
         const { question, languagesSelected, index } = this.props;
 
         return (
-            <div className="questions-edit">
-                <span className="question-number">{index}.</span>
-                <div className="questions-edit-textareas">
-                    {languagesSelected.map(locale =>
-                        <CustomizeQuestionsTextarea
-                            key={locale}
-                            locale={locale}
-                            question={question[locale]}
-                        />
-                    )}
+            <React.Fragment>
+                <div className="questions-edit">
+                    <span className="question-number">{index + 1}.</span>
+                    <div className="questions-edit-textareas">
+                        {languagesSelected.map(locale =>
+                            <CustomizeQuestionsTextarea
+                                key={locale}
+                                locale={locale}
+                                question={question[locale]}
+                                editQuestion={this.editQuestion(locale)}
+                            />
+                        )}
+                    </div>
+                    <button
+                        className="questions-edit-remove"
+                        onClick={this.removeQuestion}
+                    >
+                        <i className="icon-trash"></i>
+                    </button>
                 </div>
-                <button className="questions-edit-remove">
-                    <i className="icon-trash"></i>
+                <button
+                    className="btn-pill"
+                    onClick={this.addQuestion}
+                >
+                    {i18next.t('addQuestion')}
                 </button>
-            </div>
+            </React.Fragment>
         );
     }
 

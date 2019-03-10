@@ -21,8 +21,11 @@ import PropTypes from 'prop-types';
 import i18next from 'i18next';
 
 import BackButton from '../widget/BackButton';
+import SaveIndicator from '../widget/SaveIndicator';
 import CustomizeQuestionsLanguages from './customize-questions/CustomizeQuestionsLanguages';
 import CustomizeQuestionsList from './customize-questions/CustomizeQuestionsList';
+
+import { debounce } from '../../utils/Utils';
 
 export default class CustomizeQuestions extends React.PureComponent {
 
@@ -39,12 +42,17 @@ export default class CustomizeQuestions extends React.PureComponent {
         const languagesSelected = Object.keys(this.props.questions);
         this.state = {
             languagesSelected: languagesSelected,
-            questions: this.props.questions
+            questions: this.props.questions,
+            saveStatus: null
         };
 
         this.setLanguagesSelected = this.setLanguagesSelected.bind(this);
         this.addLanguage = this.addLanguage.bind(this);
         this.removeLanguage = this.removeLanguage.bind(this);
+        this.addQuestion = this.addQuestion.bind(this);
+        this.editQuestion = this.editQuestion.bind(this);
+        this.saveQuestions = this.saveQuestions.bind(this);
+        this.saveQuestionsDebounce = debounce(this.saveQuestions, 5000);
         this.removeQuestion = this.removeQuestion.bind(this);
     }
 
@@ -60,6 +68,8 @@ export default class CustomizeQuestions extends React.PureComponent {
         this.setState({
             languagesSelected: [...languagesSelected, language],
             questions: {...questions, [language]: ['']}
+        }, () => {
+            this.saveQuestions();
         });
     }
 
@@ -75,16 +85,72 @@ export default class CustomizeQuestions extends React.PureComponent {
         this.setState({
             languagesSelected: newLanguagesSelected,
             questions: newQuestions
+        }, () => {
+            this.saveQuestions();
         });
     }
 
-    removeQuestion(question) {
-        console.log('removeQuestion', question);
+    addQuestion(questionIndex) {
+        const { questions } = this.state;
+        const newQuestions = JSON.parse(JSON.stringify(questions));
+        Object.keys(newQuestions).forEach(locale => {
+            newQuestions[locale].splice(questionIndex + 1, 0, "");
+        });
+
+        this.setState({
+            questions: newQuestions
+        }, () => {
+            this.saveQuestions();
+        });
+    }
+
+    editQuestion(locale, questionIndex, value) {
+        const { questions } = this.state;
+        const newQuestions = JSON.parse(JSON.stringify(questions));
+        newQuestions[locale][questionIndex] = value;
+
+        this.setState({
+            questions: newQuestions
+        }, () => {
+            this.saveQuestionsDebounce();
+        });
+    }
+
+    removeQuestion(questionIndex) {
+        const { questions } = this.state;
+        const newQuestions = JSON.parse(JSON.stringify(questions));
+        Object.keys(newQuestions).forEach(locale => {
+            newQuestions[locale].splice(questionIndex, 1);
+        });
+
+        this.setState({
+            questions: newQuestions
+        }, () => {
+            this.saveQuestions();
+        });
+    }
+
+    saveQuestions() {
+        const { saveQuestions } = this.props;
+
+        this.setState({
+            saveStatus: 'saving'
+        });
+        saveQuestions(this.state.questions).then(() => {
+            this.setState({
+                saveStatus: 'saved'
+            });
+        }, err => {
+            window.logger.error(err);
+            this.setState({
+                saveStatus: 'error'
+            });
+        });
     }
 
     render() {
         const { back, frontBack } = this.props;
-        const { languagesSelected, questions } = this.state;
+        const { languagesSelected, questions, saveStatus } = this.state;
         const className = `${frontBack}`;
         const languages = Object.keys(this.state.questions);
 
@@ -110,11 +176,16 @@ export default class CustomizeQuestions extends React.PureComponent {
                                 <CustomizeQuestionsList
                                     languagesSelected={languagesSelected}
                                     questions={questions}
+                                    addQuestion={this.addQuestion}
+                                    editQuestion={this.editQuestion}
                                     removeQuestion={this.removeQuestion}
                                 />
                             </div>
                     }
                 </div>
+                <footer className="save-indicator-container">
+                    <SaveIndicator saveStatus={saveStatus} />
+                </footer>
             </section>
         );
     }

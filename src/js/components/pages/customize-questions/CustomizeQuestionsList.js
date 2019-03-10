@@ -26,11 +26,14 @@ export default class CustomizeQuestionsList extends React.PureComponent {
 
     static propTypes = {
         questions: PropTypes.object.isRequired,
-        languagesSelected: PropTypes.arrayOf(PropTypes.string).isRequired
+        languagesSelected: PropTypes.arrayOf(PropTypes.string).isRequired,
+        addQuestion: PropTypes.func.isRequired,
+        editQuestion: PropTypes.func.isRequired,
+        removeQuestion: PropTypes.func.isRequired
     };
 
     render() {
-        const { questions, languagesSelected } = this.props;
+        const { questions, languagesSelected, addQuestion, editQuestion, removeQuestion } = this.props;
         const questionsByIndex = [];
 
         languagesSelected.map(locale => {
@@ -42,14 +45,15 @@ export default class CustomizeQuestionsList extends React.PureComponent {
             });
         });
 
-        console.log(questionsByIndex);
-
         return questionsByIndex.map((question, index) =>
             <CustomizeQuestionsEdit
                 key={index}
                 question={question}
                 languagesSelected={languagesSelected}
-                index={index + 1}
+                index={index}
+                addQuestion={addQuestion}
+                editQuestion={editQuestion}
+                removeQuestion={removeQuestion}
             />
         );
     }

@@ -34,6 +34,7 @@
         border-radius: 17px;
         height: 34px;
         font-size: 14px;
+        text-transform: initial;
 
         &:last-of-type {
             margin-right: 0;
@@ -129,6 +130,9 @@
             .questions-edit-textarea {
                 display: flex;
                 margin-bottom: 6px;
+                &:last-child {
+                    margin-bottom: 0;
+                }
 
                 .questions-edit-textarea-locale {
                     background: white;

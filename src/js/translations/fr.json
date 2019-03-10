@@ -35,6 +35,7 @@
         "unselectAll": "Tout désélectionner",
         "questions": "Questions",
         "addLanguage": "Ajouter une langue",
-        "addLanguageAction": "Ajouter la langue"
+        "addLanguageAction": "Ajouter la langue",
+        "addQuestion": "Ajouter une question"
     }
 }

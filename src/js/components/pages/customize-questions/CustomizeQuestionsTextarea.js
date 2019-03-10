@@ -23,8 +23,21 @@ export default class CustomizeQuestionsTextarea extends React.PureComponent {
 
     static propTypes = {
         question: PropTypes.string.isRequired,
-        locale: PropTypes.string.isRequired
+        locale: PropTypes.string.isRequired,
+        editQuestion: PropTypes.func.isRequired
     };
+
+    constructor(props) {
+        super(props);
+
+        this.onChange = this.onChange.bind(this);
+    }
+
+    onChange(e) {
+        const { editQuestion } = this.props;
+
+        editQuestion(e.target.value);
+    }
 
     render() {
         const { question, locale } = this.props;
@@ -32,7 +45,10 @@ export default class CustomizeQuestionsTextarea extends React.PureComponent {
         return (
             <div className="questions-edit-textarea">
                 <div className="questions-edit-textarea-locale">{locale}</div>
-                <textarea value={question}></textarea>
+                <textarea
+                    value={question}
+                    onChange={this.onChange}
+                ></textarea>
             </div>
         );
     }
