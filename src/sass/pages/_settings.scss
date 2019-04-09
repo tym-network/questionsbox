@@ -17,15 +17,19 @@
 //
 
 #settings {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-left: 80px;
+
+    .content-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-left: 80px;
+    }
 
     .settings-wrapper {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        flex-shrink: 0;
 
         @media (max-width: $size-sm) {
             flex-direction: column;
@@ -42,6 +46,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            flex-shrink: 0;
         }
     }
 

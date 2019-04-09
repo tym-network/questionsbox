@@ -64,10 +64,21 @@ export default class CustomizeQuestions extends React.PureComponent {
 
     addLanguage(language) {
         const { questions, languagesSelected } = this.state;
+        let nbQuestions = 0;
+        let arrayEmptyQuestions = [];
+
+        // Get the number of questions
+        Object.keys(questions).forEach(locale => {
+            nbQuestions = Math.max(nbQuestions, questions[locale].length);
+        });
+
+        for (let i = 0; i < nbQuestions; i++) {
+            arrayEmptyQuestions.push("");
+        }
 
         this.setState({
             languagesSelected: [...languagesSelected, language],
-            questions: {...questions, [language]: ['']}
+            questions: {...questions, [language]: arrayEmptyQuestions}
         }, () => {
             this.saveQuestions();
         });
@@ -157,35 +168,37 @@ export default class CustomizeQuestions extends React.PureComponent {
         return (
             <section id="customize-questions" className={className}>
                 <BackButton onClick={back}/>
-                <div className="custom-form">
-                    <h1>{i18next.t('questionsList')}</h1>
-                    <div className="customize-block">
-                        <label>{i18next.t('languages')}</label>
-                        <CustomizeQuestionsLanguages
-                            languages={languages}
-                            languagesSelected={languagesSelected}
-                            setLanguagesSelected={this.setLanguagesSelected}
-                            addLanguage={this.addLanguage}
-                            removeLanguage={this.removeLanguage}
-                        />
+                <div className="content-wrap">
+                    <div className="custom-form">
+                        <h1>{i18next.t('questionsList')}</h1>
+                        <div className="customize-block">
+                            <label>{i18next.t('languages')}</label>
+                            <CustomizeQuestionsLanguages
+                                languages={languages}
+                                languagesSelected={languagesSelected}
+                                setLanguagesSelected={this.setLanguagesSelected}
+                                addLanguage={this.addLanguage}
+                                removeLanguage={this.removeLanguage}
+                            />
+                        </div>
+                        {
+                            languagesSelected.length > 0 &&
+                                <div className="customize-block">
+                                    <label>{i18next.t('questions')}</label>
+                                    <CustomizeQuestionsList
+                                        languagesSelected={languagesSelected}
+                                        questions={questions}
+                                        addQuestion={this.addQuestion}
+                                        editQuestion={this.editQuestion}
+                                        removeQuestion={this.removeQuestion}
+                                    />
+                                </div>
+                        }
                     </div>
-                    {
-                        languagesSelected.length > 0 &&
-                            <div className="customize-block">
-                                <label>{i18next.t('questions')}</label>
-                                <CustomizeQuestionsList
-                                    languagesSelected={languagesSelected}
-                                    questions={questions}
-                                    addQuestion={this.addQuestion}
-                                    editQuestion={this.editQuestion}
-                                    removeQuestion={this.removeQuestion}
-                                />
-                            </div>
-                    }
+                    <footer className="save-indicator-container">
+                        <SaveIndicator saveStatus={saveStatus} />
+                    </footer>
                 </div>
-                <footer className="save-indicator-container">
-                    <SaveIndicator saveStatus={saveStatus} />
-                </footer>
             </section>
         );
     }

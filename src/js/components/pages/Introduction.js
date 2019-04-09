@@ -35,16 +35,18 @@ export default class Introduction extends React.PureComponent {
         const classNames = this.props.frontBack;
         return (
             <section id="introduction" className={classNames}>
-                <div className="introduction-wrapper">
-                    <div>
-                        <span className="avatar"><img src={this.props.logo || logo} alt="" /></span>
-                        <h1>{this.props.title}</h1>
+                <div className="content-wrap flex-column">
+                    <div className="introduction-wrapper">
+                        <div>
+                            <span className="avatar"><img src={this.props.logo || logo} alt="" /></span>
+                            <h1>{this.props.title}</h1>
+                        </div>
                     </div>
-                </div>
 
-                <footer>
-                    <button id="see-instructions" onClick={this.props.goToNextStep}>{i18next.t('instructionsButton')}</button>
-                </footer>
+                    <footer>
+                        <button id="see-instructions" onClick={this.props.goToNextStep}>{i18next.t('instructionsButton')}</button>
+                    </footer>
+                </div>
             </section>
         );
     }

@@ -17,10 +17,14 @@
 //
 
 #customize-questions {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-left: 80px;
+
+    .content-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-left: 80px;
+        padding-bottom: 80px;
+    }
 
     .row {
         display: flex;
@@ -165,5 +169,9 @@
                 border-color: $red;
             }
         }
+    }
+
+    .btn-add-question {
+        margin-bottom: 20px;
     }
 }

@@ -92,89 +92,91 @@ export default class Customize extends React.PureComponent {
         return (
             <section id="customize" className={className}>
                 <BackButton onClick={back}/>
-                <div className="custom-form">
-                    <h1>{i18next.t('customize')}</h1>
-                    <div className="customize-block">
-                        <label htmlFor="title">{i18next.t('title')}</label>
-                        <input
-                            id="title"
-                            type="text"
-                            value={configuration.title}
-                            onChange={this.onTitleChanged}
-                        />
-                    </div>
-                    <div className="customize-block">
-                        <label htmlFor="logo">{i18next.t('logoLabel')}</label>
-                        <div className="group">
+                <div className="content-wrap">
+                    <div className="custom-form">
+                        <h1>{i18next.t('customize')}</h1>
+                        <div className="customize-block">
+                            <label htmlFor="title">{i18next.t('title')}</label>
                             <input
-                                id="logo-path"
-                                className="file-path"
+                                id="title"
                                 type="text"
-                                value={configuration.logo || ''}
-                                placeholder={i18next.t('defaultLogo')}
-                                onChange={this.onFilePathChanged('logo')}
+                                value={configuration.title}
+                                onChange={this.onTitleChanged}
                             />
-                            <button
-                                id="logo"
-                                type="button"
-                                className="file-picker"
-                                onClick={this.openFileDialog(
-                                    'logo',
-                                    [{'name': 'img', 'extensions': ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'svg', 'webp']}]
-                                )}
-                            >
-                                <i className="icon-folder"></i>{i18next.t('chooseFile')}
-                            </button>
-                            <button
-                                id="logo-remove"
-                                type="button"
-                                className="remove-file"
-                                onClick={this.clearFilePath('logo')}
-                            >
-                                <i className="icon-close-circled"></i>
-                            </button>
+                        </div>
+                        <div className="customize-block">
+                            <label htmlFor="logo">{i18next.t('logoLabel')}</label>
+                            <div className="group">
+                                <input
+                                    id="logo-path"
+                                    className="file-path"
+                                    type="text"
+                                    value={configuration.logo || ''}
+                                    placeholder={i18next.t('defaultLogo')}
+                                    onChange={this.onFilePathChanged('logo')}
+                                />
+                                <button
+                                    id="logo"
+                                    type="button"
+                                    className="file-picker"
+                                    onClick={this.openFileDialog(
+                                        'logo',
+                                        [{'name': 'img', 'extensions': ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'svg', 'webp']}]
+                                    )}
+                                >
+                                    <i className="icon-folder"></i>{i18next.t('chooseFile')}
+                                </button>
+                                <button
+                                    id="logo-remove"
+                                    type="button"
+                                    className="remove-file"
+                                    onClick={this.clearFilePath('logo')}
+                                >
+                                    <i className="icon-close-circled"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div className="customize-block">
+                            <label htmlFor="buzz-sound">{i18next.t('buzzSound')}</label>
+                            <div className="group">
+                                <input
+                                    id="buzz-sound-path"
+                                    className="file-path"
+                                    type="text"
+                                    value={configuration.buzzSound || ''}
+                                    placeholder={i18next.t('defaultSound')}
+                                    onChange={this.onFilePathChanged('buzzSound')}
+                                />
+                                <button
+                                    id="buzz-sound"
+                                    type="button"
+                                    className="file-picker"
+                                    onClick={this.openFileDialog(
+                                        'buzzSound',
+                                        [{'name': 'sound', 'extensions': ['ogg', 'wav', 'mp3', 'webm']}]
+                                    )}
+                                >
+                                    <i className="icon-folder"></i>{i18next.t('chooseFile')}
+                                </button>
+                                <button
+                                    id="buzz-sound-remove"
+                                    type="button"
+                                    className="remove-file"
+                                    onClick={this.clearFilePath('buzzSound')}
+                                >
+                                    <i className="icon-close-circled"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div className="customize-block">
-                        <label htmlFor="buzz-sound">{i18next.t('buzzSound')}</label>
-                        <div className="group">
-                            <input
-                                id="buzz-sound-path"
-                                className="file-path"
-                                type="text"
-                                value={configuration.buzzSound || ''}
-                                placeholder={i18next.t('defaultSound')}
-                                onChange={this.onFilePathChanged('buzzSound')}
-                            />
-                            <button
-                                id="buzz-sound"
-                                type="button"
-                                className="file-picker"
-                                onClick={this.openFileDialog(
-                                    'buzzSound',
-                                    [{'name': 'sound', 'extensions': ['ogg', 'wav', 'mp3', 'webm']}]
-                                )}
-                            >
-                                <i className="icon-folder"></i>{i18next.t('chooseFile')}
-                            </button>
-                            <button
-                                id="buzz-sound-remove"
-                                type="button"
-                                className="remove-file"
-                                onClick={this.clearFilePath('buzzSound')}
-                            >
-                                <i className="icon-close-circled"></i>
-                            </button>
-                        </div>
+                        <label htmlFor="edit-questions-button">{i18next.t('questionsList')}</label>
+                        <button htmlFor="edit-questions-button" onClick={editQuestions}>{i18next.t('editQuestions')}</button>
                     </div>
+                    <footer className="save-indicator-container">
+                        <SaveIndicator saveStatus={saveStatus} />
+                    </footer>
                 </div>
-                <div className="customize-block">
-                    <label htmlFor="edit-questions-button">{i18next.t('questionsList')}</label>
-                    <button htmlFor="edit-questions-button" onClick={editQuestions}>{i18next.t('editQuestions')}</button>
-                </div>
-                <footer className="save-indicator-container">
-                    <SaveIndicator saveStatus={saveStatus} />
-                </footer>
             </section>
         );
     }

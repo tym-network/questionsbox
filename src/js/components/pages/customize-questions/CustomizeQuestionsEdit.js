@@ -84,7 +84,7 @@ export default class CustomizeQuestionsEdit extends React.PureComponent {
                     </button>
                 </div>
                 <button
-                    className="btn-pill"
+                    className="btn-pill btn-add-question"
                     onClick={this.addQuestion}
                 >
                     {i18next.t('addQuestion')}

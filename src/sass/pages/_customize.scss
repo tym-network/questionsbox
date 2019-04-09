@@ -17,10 +17,13 @@
 //
 
 #customize {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-left: 80px;
+
+    .content-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-left: 80px;
+    }
 
     .custom-form {
         .group {
