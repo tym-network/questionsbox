@@ -48,12 +48,14 @@ export default class Menu extends React.PureComponent {
     render() {
         return (
             <section id="menu" className={this.props.frontBack}>
-                <h1>{i18next.t('menu')}</h1>
-                <div className="menu-wrapper">
-                    <button onClick={this.goToStep('customize')}>{i18next.t('customize')}</button>
-                    <button onClick={this.goToStep('settings')}>{i18next.t('settings')}</button>
-                    <button onClick={this.openVideoFolder}>{i18next.t('videoFolder')}</button>
-                    <button className="start" onClick={this.goToStep('locale')}>{i18next.t('start')}</button>
+                <div className="content-wrap">
+                    <h1>{i18next.t('menu')}</h1>
+                    <div className="menu-wrapper">
+                        <button onClick={this.goToStep('customize')}>{i18next.t('customize')}</button>
+                        <button onClick={this.goToStep('settings')}>{i18next.t('settings')}</button>
+                        <button onClick={this.openVideoFolder}>{i18next.t('videoFolder')}</button>
+                        <button className="start" onClick={this.goToStep('locale')}>{i18next.t('start')}</button>
+                    </div>
                 </div>
             </section>
         );

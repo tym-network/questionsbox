@@ -25,6 +25,7 @@ import electron from 'electron';
 
 import { readJsonFile } from '../utils/Utils';
 import Customize from './pages/Customize';
+import CustomizeQuestions from './pages/CustomizeQuestions';
 import Introduction from './pages/Introduction';
 import LocalePicker from './pages/LocalePicker';
 import MainViewer from './pages/MainViewer';
@@ -37,6 +38,7 @@ export default class App extends React.Component {
     steps = [
         'menu',
         'customize',
+        'customize-questions',
         'settings',
         'locale',
         'preview-video',
@@ -77,6 +79,7 @@ export default class App extends React.Component {
         this.setCurrentInput = this.setCurrentInput.bind(this);
         this.setConfigurationProperty = this.setConfigurationProperty.bind(this);
         this.setLocale = this.setLocale.bind(this);
+        this.saveQuestions = this.saveQuestions.bind(this);
         this.startRecording = this.startRecording.bind(this);
     }
 
@@ -112,6 +115,21 @@ export default class App extends React.Component {
             }
         }, err => {
             window.logger.error('Error while reading questions.json file', err)
+        });
+    }
+
+    saveQuestions(questions) {
+        return new Promise((res, rej) => {
+            fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(questions, null, 4), err => {
+                if (err) {
+                    window.logger.error(err);
+                    rej(err);
+                }
+                this.setState({
+                    questions: questions
+                });
+                res();
+            });
         });
     }
 
@@ -273,11 +291,24 @@ export default class App extends React.Component {
                     <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
                         <Customize
                             back={() => {this.goToStep('menu');}}
+                            editQuestions={() => {this.goToStep('customize-questions');}}
                             save={this.saveConfiguration}
                             saveStatus={this.state.saveConfigurationStatus}
                             frontBack={this.frontBack}
                             configuration={this.state.configuration}
                             setConfigurationProperty={this.setConfigurationProperty}
+                        />
+                    </CSSTransition>
+                );
+                break;
+            case 'customize-questions':
+                currentComponent = (
+                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
+                        <CustomizeQuestions
+                            back={() => {this.goToStep('customize');}}
+                            frontBack={this.frontBack}
+                            questions={this.state.questions}
+                            saveQuestions={this.saveQuestions}
                         />
                     </CSSTransition>
                 );

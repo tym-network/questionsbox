@@ -41,6 +41,8 @@ $borderFocus: darken($border, 20%);
 // Widths
 $size-sm: 768px;
 
+@import 'libraries/bootstrap.min.css';
+
 @import 'fonts/questions-box';
 
 @import 'widgets/back-button';
@@ -48,6 +50,7 @@ $size-sm: 768px;
 @import 'widgets/sound-meter';
 
 @import 'pages/customize';
+@import 'pages/customize-questions';
 @import 'pages/introduction';
 @import 'pages/locale-picker';
 @import 'pages/main-viewer';
@@ -109,6 +112,7 @@ label {
     display: block;
     margin: 6px 0 2px 0;
     font-size: 0.9em;
+    font-weight: normal;
     color: $border;
     text-align: left;
 }
@@ -141,6 +145,10 @@ input {
     box-sizing: border-box;
     padding: 8px 20px 8px 8px;
     border: solid 1px $border;
+
+    &[type="checkbox"] {
+        width: auto;
+    }
 
     &:focus {
         border-color: $borderFocus;
@@ -236,18 +244,33 @@ button,
 
 section.front, section.back {
     position: absolute;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     max-height: 100%;
     min-height: 80vh;
     top: 50%;
     left: 0;
     transform: translateY(-50%);
-    padding: 40px;
     box-sizing: border-box;
     background: #ffffff;
     border-radius: 4px;
     backface-visibility: hidden;
-    overflow: scroll;
+    overflow: hidden;
+
+    .content-wrap {
+        position: relative;
+        width: 100%;
+        padding: 40px;
+        overflow: scroll;
+
+        &.flex-column {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+    }
 }
 
 section.front {

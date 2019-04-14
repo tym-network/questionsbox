@@ -1,0 +1,176 @@
+// Copyright (C) 2018 Théotime Loiseau
+//
+// This file is part of QuestionsBox.
+//
+// QuestionsBox is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// QuestionsBox is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with QuestionsBox.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#customize-questions {
+
+    .content-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-left: 80px;
+        padding-bottom: 80px;
+    }
+
+    .languages-row {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .btn-pill {
+        margin: 0 10px 10px 0;
+        padding: 4px 10px;
+        line-height: normal;
+        border-radius: 17px;
+        height: 34px;
+        font-size: 14px;
+        text-transform: initial;
+
+        &:last-of-type {
+            margin-right: 0;
+        }
+    }
+
+    .btn-pill-left {
+        margin: 0 0 10px 0;
+        padding: 4px 10px;
+        line-height: normal;
+        border-radius: 17px 0 0 17px;
+        height: 34px;
+        font-size: 14px;
+    }
+
+    .btn-pill-right {
+        margin: 0 10px 10px -1px;
+        padding: 4px 10px;
+        line-height: normal;
+        border-radius: 0 17px 17px 0;
+        height: 34px;
+        font-size: 14px;
+    }
+
+    .language-button {
+        display: flex;
+        flex-direction: row;
+
+        input[type=checkbox] {
+            position: absolute;
+            opacity: 0;
+            left: -100vw;
+            top: -100vh;
+        }
+
+        label {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 1;
+
+            .checkbox {
+                width: 16px;
+                height: 16px;
+                margin-right: 4px;
+                font-size: 16px;
+
+                .visibility-indicator {
+                    opacity: 0.4;
+                }
+            }
+
+        }
+
+        input[type=checkbox]:checked + label {
+            .checkbox {
+                .visibility-indicator {
+                    opacity: 1;
+                }
+            }
+        }
+
+        .language-button-remove {
+            &:hover, &:focus {
+                border-color: $red;
+                color: $red;
+                z-index: 2;
+            }
+        }
+    }
+
+    .questions-edit {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 10px;
+        padding: 6px;
+        border: 1px solid $border;
+        border-radius: 6px;
+        background: $lightgrey;
+
+        .question-number {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .questions-edit-textareas {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+
+            .questions-edit-textarea {
+                display: flex;
+                margin-bottom: 6px;
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                .questions-edit-textarea-locale {
+                    background: white;
+                    border-radius: 6px 0 0 6px;
+                    padding: 6px;
+                    border: 1px solid $border;
+                    border-right: none;
+                }
+
+                textarea {
+                    flex-grow: 1;
+                    padding: 6px;
+                    text-transform: none;
+                    border: 1px solid $border;
+                    resize: vertical;
+                    min-height: 40px;
+                }
+            }
+        }
+
+        .questions-edit-remove {
+            margin: -7px -7px -7px 6px;
+            padding: 0 8px;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            border: 1px solid $border;
+
+            &:hover, &:focus {
+                color: $red;
+                border-color: $red;
+            }
+        }
+    }
+
+    .btn-add-question {
+        margin-bottom: 20px;
+    }
+}

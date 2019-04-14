@@ -116,7 +116,7 @@ export default class Settings extends React.PureComponent {
         return (
             <section id="settings" className={className}>
                 <BackButton onClick={this.props.back} />
-                <div>
+                <div className="content-wrap">
                     <h1>{i18next.t('settings')}</h1>
                     <div className="settings-wrapper">
                         <div className="settings-wrapper-inputs">
@@ -156,10 +156,10 @@ export default class Settings extends React.PureComponent {
                             </div>
                         </div>
                     </div>
+                    <footer className="save-indicator-container">
+                        <SaveIndicator saveStatus={this.props.saveStatus} />
+                    </footer>
                 </div>
-                <footer className="save-indicator-container">
-                    <SaveIndicator saveStatus={this.props.saveStatus} />
-                </footer>
             </section>
         );
     }

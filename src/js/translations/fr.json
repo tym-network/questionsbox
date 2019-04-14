@@ -26,6 +26,16 @@
         "buzzSound": "Son du buzzer",
         "chooseFile": "Choisir un fichier",
         "logoLabel": "Logo de la page d'introduction",
-        "defaultLogo": "Logo par défaut"
+        "defaultLogo": "Logo par défaut",
+        "questionsList": "Édition des questions",
+        "editQuestions": "Éditer les questions",
+        "language": "Langue",
+        "languages": "Langues",
+        "displayAll": "Tout afficher",
+        "hideAll": "Tout masquer",
+        "questions": "Questions",
+        "addLanguage": "Ajouter une langue",
+        "addLanguageAction": "Ajouter la langue",
+        "addQuestion": "Ajouter une question"
     }
 }

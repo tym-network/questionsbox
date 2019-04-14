@@ -192,9 +192,11 @@ export default class MainViewer extends React.PureComponent {
 
         return (
             <section id="start" className={classNames} style={this.state.style}>
-                <TransitionGroup>
-                    {currentComponent}
-                </TransitionGroup>
+                <div className="content-wrap flex-column">
+                    <TransitionGroup>
+                        {currentComponent}
+                    </TransitionGroup>
+                </div>
                 {buzzers}
             </section>
         );

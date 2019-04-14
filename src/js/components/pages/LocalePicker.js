@@ -49,21 +49,23 @@ export default class LocalePicker extends React.PureComponent {
     }
 
     render() {
-        const classNames = `${this.props.frontBack} flex column space-between`;
+        const classNames = `${this.props.frontBack}`;
         return (
             <section id="locale" className={classNames}>
-                <h1>Select a language</h1>
-                <div className="flex row center align-center grow">
-                    {
-                        this.props.locales.map(locale => {
-                            const flagImg = require(`../../../assets/img/flags/${locale}.svg`);
-                            return (
-                                <div className="flag" key={locale} onClick={this.setLocale(locale)}>
-                                    <img src={flagImg}/>
-                                </div>
-                            );
-                        })
-                    }
+                <div className="content-wrap flex-column">
+                    <h1>Select a language</h1>
+                    <div className="locale-picker-flags">
+                        {
+                            this.props.locales.map(locale => {
+                                const flagImg = require(`../../../assets/img/flags/${locale}.svg`);
+                                return (
+                                    <div className="flag" key={locale} onClick={this.setLocale(locale)}>
+                                        <img src={flagImg}/>
+                                    </div>
+                                );
+                            })
+                        }
+                    </div>
                 </div>
             </section>
         );
