@@ -1,7 +1,7 @@
 {
   "name": "questions-box",
   "description": "Create a set of questions and record your friends answering them",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Théotime Loiseau <contac@theotimeloiseau.com>",
   "license": "GPL-3.0",
   "homepage": "https://github.com/tym-network/questionsbox",
@@ -12,6 +12,7 @@
     "build-main": "webpack --config webpack.main.js",
     "build-renderer:dev": "webpack --config webpack.dev.js",
     "build-renderer:prod": "webpack --config webpack.prod.js",
+    "build:release": "node ./scripts/build.js",
     "watch": "concurrently \"npm run watch-main\" \"npm run watch-renderer\"",
     "watch-main": "webpack --watch --config webpack.main.js",
     "watch-renderer": "webpack --watch --config webpack.dev.js"
@@ -34,7 +35,7 @@
     "concurrently": "^3.5.1",
     "css-loader": "^0.28.9",
     "electron": "^3.0.7",
-    "electron-builder": "^20.40.2",
+    "electron-builder": "20.31.2",
     "eslint": "^4.15.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-loader": "^1.9.0",
