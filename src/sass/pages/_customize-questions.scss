@@ -26,7 +26,7 @@
         padding-bottom: 80px;
     }
 
-    .row {
+    .languages-row {
         display: flex;
         flex-direction: row;
     }
@@ -85,11 +85,10 @@
                 width: 16px;
                 height: 16px;
                 margin-right: 4px;
-                border-radius: 50%;
-                border: 1px solid gray;
+                font-size: 16px;
 
-                .checkmark {
-                    opacity: 0
+                .visibility-indicator {
+                    opacity: 0.4;
                 }
             }
 
@@ -97,7 +96,7 @@
 
         input[type=checkbox]:checked + label {
             .checkbox {
-                .checkmark {
+                .visibility-indicator {
                     opacity: 1;
                 }
             }

@@ -68,21 +68,21 @@ export default class CustomizeQuestionsLanguages extends React.PureComponent {
 
         return (
             <React.Fragment>
-                <div className="row">
+                <div className="languages-row">
                     <button
                         className="btn-pill"
                         onClick={this.selectAll}
                     >
-                        {i18next.t('selectAll')}
+                        {i18next.t('displayAll')}
                     </button>
                     <button
                         className="btn-pill"
                         onClick={this.unselectAll}
                     >
-                        {i18next.t('unselectAll')}
+                        {i18next.t('hideAll')}
                     </button>
                 </div>
-                <div className="row">
+                <div className="languages-row">
                     { languages.map(language =>
                         <LanguageButton
                             key={language}

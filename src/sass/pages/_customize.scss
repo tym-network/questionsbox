@@ -31,22 +31,25 @@
             flex-direction: row;
         }
 
-        button {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            line-height: normal;
-            margin: 0 0 0 4px;
-            padding: 0 10px;
-            border-radius: 0;
-            font-size: 12px;
-
-            i {
+        .file-picker-group {
+            button {
                 display: flex;
-                font-size: 20px;
-                vertical-align: middle;
+                flex-direction: row;
+                align-items: center;
+                line-height: normal;
+                margin: 0 0 0 4px;
+                padding: 0 10px;
+                border-radius: 0;
+                font-size: 12px;
+
+                i {
+                    display: flex;
+                    font-size: 20px;
+                    vertical-align: middle;
+                }
             }
         }
+
     }
 
     .file-picker {

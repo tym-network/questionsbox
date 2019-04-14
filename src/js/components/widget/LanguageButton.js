@@ -59,7 +59,7 @@ export default class LanguageButton extends React.PureComponent {
                 />
                 <label className="button btn-pill-left" htmlFor={inputId}>
                     <div className="checkbox">
-                        <i className="checkmark icon-checkmark-round"></i>
+                        <i className="icon-eye visibility-indicator"></i>
                     </div>
                     { language }
                 </label>

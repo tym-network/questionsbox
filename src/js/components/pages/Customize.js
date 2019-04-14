@@ -106,7 +106,7 @@ export default class Customize extends React.PureComponent {
                         </div>
                         <div className="customize-block">
                             <label htmlFor="logo">{i18next.t('logoLabel')}</label>
-                            <div className="group">
+                            <div className="group file-picker-group">
                                 <input
                                     id="logo-path"
                                     className="file-path"
@@ -138,7 +138,7 @@ export default class Customize extends React.PureComponent {
                         </div>
                         <div className="customize-block">
                             <label htmlFor="buzz-sound">{i18next.t('buzzSound')}</label>
-                            <div className="group">
+                            <div className="group file-picker-group">
                                 <input
                                     id="buzz-sound-path"
                                     className="file-path"
@@ -168,10 +168,10 @@ export default class Customize extends React.PureComponent {
                                 </button>
                             </div>
                         </div>
-                    </div>
-                    <div className="customize-block">
-                        <label htmlFor="edit-questions-button">{i18next.t('questionsList')}</label>
-                        <button htmlFor="edit-questions-button" onClick={editQuestions}>{i18next.t('editQuestions')}</button>
+                        <div className="customize-block">
+                            <label htmlFor="edit-questions-button">{i18next.t('questionsList')}</label>
+                            <button htmlFor="edit-questions-button" onClick={editQuestions}>{i18next.t('editQuestions')}</button>
+                        </div>
                     </div>
                     <footer className="save-indicator-container">
                         <SaveIndicator saveStatus={saveStatus} />
