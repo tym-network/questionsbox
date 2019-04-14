@@ -26,20 +26,7 @@ Double-click on the .dmg file. It should open a new window. Simply drag the "Que
 
 ## How to use
 
-When you start the app for the first time, a new `questions.json` file will be created in a folder dedicated to the app (see "Where to find the generated files" to know more about this). You can update this file to change the questions displayed to the users. Note that you always have to specify the locale you wish to use.
-
-The `questions.json` file should have this format:
-```json
-{
-    "en": [
-        "Question 1",
-        "Question 2"
-    ],
-    "fr": [
-        "Question 1"
-    ]
-}
-```
+When you start the app for the first time, a new `questions.json` file will be created in a folder dedicated to the app (see "Where to find the generated files" to know more about this). The questions can be edited on the app in "Customize" > "Edit Questions". For now only a few locales are supported but more should arrive soon.
 
 Note that you do no need to provide the same number of questions for each locale. The question sets can be totally different.
 
@@ -93,7 +80,6 @@ To build for Windows on MacOS, install wine and mono: `brew install mono` and `b
 
 ## Features to come
 
-- Being able to change the questions directly inside the application
 - Improve UI and UX
-- Direct link to the "Videos" folder
 - Add HMR
+- Allow to write questions in all languages
