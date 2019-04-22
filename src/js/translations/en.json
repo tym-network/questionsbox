@@ -48,6 +48,7 @@
         "langSwedish": "Swedish (Svenska)",
         "langNorwegian": "Norwegian (Norsk)",
         "langDanish": "Danish (Dansk)",
-        "langPolish": "Polish (Polski)"
+        "langPolish": "Polish (Polski)",
+        "searchSelectLanguage": "Search or select the language to add"
     }
 }

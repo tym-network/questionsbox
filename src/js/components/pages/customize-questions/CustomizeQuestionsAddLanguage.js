@@ -143,6 +143,7 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
                                 isSearchable={true}
                                 value={selectedLanguage}
                                 onChange={this.onSelectedLanguageChange}
+                                placeholder={i18next.t('searchSelectLanguage')}
                             />
                         </div>
                     </Modal.Body>
