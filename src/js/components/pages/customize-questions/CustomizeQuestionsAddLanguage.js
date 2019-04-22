@@ -20,6 +20,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
 import { Modal } from 'react-bootstrap';
+import Select from 'react-select';
+
+// Import all flags
+function importAll (r) {
+    r.keys().forEach(r);
+}
+
+importAll(require.context('../../../../assets/img/flags', true, /\.svg$/));
 
 export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
 
@@ -27,13 +35,6 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
         currentLanguages: PropTypes.arrayOf(PropTypes.string),
         addLanguage: PropTypes.func.isRequired
     };
-
-    static supportedLanguages = [
-        'en',
-        'fr',
-        'es',
-        'de'
-    ]
 
     constructor(props) {
         super(props);
@@ -46,8 +47,7 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.addLanguage = this.addLanguage.bind(this);
-
-        this.language = React.createRef();
+        this.onSelectedLanguageChange = this.onSelectedLanguageChange.bind(this);
     }
 
     openModal() {
@@ -63,15 +63,59 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
     }
 
     addLanguage() {
-        this.props.addLanguage(this.language.current.value);
+        const { selectedLanguage } = this.state;
+
+        if (!selectedLanguage) {
+            return;
+        }
+
+        this.props.addLanguage(selectedLanguage.value);
         this.setState({
-            open: false
+            open: false,
+            selectedLanguage: null
+        });
+    }
+
+    getSupportedLanguages() {
+        const languages = [
+            { value: 'en', label: i18next.t('langEnglish'), flag: require('../../../../assets/img/flags/en.svg')},
+            { value: 'fr', label: i18next.t('langFrench'), flag: require('../../../../assets/img/flags/fr.svg')},
+            { value: 'es', label: i18next.t('langSpanish'), flag: require('../../../../assets/img/flags/es.svg')},
+            { value: 'de', label: i18next.t('langGerman'), flag: require('../../../../assets/img/flags/de.svg')},
+            { value: 'it', label: i18next.t('langItalian'), flag: require('../../../../assets/img/flags/it.svg')},
+            { value: 'ru', label: i18next.t('langRussian'), flag: require('../../../../assets/img/flags/ru.svg')},
+            { value: 'pt', label: i18next.t('langPortuguese'), flag: require('../../../../assets/img/flags/pt.svg')},
+            { value: 'nl', label: i18next.t('langDutch'), flag: require('../../../../assets/img/flags/nl.svg')},
+            { value: 'sv', label: i18next.t('langSwedish'), flag: require('../../../../assets/img/flags/se.svg')},
+            { value: 'no', label: i18next.t('langNorwegian'), flag: require('../../../../assets/img/flags/no.svg')},
+            { value: 'da', label: i18next.t('langDanish'), flag: require('../../../../assets/img/flags/dk.svg')},
+            { value: 'pl', label: i18next.t('langPolish'), flag: require('../../../../assets/img/flags/pl.svg')}
+        ];
+        return languages.sort((a, b) => (
+            a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1
+        ));
+    }
+
+    getLabel(language) {
+        return (
+            <div className="language-select-item">
+              <img src={language.flag} alt="" className="flag-label" />
+              <span>{language.label}</span>
+            </div>
+          );
+    }
+
+    onSelectedLanguageChange(language) {
+        console.log(language);
+        this.setState({
+            selectedLanguage: language
         });
     }
 
     render() {
         const { currentLanguages } = this.props;
-        const availableLanguages = CustomizeQuestionsAddLanguage.supportedLanguages.filter(lang => !currentLanguages.includes(lang));
+        const { selectedLanguage } = this.state;
+        const availableLanguages = this.getSupportedLanguages().filter(lang => !currentLanguages.includes(lang.value));
 
         return (
             <React.Fragment>
@@ -81,27 +125,35 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
                 >
                     {i18next.t('addLanguage')}
                 </button>
-                <Modal show={this.state.open} onHide={this.closeModal}>
+                <Modal
+                    show={this.state.open}
+                    onHide={this.closeModal}
+                    dialogClassName="add-language-modal"
+                >
                     <Modal.Header closeButton>
                         <Modal.Title>{i18next.t('addLanguage')}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <div className="select-input">
                             <label htmlFor="language">{i18next.t('language')}</label>
-                            <div className="select-wrapper">
-                                <select
-                                    id="language"
-                                    ref={this.language}
-                                >
-                                    {availableLanguages.map(language => (
-                                        <option key={language} value={language}>{i18next.t(language)}</option>
-                                    ))}
-                                </select>
-                            </div>
+                            <Select
+                                options={availableLanguages}
+                                formatOptionLabel={this.getLabel}
+                                isClearable={true}
+                                isSearchable={true}
+                                value={selectedLanguage}
+                                onChange={this.onSelectedLanguageChange}
+                                placeholder={i18next.t('searchSelectLanguage')}
+                            />
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <button onClick={this.addLanguage}>{i18next.t('addLanguageAction')}</button>
+                        <button
+                            onClick={this.addLanguage}
+                            disabled={!selectedLanguage}
+                        >
+                            {i18next.t('addLanguageAction')}
+                        </button>
                     </Modal.Footer>
                     </Modal>
             </React.Fragment>

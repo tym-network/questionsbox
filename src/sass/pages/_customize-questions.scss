@@ -174,3 +174,21 @@
         margin-bottom: 20px;
     }
 }
+
+.add-language-modal {
+
+    .language-select-item {
+        .flag-label {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 8px;
+            text-align: center;
+        }
+
+        span {
+            vertical-align: middle;
+        }
+    }
+
+}

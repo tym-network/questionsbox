@@ -60,7 +60,7 @@ export default class LocalePicker extends React.PureComponent {
                                 const flagImg = require(`../../../assets/img/flags/${locale}.svg`);
                                 return (
                                     <div className="flag" key={locale} onClick={this.setLocale(locale)}>
-                                        <img src={flagImg}/>
+                                        <img src={flagImg} alt={locale} />
                                     </div>
                                 );
                             })
