@@ -36,6 +36,19 @@
         "questions": "Questions",
         "addLanguage": "Add a language",
         "addLanguageAction": "Add language",
-        "addQuestion": "Add a question"
+        "addQuestion": "Add a question",
+        "langEnglish": "English",
+        "langFrench": "French (Français)",
+        "langSpanish": "Spanish (Español)",
+        "langGerman": "German (Deutsch)",
+        "langItalian": "Italian (Italiano)",
+        "langRussian": "Russian (русский)",
+        "langPortuguese": "Portuguese (Português)",
+        "langDutch": "Dutch (Nederlandse)",
+        "langSwedish": "Swedish (Svenska)",
+        "langNorwegian": "Norwegian (Norsk)",
+        "langDanish": "Danish (Dansk)",
+        "langPolish": "Polish (Polski)",
+        "searchSelectLanguage": "Search or select the language to add"
     }
 }

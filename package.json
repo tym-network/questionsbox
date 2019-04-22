@@ -20,6 +20,7 @@
   "dependencies": {
     "i18next": "^11.10.2",
     "react-bootstrap": "^0.32.4",
+    "react-select": "^2.4.2",
     "react-transition-group": "^2.3.1",
     "recordrtc": "^5.4.8",
     "winston": "^2.4.0"

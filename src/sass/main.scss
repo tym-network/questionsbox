@@ -196,7 +196,8 @@ button,
     }
 
     &:disabled {
-        opacity: 0;
+        border-color: $lightgrey;
+        color: $lightgrey;
     }
 }
 
