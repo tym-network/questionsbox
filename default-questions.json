@@ -1,8 +1,29 @@
 {
+    "en": [
+        "Introduce yourself in one sentence",
+        "Who was your idol when you were a teenager?",
+        "Sing your favorite song",
+        "Sweet or savory?",
+        "If your life was a movie, what would it be?",
+        "A perfect evening for you is ...",
+        "What's your last impusle buy?",
+        "If you were a super-hero, who would you be?",
+        "What's your favorite place?",
+        "If you could only bring one object on a deserted island, what would you take?",
+        "Make a funny face"
+    ],
     "fr": [
-        "Question 1",
-        "Question 2",
-        "Question 3",
-        "Question 4"
+        "Présentez-vous en une phrase",
+        "Qui était votre idole quand vous étiez adolescent?",
+        "Interprétez votre chanson préférée",
+        "Sucré ou salé?",
+        "Si votre vie était un film, lequel serait-il?",
+        "Pain au chocolat ou chocolatine?",
+        "Une soirée parfaite pour vous, c'est ...",
+        "Quel est votre dernier achat compulsif?",
+        "Si vous étiez un super-héros, vous seriez ...",
+        "Quel est votre lieu préféré?",
+        "Si vous ne pouviez prendre qu'un seul objet sur une île déserte, que choisiriez-vous?",
+        "Une grimace pour la fin?"
     ]
 }
