@@ -69,6 +69,7 @@ export default class App extends React.Component {
                 title: 'Questions Box'
             },
             questions: {},
+            questionsData: {},
             saveConfigurationStatus: null
         }
 
@@ -89,6 +90,8 @@ export default class App extends React.Component {
     }
 
     setQuestions(questions) {
+        const questionsData = Object.assign({}, questions.data);
+        delete questions.data;
         // If only one language, use it for the interface
         const locales = Object.keys(questions);
         if (locales.length === 1) {
@@ -96,7 +99,8 @@ export default class App extends React.Component {
         }
 
         this.setState({
-            questions: questions
+            questions: questions,
+            questionsData: questionsData
         });
     }
 
@@ -120,13 +124,20 @@ export default class App extends React.Component {
 
     saveQuestions(questions) {
         return new Promise((res, rej) => {
+            if (!questions.data) {
+                questions.data = {};
+            }
+            questions.data.updatedAt = Date.now();
             fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(questions, null, 4), err => {
                 if (err) {
                     window.logger.error(err);
                     rej(err);
                 }
+                const questionsData = Object.assign({}, questions.data);
+                delete questions.data;
                 this.setState({
-                    questions: questions
+                    questions: questions,
+                    questionsData
                 });
                 res();
             });
@@ -242,7 +253,8 @@ export default class App extends React.Component {
 
     setConfigurationProperty(property, value) {
         const newConfiguration = Object.assign({}, this.state.configuration, {
-            [property]: value
+            [property]: value,
+            updatedAt: Date.now()
         });
         this.setState({
             configuration: newConfiguration
@@ -308,6 +320,7 @@ export default class App extends React.Component {
                             back={() => {this.goToStep('customize');}}
                             frontBack={this.frontBack}
                             questions={this.state.questions}
+                            questionsData={this.state.questionsData}
                             saveQuestions={this.saveQuestions}
                         />
                     </CSSTransition>

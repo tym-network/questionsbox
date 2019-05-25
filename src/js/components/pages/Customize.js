@@ -174,7 +174,10 @@ export default class Customize extends React.PureComponent {
                         </div>
                     </div>
                     <footer className="save-indicator-container">
-                        <SaveIndicator saveStatus={saveStatus} />
+                        <SaveIndicator
+                            saveStatus={saveStatus}
+                            updatedAt={configuration.updatedAt}
+                        />
                     </footer>
                 </div>
             </section>

@@ -19,32 +19,103 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
+import moment from 'moment';
 
 export default class SaveIndicator extends React.PureComponent {
 
+    debounce = null;
+
     static propTypes = {
         saveStatus: PropTypes.string,
+        updatedAt: PropTypes.number
     };
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            status: null,
+            lastChangeAt: null
+        };
+
+        this.showNextStatus = this.showNextStatus.bind(this);
+    }
+
+    componentWillUnmount() {
+        if (this.debounce) {
+            clearTimeout(this.debounce);
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.saveStatus !== this.props.saveStatus) {
+            if (this.props.saveStatus === 'saving') {
+                this.setState({
+                    status: this.props.saveStatus
+                });
+                // Stay in "Saving" for at least 600ms
+                this.debounce = setTimeout(this.showNextStatus, 600);
+            }
+
+            if (!this.debounce) {
+                // Status changed to "saved" or "error" and "saving" has been displayed to more than 600ms
+                if (this.props.saveStatus === 'saved' || this.props.saveStatus === 'error') {
+                    this.setState({
+                        status: this.props.saveStatus
+                    });
+                }
+            }
+        }
+
+        if (prevState.status !== this.state.status) {
+            if (this.state.status === 'saved') {
+                // Show "saved" for 10s then back to "updated at"
+                this.debounce = setTimeout(() => {
+                    this.setState({
+                        status: null
+                    });
+                }, 10000);
+            }
+        }
+    }
+
+    showNextStatus() {
+        const nextStatus = this.props.saveStatus;
+        this.setState({
+            status: nextStatus
+        });
+
+        this.debounce = null;
+    }
+
     render() {
+        const { status } = this.state;
+        const { updatedAt } = this.props;
         let statusText;
         let statusClass;
-        if (this.props.saveStatus === 'saving') {
+        let statusTitle = "";
+        if (status === 'saving') {
             statusText = i18next.t('saving');
             statusClass = 'warn';
-        } else if (this.props.saveStatus === 'saved') {
+        } else if (status === 'saved') {
             statusText = i18next.t('saved');
             statusClass = 'ok';
-        } else if (this.props.saveStatus === 'error') {
-            statusText = i18next.t('error');
+        } else if (status === 'error') {
+            statusText = i18next.t('saveError');
             statusClass = 'error';
+        } else if (updatedAt) {
+            const updatedAtMoment = moment(updatedAt);
+            const timeFromNow = updatedAtMoment.fromNow();
+            statusText = i18next.t('updatedAt', { time: timeFromNow });
+            statusClass = 'info';
+            statusTitle = updatedAtMoment.format('LLL');
         } else {
             return null;
         }
 
         return (
             <div className={`save-indicator ${statusClass}`} ref={ref => this.saveIndicator = ref}>
-                <span className="save-indicator-text">{statusText}</span>
+                <span className="save-indicator-text" title={statusTitle}>{statusText}</span>
             </div>
         );
     }

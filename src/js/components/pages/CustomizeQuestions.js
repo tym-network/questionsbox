@@ -33,6 +33,7 @@ export default class CustomizeQuestions extends React.PureComponent {
         frontBack: PropTypes.string.isRequired,
         back: PropTypes.func.isRequired,
         questions: PropTypes.object.isRequired,
+        questionsData: PropTypes.object.isRequired,
         saveQuestions: PropTypes.func.isRequired
     };
 
@@ -52,7 +53,7 @@ export default class CustomizeQuestions extends React.PureComponent {
         this.addQuestion = this.addQuestion.bind(this);
         this.editQuestion = this.editQuestion.bind(this);
         this.saveQuestions = this.saveQuestions.bind(this);
-        this.saveQuestionsDebounce = debounce(this.saveQuestions, 5000);
+        this.saveQuestionsDebounce = debounce(this.saveQuestions, 2000);
         this.removeQuestion = this.removeQuestion.bind(this);
     }
 
@@ -160,7 +161,7 @@ export default class CustomizeQuestions extends React.PureComponent {
     }
 
     render() {
-        const { back, frontBack } = this.props;
+        const { back, frontBack, questionsData } = this.props;
         const { languagesSelected, questions, saveStatus } = this.state;
         const className = `${frontBack}`;
         const languages = Object.keys(this.state.questions);
@@ -196,7 +197,10 @@ export default class CustomizeQuestions extends React.PureComponent {
                         }
                     </div>
                     <footer className="save-indicator-container">
-                        <SaveIndicator saveStatus={saveStatus} />
+                        <SaveIndicator
+                            saveStatus={saveStatus}
+                            updatedAt={questionsData.updatedAt}
+                        />
                     </footer>
                 </div>
             </section>

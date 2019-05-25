@@ -49,6 +49,7 @@
         "langNorwegian": "Norvégien (Norsk)",
         "langDanish": "Danois (Dansk)",
         "langPolish": "Polonais (Polski)",
-        "searchSelectLanguage": "Recherchez ou choisissez la langue à ajouter"
+        "searchSelectLanguage": "Recherchez ou choisissez la langue à ajouter",
+        "updatedAt": "Dernière mise à jour: {{time}}"
     }
 }
