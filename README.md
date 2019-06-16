@@ -10,7 +10,8 @@ It's great to provide some entertainment during a party, a team building or any 
 - Allow the users to start a session on their own (loop by itself, instructions are provided in the app)
 - Supports multiple languages for questions: write your questions in any language, the user will chose the one he/she prefers before the questions start
 - Interface available in English and in French (and can easily be extended if someone wishes to translate it in an another language)
-- Customize the title to make it match your event
+- Customize the title, the logo and even the buzz sound to make it match your event
+- Edit the questions directly in the app
 
 ## Compatibility
 
@@ -28,7 +29,7 @@ Double-click on the .dmg file. It should open a new window. Simply drag the "Que
 
 When you start the app for the first time, a new `questions.json` file will be created in a folder dedicated to the app (see "Where to find the generated files" to know more about this). The questions can be edited on the app in "Customize" > "Edit Questions". For now only a few locales are supported but more should arrive soon.
 
-Note that you do no need to provide the same number of questions for each locale. The question sets can be totally different.
+Note that you do not need to provide the same number of questions for each locale. The question sets can be totally different.
 
 If you only have one locale and this locale is either "fr" or "en", then the app will detect it and use the correct translation for the interface.
 
