@@ -22,12 +22,7 @@ import i18next from 'i18next';
 import { Modal } from 'react-bootstrap';
 import Select from 'react-select';
 
-// Import all flags
-function importAll (r) {
-    r.keys().forEach(r);
-}
-
-importAll(require.context('../../../../assets/img/flags', true, /\.svg$/));
+import { getLocales } from '../../../utils/Utils';
 
 export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
 
@@ -77,36 +72,31 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
     }
 
     getSupportedLanguages() {
-        const languages = [
-            { value: 'en', label: i18next.t('langEnglish'), flag: require('../../../../assets/img/flags/en.svg')},
-            { value: 'fr', label: i18next.t('langFrench'), flag: require('../../../../assets/img/flags/fr.svg')},
-            { value: 'es', label: i18next.t('langSpanish'), flag: require('../../../../assets/img/flags/es.svg')},
-            { value: 'de', label: i18next.t('langGerman'), flag: require('../../../../assets/img/flags/de.svg')},
-            { value: 'it', label: i18next.t('langItalian'), flag: require('../../../../assets/img/flags/it.svg')},
-            { value: 'ru', label: i18next.t('langRussian'), flag: require('../../../../assets/img/flags/ru.svg')},
-            { value: 'pt', label: i18next.t('langPortuguese'), flag: require('../../../../assets/img/flags/pt.svg')},
-            { value: 'nl', label: i18next.t('langDutch'), flag: require('../../../../assets/img/flags/nl.svg')},
-            { value: 'sv', label: i18next.t('langSwedish'), flag: require('../../../../assets/img/flags/se.svg')},
-            { value: 'no', label: i18next.t('langNorwegian'), flag: require('../../../../assets/img/flags/no.svg')},
-            { value: 'da', label: i18next.t('langDanish'), flag: require('../../../../assets/img/flags/dk.svg')},
-            { value: 'pl', label: i18next.t('langPolish'), flag: require('../../../../assets/img/flags/pl.svg')}
-        ];
+        const languages = getLocales();
+        languages.map(lang => {
+            lang.label = i18next.t(lang.labelKey);
+        });
         return languages.sort((a, b) => (
             a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1
         ));
     }
 
     getLabel(language) {
+        let label = language.label;
+
+        if (language.value !== i18next.language) {
+            label += ` (${language.name})`;
+        }
+
         return (
             <div className="language-select-item">
               <img src={language.flag} alt="" className="flag-label" />
-              <span>{language.label}</span>
+              <span>{label}</span>
             </div>
           );
     }
 
     onSelectedLanguageChange(language) {
-        console.log(language);
         this.setState({
             selectedLanguage: language
         });
