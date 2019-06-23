@@ -1,11 +1,7 @@
 const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CleanObsoleteChunks = require('webpack-clean-obsolete-chunks');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-const extractSass = new ExtractTextPlugin({
-    filename: "css/[name].css"
-});
 
 module.exports = {
     entry: './src/js/app.js',
@@ -32,19 +28,20 @@ module.exports = {
                 include: [
                     path.resolve(__dirname, "src", "sass")
                 ],
-                use: extractSass.extract({
-                    use: [{
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: false
-                        }
-                    }, {
-                        loader: 'sass-loader',
-                        options: {
-                            sourceMap: false
-                        }
-                    }]
-                })
+                use: [{
+                    loader: MiniCssExtractPlugin.loader,
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        sourceMap: false
+                    }
+                }, {
+                    loader: 'sass-loader',
+                    options: {
+                        sourceMap: false
+                    }
+                }]
             },
             {
                 test: /\.(svg|gif|jpg|jpeg|png)$/,
@@ -93,7 +90,10 @@ module.exports = {
             filename: 'html/index.html',
             template: 'src/index.html'
         }),
-        extractSass,
+        new MiniCssExtractPlugin({
+            filename: 'css/[name].css',
+            chunkFilename: '[id].css'
+        }),
         new CleanObsoleteChunks()
     ],
     resolve: {

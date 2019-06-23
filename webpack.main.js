@@ -1,5 +1,4 @@
 const path = require('path');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
     entry: './src/js/main.js',
@@ -8,6 +7,7 @@ module.exports = {
         filename: 'js/main.js'
     },
     target: 'electron-main',
+    mode: 'production',
     module: {
         rules: [
             {
@@ -23,9 +23,6 @@ module.exports = {
             }
         ]
     },
-    plugins: [
-        new UglifyJSPlugin({})
-    ],
     resolve: {
         symlinks: true
     },

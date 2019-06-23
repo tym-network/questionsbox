@@ -52,7 +52,7 @@ export default class Settings extends React.PureComponent {
         this.listDevices = this.listDevices.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         navigator.mediaDevices.enumerateDevices()
             .then(this.listDevices)
             .catch(function(err) {
