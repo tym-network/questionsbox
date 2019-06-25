@@ -22,14 +22,14 @@
     "watch-renderer": "webpack --watch --config webpack.dev.js"
   },
   "dependencies": {
-    "i18next": "^11.10.2",
+    "i18next": "^17.0.4",
     "mem": "^5.1.0",
     "moment": "^2.24.0",
     "react-bootstrap": "^0.32.4",
-    "react-select": "^2.4.2",
+    "react-select": "^3.0.4",
     "react-transition-group": "^2.3.1",
     "recordrtc": "^5.5.8",
-    "winston": "^2.4.0"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
