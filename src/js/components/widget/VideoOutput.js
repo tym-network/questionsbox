@@ -64,7 +64,7 @@ export default class VideoOutput extends React.PureComponent {
                 id="video-output"
                 ref={ref => this.video = ref}
                 src={this.props.stream ? URL.createObjectURL(this.props.stream) : null}
-                muted="true"
+                muted={true}
             >
             </video>
         );

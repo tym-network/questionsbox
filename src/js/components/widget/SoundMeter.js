@@ -19,7 +19,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {throttle} from '../../utils/Utils';
+import { throttle } from '../../utils/Utils';
 
 export default class SoundMeter extends React.PureComponent {
 
@@ -37,15 +37,17 @@ export default class SoundMeter extends React.PureComponent {
         this.onAudioProcessThrottled = throttle(this.onAudioProcess.bind(this), 50);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.listenToAudioChanges(this.props.stream);
     }
 
-    componentWillReceiveProps(newProps) {
-        if (this.audioContext) {
-            this.audioContext.close();
+    componentDidUpdate(prevProps) {
+        if (prevProps.stream !== this.props.stream) {
+            if (this.audioContext) {
+                this.audioContext.close();
+            }
+            this.listenToAudioChanges(this.props.stream);
         }
-        this.listenToAudioChanges(newProps.stream);
     }
 
     componentWillUnmount() {

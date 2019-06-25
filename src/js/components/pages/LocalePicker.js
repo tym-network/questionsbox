@@ -19,7 +19,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import mem from 'mem';
-import i18next from 'i18next';
 
 import { getLocales } from '../../utils/Utils';
 
