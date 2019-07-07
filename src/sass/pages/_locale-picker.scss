@@ -28,9 +28,8 @@
 
         .flag {
             position: relative;
-            display: inline-block;
-            width: 150px;
-            height: 150px;
+            display: flex;
+            flex-direction: column;
             cursor: pointer;
             -webkit-user-drag: none;
             user-drag: none;
@@ -41,7 +40,9 @@
             transition: background-color 0.2s ease-in-out;
 
             img {
-                width: 100%;
+                width: 100px;
+                height: 100px;
+                margin-bottom: 12px;
                 border-radius: 50%;
                 -webkit-user-drag: none;
                 user-drag: none;

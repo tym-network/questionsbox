@@ -27,7 +27,7 @@ import App from './components/App.js';
 import '../sass/main.scss';
 
 // Add a logger
-window.logger = new winston.Logger({
+window.logger = winston.createLogger({
     level: 'warn',
     format: 'json',
     transports: [

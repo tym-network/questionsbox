@@ -18,6 +18,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import mem from 'mem';
+
+import { getLocales } from '../../utils/Utils';
 
 // Import all flags
 function importAll (r) {
@@ -39,6 +42,7 @@ export default class LocalePicker extends React.PureComponent {
         super(props);
 
         this.setLocale = this.setLocale.bind(this);
+        this.getLocaleObjects = mem(this.getLocaleObjects);
     }
 
     setLocale(locale) {
@@ -48,19 +52,30 @@ export default class LocalePicker extends React.PureComponent {
         };
     }
 
+    getLocaleObjects() {
+        const localesIndexed = {};
+        getLocales().forEach(locale => {
+            localesIndexed[locale.value] = locale;
+        });
+        return this.props.locales.map(locale => (
+            localesIndexed[locale]
+        ));
+    }
+
     render() {
         const classNames = `${this.props.frontBack}`;
+        const locales = this.getLocaleObjects();
         return (
             <section id="locale" className={classNames}>
                 <div className="content-wrap flex-column">
                     <h1>Select a language</h1>
                     <div className="locale-picker-flags">
                         {
-                            this.props.locales.map(locale => {
-                                const flagImg = require(`../../../assets/img/flags/${locale}.svg`);
+                            locales.map(locale => {
                                 return (
-                                    <div className="flag" key={locale} onClick={this.setLocale(locale)}>
-                                        <img src={flagImg} alt={locale} />
+                                    <div className="flag" key={locale.value} onClick={this.setLocale(locale.value)}>
+                                        <img src={locale.flag} alt={locale.value} />
+                                        <span className="flag-label">{locale.name}</span>
                                     </div>
                                 );
                             })

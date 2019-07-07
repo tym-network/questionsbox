@@ -45,13 +45,13 @@ export default function withStream(WrappedComponent) {
             this.handleStreamError = this.handleStreamError.bind(this);
         }
 
-        componentWillMount() {
+        componentDidMount() {
             this.getStream(this.props.constraints);
         }
 
-        componentWillReceiveProps(nextProps) {
-            if (JSON.stringify(nextProps) != JSON.stringify(this.props)) {
-                this.getStream(nextProps.constraints);
+        componentDidUpdate(prevProps) {
+            if (JSON.stringify(prevProps) !== JSON.stringify(this.props)) {
+                this.getStream(this.props.constraints);
             }
         }
 

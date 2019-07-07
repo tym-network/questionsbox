@@ -77,7 +77,7 @@ export default class PreviewVideo extends React.PureComponent {
                 <video
                     ref={ref => this.video = ref}
                     src={this.props.stream ? URL.createObjectURL(this.props.stream) : null}
-                    muted="true"
+                    muted={true}
                 >
                 </video>
                 <button onClick={this.props.goToNextStep}>{i18next.t('next')}</button>
