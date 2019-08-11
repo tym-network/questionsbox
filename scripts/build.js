@@ -21,8 +21,8 @@ const builder = require('electron-builder');
 const path = require('path');
 const fs = require('fs');
 
-const webpackRendererConfiguration = require('./../webpack.prod.js');
-const webpackMainConfiguration = require('./../webpack.main.js');
+const webpackRendererConfiguration = require('./../webpack.renderer.prod.js');
+const webpackMainConfiguration = require('./../webpack.main.prod.js');
 
 // Build the source code
 const rendererCompilePromise = function() {

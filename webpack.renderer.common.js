@@ -7,7 +7,8 @@ module.exports = {
     entry: './src/js/app.js',
     output: {
         path: path.resolve(__dirname, 'web'),
-        filename: 'js/app.bundle.js'
+        filename: 'js/app.bundle.js',
+        publicPath: '/'
     },
     target: 'electron-renderer',
     module: {
@@ -21,26 +22,6 @@ module.exports = {
                     loader:'babel-loader'
                 }, {
                     loader: 'eslint-loader'
-                }]
-            },
-            {
-                test: /\.scss$/,
-                include: [
-                    path.resolve(__dirname, "src", "sass")
-                ],
-                use: [{
-                    loader: MiniCssExtractPlugin.loader,
-                },
-                {
-                    loader: 'css-loader',
-                    options: {
-                        sourceMap: false
-                    }
-                }, {
-                    loader: 'sass-loader',
-                    options: {
-                        sourceMap: false
-                    }
                 }]
             },
             {
@@ -89,10 +70,6 @@ module.exports = {
             title: 'QuestionsBox',
             filename: 'html/index.html',
             template: 'src/index.html'
-        }),
-        new MiniCssExtractPlugin({
-            filename: 'css/[name].css',
-            chunkFilename: '[id].css'
         }),
         new CleanObsoleteChunks()
     ],
