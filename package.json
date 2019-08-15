@@ -19,7 +19,7 @@
     "build-renderer:dev": "webpack --config webpack.renderer.dev.js",
     "build-renderer:prod": "webpack --config webpack.renderer.prod.js",
     "build:release": "node ./scripts/build.js",
-    "start-dev-server": "webpack-dev-server --open --config webpack.renderer.dev.js",
+    "start-dev-server": "webpack-dev-server --config webpack.renderer.dev.js",
     "watch": "concurrently \"npm run watch-main\" \"npm run start-dev-server\"",
     "watch-main": "webpack --watch --config webpack.main.dev.js",
     "watch-renderer": "webpack --watch --config webpack.renderer.dev.js"
