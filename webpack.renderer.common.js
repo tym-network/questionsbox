@@ -6,8 +6,7 @@ module.exports = {
     entry: './src/js/app.js',
     output: {
         path: path.resolve(__dirname, 'web'),
-        filename: 'js/app.bundle.js',
-        publicPath: '/'
+        filename: 'js/app.bundle.js'
     },
     target: 'electron-renderer',
     module: {

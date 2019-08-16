@@ -18,6 +18,7 @@
 
 const webpack = require('webpack');
 const builder = require('electron-builder');
+const Platform = builder.Platform;
 const path = require('path');
 const fs = require('fs');
 
@@ -44,7 +45,6 @@ const rendererCompilePromise = function() {
 
 const mainCompilePromise = function() {
     return new Promise((res, rej) => {
-        console.log('PLOP');
         const mainCompiler = webpack(webpackMainConfiguration);
         mainCompiler.run((err, stats) => {
             if (err || stats.hasErrors()) {
@@ -67,10 +67,10 @@ console.log(`CLEAR BUILD FOLDER (${buildDirectory})`);
 console.log(`CLEAR BUILD FOLDER (${webDirectory})`);
 Promise.all([buildDirectory, webDirectory]).then(() => {
     console.log('CLEAR BUILD FOLDERS OK');
-    Promise.all([rendererCompilePromise, mainCompilePromise]).then(() => {
-        const buildWindows = buildApp('windows');
-        const buildLinux = buildApp('linux');
-        const buildMac = buildApp('mac');
+    Promise.all([rendererCompilePromise(), mainCompilePromise()]).then(() => {
+        const buildWindows = buildApp(Platform.WINDOWS.createTarget());
+        const buildLinux = buildApp(Platform.LINUX.createTarget());
+        const buildMac = buildApp(Platform.MAC.createTarget());
 
         return Promise.all([
             buildWindows,
@@ -145,8 +145,8 @@ function emptyDirectory(directory) {
 }
 
 // Build the app
-function buildApp(platform) {
-    builder.build({
+function buildApp(target) {
+    return builder.build({
         config: {
             appId: 'com.questionsbox',
             productName: 'QuestionsBox',
@@ -173,7 +173,7 @@ function buildApp(platform) {
                 category: 'Game'
             }
         },
-        platform: platform
+        targets: target
     }).then(() => {
         console.log('App built!');
     }).catch((error) => {
