@@ -26,21 +26,37 @@ export default class VideoOutput extends React.PureComponent {
         streamError: PropTypes.object
     };
 
+    constructor(props) {
+        super(props);
+
+        this.video = React.createRef();
+    }
+
     componentDidMount() {
-        if (this.video) {
-            this.video.play();
+        const { stream } = this.props;
+
+        if (this.video && this.video.current) {
+            if (stream) {
+                this.video.current.srcObject = this.props.stream;
+            }
+            this.video.current.play();
         }
     }
 
     componentDidUpdate() {
-        if (this.video) {
-            this.video.play();
+        const { stream } = this.props;
+
+        if (this.video.current) {
+            if (stream) {
+                this.video.current.srcObject = this.props.stream;
+            }
+            this.video.current.play();
         }
     }
 
     componentWillUnmount() {
-        if (this.video) {
-            this.video.pause();
+        if (this.video.current) {
+            this.video.current.pause();
         }
     }
 
@@ -62,8 +78,7 @@ export default class VideoOutput extends React.PureComponent {
         return (
             <video
                 id="video-output"
-                ref={ref => this.video = ref}
-                src={this.props.stream ? URL.createObjectURL(this.props.stream) : null}
+                ref={this.video}
                 muted={true}
             >
             </video>

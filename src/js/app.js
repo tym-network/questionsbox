@@ -29,14 +29,14 @@ import '../sass/main.scss';
 // Add a logger
 window.logger = winston.createLogger({
     level: 'warn',
-    format: 'json',
+    format: winston.format.json(),
     transports: [
         new winston.transports.File({ filename: electron.remote.getGlobal('paths').error }),
-        new winston.transports.Console({ format: 'simple', level: 'info' })
+        new winston.transports.Console({ level: 'info' })
     ],
     exceptionHandlers: [
         new winston.transports.File({ filename: electron.remote.getGlobal('paths').error }),
-        new winston.transports.Console({ format: 'simple' })
+        new winston.transports.Console()
     ],
     exitOnError: false
 });

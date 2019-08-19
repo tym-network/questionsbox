@@ -37,6 +37,8 @@ export default class PreviewVideo extends React.PureComponent {
             style: {}
         };
 
+        this.video = React.createRef();
+
         // Start recording as soon as the preview is displayed
         this.props.startRecording();
     }
@@ -44,14 +46,24 @@ export default class PreviewVideo extends React.PureComponent {
     componentDidMount() {
         this.playVideo();
         this.computeHeight();
+
+        if (this.video && this.video.current && this.props.stream) {
+            this.video.current.srcObject = this.props.stream;
+        }
     }
 
     componentDidUpdate() {
+        if (this.video && this.video.current && this.props.stream) {
+            this.video.current.srcObject = this.props.stream;
+        }
+
         this.playVideo();
     }
 
     playVideo() {
-        this.video && this.video.play();
+        if (this.video && this.video.current) {
+            this.video.current.play();
+        }
     }
 
     computeHeight() {
@@ -75,8 +87,7 @@ export default class PreviewVideo extends React.PureComponent {
         return (
             <section id="preview-video" ref={ref => this.previewVideo = ref} className={classNames} style={this.state.style}>
                 <video
-                    ref={ref => this.video = ref}
-                    src={this.props.stream ? URL.createObjectURL(this.props.stream) : null}
+                    ref={this.video}
                     muted={true}
                 >
                 </video>

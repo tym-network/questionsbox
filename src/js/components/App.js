@@ -16,6 +16,7 @@
 // along with QuestionsBox.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
@@ -33,7 +34,7 @@ import Menu from './pages/Menu';
 import PreviewVideo from './pages/PreviewVideo';
 import Settings from './pages/Settings';
 
-export default class App extends React.Component {
+export class App extends React.Component {
 
     steps = [
         'menu',
@@ -405,10 +406,9 @@ export default class App extends React.Component {
                         {currentComponent}
                     </TransitionGroup>
                 </div>
-                {
-                    // {this.props.stream && <video id="video-feedback" ref={ref => this.video = ref} muted="true" src={URL.createObjectURL(this.props.stream)}></video>}
-                }
             </div>
         );
     }
 }
+
+export default hot(App);
