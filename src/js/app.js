@@ -31,12 +31,15 @@ window.logger = winston.createLogger({
     level: 'warn',
     format: winston.format.json(),
     transports: [
-        new winston.transports.File({ filename: electron.remote.getGlobal('paths').error }),
-        new winston.transports.Console({ level: 'info' })
-    ],
-    exceptionHandlers: [
-        new winston.transports.File({ filename: electron.remote.getGlobal('paths').error }),
-        new winston.transports.Console()
+        new winston.transports.File({
+            filename: electron.remote.getGlobal('paths').error,
+            handleExceptions: true
+        }),
+        new winston.transports.Console({
+            level: 'info',
+            format: winston.format.simple(),
+            handleExceptions: true
+        })
     ],
     exitOnError: false
 });

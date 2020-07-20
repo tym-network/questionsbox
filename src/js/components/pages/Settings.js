@@ -25,6 +25,7 @@ import SaveIndicator from '../widget/SaveIndicator';
 import SoundMeter from '../widget/SoundMeter';
 import VideoOutput from '../widget/VideoOutput';
 import withStream from '../containers/WebRTCStreamContainer';
+import { listDevices } from '../../utils/WebRTCUtils'
 
 const VideoOutputWithStream = withStream(VideoOutput);
 const SoundMeterWithStream = withStream(SoundMeter);
@@ -49,42 +50,25 @@ export default class Settings extends React.PureComponent {
             videoInputs: []
         }
 
-        this.listDevices = this.listDevices.bind(this);
+        this.handleDeviceList = this.handleDeviceList.bind(this);
     }
 
     componentDidMount() {
-        navigator.mediaDevices.enumerateDevices()
-            .then(this.listDevices)
-            .catch(function(err) {
-                window.logger.error('Error while enumerating devices', err);
-            });
+        listDevices().then(this.handleDeviceList)
     }
 
-    listDevices(deviceInfos) {
-        const audioInputs = [];
-        const videoInputs = [];
+    handleDeviceList(deviceList) {
+        const { audioInputs, videoInputs } = deviceList;
         let audioInputExists = false;
         let videoInputExists = false;
 
-        deviceInfos.forEach(deviceInfo => {
-            const device = {
-                id: deviceInfo.deviceId
-            };
+        audioInputExists = !!audioInputs.find(deviceInfo => (
+            deviceInfo.deviceId === this.props.currentAudioInputId
+        ));
 
-            if (deviceInfo.kind === 'audioinput') {
-                device.text = deviceInfo.label || 'microphone ' + (audioInputs.length + 1);
-                audioInputs.push(device);
-                if (deviceInfo.deviceId === this.props.currentAudioInputId) {
-                    audioInputExists = true;
-                }
-            } else if (deviceInfo.kind === 'videoinput') {
-                device.text = deviceInfo.label || 'camera ' + (videoInputs.length + 1);
-                videoInputs.push(device);
-                if (deviceInfo.deviceId === this.props.currentVideoInputId) {
-                    videoInputExists = true;
-                }
-            }
-        });
+        videoInputExists = !!videoInputs.find(deviceInfo => (
+            deviceInfo.deviceId === this.props.currentVideoInputId
+        ));
 
         this.setState({
             audioInputs,

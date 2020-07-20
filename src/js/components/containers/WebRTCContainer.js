@@ -21,7 +21,7 @@ import React from 'react';
 import RecordRTC from 'recordrtc';
 import electron from 'electron';
 
-import { getStream } from '../../utils/WebRTCUtils';
+import { getStream, listDevices } from '../../utils/WebRTCUtils';
 
 export default function withRecorder(WrappedComponent) {
 
@@ -64,9 +64,50 @@ export default function withRecorder(WrappedComponent) {
                 this.recordRTC.startRecording();
             };
 
-            getStream(mediaConstraints)
-                .then(onMediaSuccess)
-                .catch(onMediaError);
+            new Promise((res, rej) => {
+                // We are missing a device id in the configuration file
+                if (!videoInputDeviceId || !audioInputDeviceId) {
+                    listDevices().then(deviceList => {
+                        // Use first device in the list for the video device
+                        if (
+                            !videoInputDeviceId &&
+                            deviceList &&
+                            deviceList.videoInputs &&
+                            deviceList.videoInputs[0] &&
+                            deviceList.videoInputs[0].id
+                        ) {
+                            mediaConstraints.video.deviceId = {
+                                exact: deviceList.videoInputs[0].id
+                            }
+                        } else {
+                            rej("Unable to find a video device")
+                        }
+
+                        // Use first device in the list for the audio device
+                        if (
+                            !audioInputDeviceId &&
+                            deviceList &&
+                            deviceList.audioInputs &&
+                            deviceList.audioInputs[0] &&
+                            deviceList.audioInputs[0].id
+                        ) {
+                            mediaConstraints.audio.deviceId = {
+                                exact: deviceList.audioInputs[0].id
+                            }
+                        } else {
+                            rej("Unable to find an audio device")
+                        }
+
+                        res();
+                    })
+                } else {
+                    res();
+                }
+            }).then(() => {
+                return getStream(mediaConstraints);
+            })
+            .then(onMediaSuccess)
+            .catch(onMediaError);
         }
 
         stopRecording() {

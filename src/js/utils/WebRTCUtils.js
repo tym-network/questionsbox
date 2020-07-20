@@ -183,7 +183,8 @@ function handleResolutionError(videoInputId, index, options) {
 }
 
 function getUserMedia(constraints) {
-    return navigator.mediaDevices.getUserMedia(constraints);
+    const promise = navigator.mediaDevices.getUserMedia(constraints);
+    return promise;
 }
 
 /**
@@ -192,8 +193,9 @@ function getUserMedia(constraints) {
  */
 export function getStream(constraints) {
     if (constraints.video) {
+        const deviceId = constraints.video.deviceId && constraints.video.deviceId.exact ? constraints.video.deviceId.exact : null;
         // For video, guess the resolution first
-        return guessResolution(constraints.video.deviceId.exact, {
+        return guessResolution(deviceId, {
             sessionStorage: true,
             keepStream: false
         }).then(result => {
@@ -211,6 +213,39 @@ export function getStream(constraints) {
             }
         });
     } else {
+        if (constraints.audio && constraints.audio.deviceId && !constraints.audio.deviceId.exact) {
+            delete constraints.audio.deviceId;
+        }
         return getUserMedia(constraints);
     }
+}
+
+export function listDevices() {
+    return navigator.mediaDevices.enumerateDevices()
+        .then(deviceInfos => {
+            const audioInputs = [];
+            const videoInputs = [];
+
+            deviceInfos.forEach(deviceInfo => {
+                const device = {
+                    id: deviceInfo.deviceId
+                };
+
+                if (deviceInfo.kind === 'audioinput') {
+                    device.text = deviceInfo.label || 'microphone ' + (audioInputs.length + 1);
+                    audioInputs.push(device);
+                } else if (deviceInfo.kind === 'videoinput') {
+                    device.text = deviceInfo.label || 'camera ' + (videoInputs.length + 1);
+                    videoInputs.push(device);
+                }
+            });
+
+            return {
+                audioInputs,
+                videoInputs
+            }
+        })
+        .catch(function(err) {
+            window.logger.error('Error while enumerating devices', err);
+        });
 }
