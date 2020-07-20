@@ -26,8 +26,8 @@ let win;
 let isDev = process.env['NODE_ENV'] === 'development';
 
 function createFoldersAndPaths() {
-    const appPath = `${app.getPath('appData')}/QuestionsBox`;
-    const videoPath = `${appPath}/videos`;
+    const appPath = path.join(app.getPath('appData'), 'QuestionsBox');
+    const videoPath = path.join(appPath, 'videos');
 
     try {
         fs.mkdirSync(appPath);
@@ -48,10 +48,10 @@ function createFoldersAndPaths() {
     global.paths = {
         'appData': appPath,
         'appPath': app.getAppPath(),
-        'error': `${appPath}/error.json`,
-        'config': `${appPath}/config.json`,
+        'error': path.join(appPath, 'error.json'),
+        'config': path.join(appPath, 'config.json'),
         'videos': videoPath,
-        'questions': `${appPath}/questions.json`
+        'questions': path.join(appPath, 'questions.json')
     };
 }
 
