@@ -17,13 +17,18 @@
 //
 
 import fs from 'fs';
-
-// Import all flags
-function importAll (r) {
-    r.keys().forEach(r);
-}
-
-importAll(require.context('../../assets/img/flags', true, /\.svg$/));
+import enFlag from '../../assets/img/flags/en.svg';
+import frFlag from '../../assets/img/flags/fr.svg';
+import esFlag from '../../assets/img/flags/es.svg';
+import deFlag from '../../assets/img/flags/de.svg';
+import itFlag from '../../assets/img/flags/it.svg';
+import ruFlag from '../../assets/img/flags/ru.svg';
+import ptFlag from '../../assets/img/flags/pt.svg';
+import nlFlag from '../../assets/img/flags/nl.svg';
+import seFlag from '../../assets/img/flags/se.svg';
+import noFlag from '../../assets/img/flags/no.svg';
+import dkFlag from '../../assets/img/flags/dk.svg';
+import plFlag from '../../assets/img/flags/pl.svg';
 
 export function throttle(callback, wait, context = this) {
     let timeout = null
@@ -81,17 +86,17 @@ export function readJsonFile(fileName) {
 
 export function getLocales() {
     return [
-        { value: 'en', name: 'English', labelKey: 'langEnglish', flag: require('../../assets/img/flags/en.svg') },
-        { value: 'fr', name: 'Français', labelKey: 'langFrench', flag: require('../../assets/img/flags/fr.svg') },
-        { value: 'es', name: 'Español', labelKey: 'langSpanish', flag: require('../../assets/img/flags/es.svg') },
-        { value: 'de', name: 'Deutsch', labelKey: 'langGerman', flag: require('../../assets/img/flags/de.svg') },
-        { value: 'it', name: 'Italiano', labelKey: 'langItalian', flag: require('../../assets/img/flags/it.svg') },
-        { value: 'ru', name: 'русский', labelKey: 'langRussian', flag: require('../../assets/img/flags/ru.svg') },
-        { value: 'pt', name: 'Português', labelKey: 'langPortuguese', flag: require('../../assets/img/flags/pt.svg') },
-        { value: 'nl', name: 'Nederlandse', labelKey: 'langDutch', flag: require('../../assets/img/flags/nl.svg') },
-        { value: 'sv', name: 'Svenska', labelKey: 'langSwedish', flag: require('../../assets/img/flags/se.svg') },
-        { value: 'no', name: 'Norsk', labelKey: 'langNorwegian', flag: require('../../assets/img/flags/no.svg') },
-        { value: 'da', name: 'Dansk', labelKey: 'langDanish', flag: require('../../assets/img/flags/dk.svg') },
-        { value: 'pl', name: 'Polski', labelKey: 'langPolish', flag: require('../../assets/img/flags/pl.svg') }
+        { value: 'en', name: 'English', labelKey: 'langEnglish', flag: enFlag },
+        { value: 'fr', name: 'Français', labelKey: 'langFrench', flag: frFlag },
+        { value: 'es', name: 'Español', labelKey: 'langSpanish', flag: esFlag },
+        { value: 'de', name: 'Deutsch', labelKey: 'langGerman', flag: deFlag },
+        { value: 'it', name: 'Italiano', labelKey: 'langItalian', flag: itFlag },
+        { value: 'ru', name: 'русский', labelKey: 'langRussian', flag: ruFlag },
+        { value: 'pt', name: 'Português', labelKey: 'langPortuguese', flag: ptFlag },
+        { value: 'nl', name: 'Nederlandse', labelKey: 'langDutch', flag: nlFlag },
+        { value: 'sv', name: 'Svenska', labelKey: 'langSwedish', flag: seFlag },
+        { value: 'no', name: 'Norsk', labelKey: 'langNorwegian', flag: noFlag },
+        { value: 'da', name: 'Dansk', labelKey: 'langDanish', flag: dkFlag },
+        { value: 'pl', name: 'Polski', labelKey: 'langPolish', flag: plFlag }
     ]
 }

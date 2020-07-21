@@ -19,8 +19,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
-
-const logo = require('../../../assets/img/logo.png');
+import logo from '../../../assets/img/logo.png';
 
 export default class Introduction extends React.PureComponent {
 
