@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const common = require('./webpack.renderer.common.js');
 
@@ -38,6 +39,12 @@ module.exports = merge(common, {
         new MiniCssExtractPlugin({
             filename: 'css/[name].css',
             chunkFilename: '[id].css'
-        })
+        }),
+        new HtmlWebpackPlugin({
+            title: 'QuestionsBox',
+            filename: 'html/index.html',
+            template: 'src/index.html',
+            csppolicy: "script-src 'self';"
+        }),
     ]
 });

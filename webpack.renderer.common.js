@@ -1,6 +1,5 @@
 const path = require('path');
 const CleanObsoleteChunks = require('webpack-clean-obsolete-chunks');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: './src/js/app.js',
@@ -64,11 +63,6 @@ module.exports = {
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            title: 'QuestionsBox',
-            filename: 'html/index.html',
-            template: 'src/index.html'
-        }),
         new CleanObsoleteChunks()
     ],
     resolve: {

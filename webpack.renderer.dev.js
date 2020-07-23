@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const common = require('./webpack.renderer.common.js');
 
 module.exports = merge(common, {
@@ -43,7 +44,13 @@ module.exports = merge(common, {
     plugins:[
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('development'),
-        })
+        }),
+        new HtmlWebpackPlugin({
+            title: 'QuestionsBox',
+            filename: 'html/index.html',
+            template: 'src/index.html',
+            csppolicy: "script-src 'unsafe-eval' 'self';"
+        }),
     ],
     resolve: {
         alias: {
