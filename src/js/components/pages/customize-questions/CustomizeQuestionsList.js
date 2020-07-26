@@ -23,20 +23,13 @@ import PropTypes from 'prop-types';
 import CustomizeQuestionsEdit from './CustomizeQuestionsEdit';
 
 export default class CustomizeQuestionsList extends React.PureComponent {
-
-    static propTypes = {
-        questions: PropTypes.object.isRequired,
-        languagesSelected: PropTypes.arrayOf(PropTypes.string).isRequired,
-        addQuestion: PropTypes.func.isRequired,
-        editQuestion: PropTypes.func.isRequired,
-        removeQuestion: PropTypes.func.isRequired
-    };
-
     render() {
-        const { questions, languagesSelected, addQuestion, editQuestion, removeQuestion } = this.props;
+        const {
+            questions, languagesSelected, addQuestion, editQuestion, removeQuestion
+        } = this.props;
         const questionsByIndex = [];
 
-        languagesSelected.map(locale => {
+        languagesSelected.forEach(locale => {
             questions[locale].forEach((question, index) => {
                 if (!questionsByIndex[index]) {
                     questionsByIndex[index] = {};
@@ -45,8 +38,9 @@ export default class CustomizeQuestionsList extends React.PureComponent {
             });
         });
 
-        return questionsByIndex.map((question, index) =>
+        return questionsByIndex.map((question, index) => (
             <CustomizeQuestionsEdit
+                // eslint-disable-next-line react/no-array-index-key
                 key={index}
                 question={question}
                 languagesSelected={languagesSelected}
@@ -55,7 +49,14 @@ export default class CustomizeQuestionsList extends React.PureComponent {
                 editQuestion={editQuestion}
                 removeQuestion={removeQuestion}
             />
-        );
+        ));
     }
-
 }
+
+CustomizeQuestionsList.propTypes = {
+    questions: PropTypes.object.isRequired,
+    languagesSelected: PropTypes.arrayOf(PropTypes.string).isRequired,
+    addQuestion: PropTypes.func.isRequired,
+    editQuestion: PropTypes.func.isRequired,
+    removeQuestion: PropTypes.func.isRequired
+};

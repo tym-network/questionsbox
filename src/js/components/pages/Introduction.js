@@ -19,35 +19,46 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
-
-const logo = require('../../../assets/img/logo.png');
+import defaultLogo from '../../../assets/img/logo.png';
 
 export default class Introduction extends React.PureComponent {
-
-    static propTypes = {
-        frontBack: PropTypes.string.isRequired,
-        goToNextStep: PropTypes.func.isRequired,
-        title: PropTypes.string.isRequired,
-        logo: PropTypes.string
-    };
-
     render() {
-        const classNames = this.props.frontBack;
+        const {
+            frontBack, title, logo, goToNextStep
+        } = this.props;
+        const classNames = frontBack;
         return (
             <section id="introduction" className={classNames}>
                 <div className="content-wrap flex-column">
                     <div className="introduction-wrapper">
                         <div>
-                            <span className="avatar"><img src={this.props.logo || logo} alt="" /></span>
-                            <h1>{this.props.title}</h1>
+                            <span className="avatar"><img src={logo || defaultLogo} alt="" /></span>
+                            <h1>{title}</h1>
                         </div>
                     </div>
 
                     <footer>
-                        <button id="see-instructions" onClick={this.props.goToNextStep}>{i18next.t('instructionsButton')}</button>
+                        <button
+                            id="see-instructions"
+                            onClick={goToNextStep}
+                            type="button"
+                        >
+                            {i18next.t('instructionsButton')}
+                        </button>
                     </footer>
                 </div>
             </section>
         );
     }
 }
+
+Introduction.defaultProps = {
+    logo: null
+};
+
+Introduction.propTypes = {
+    frontBack: PropTypes.string.isRequired,
+    goToNextStep: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    logo: PropTypes.string
+};

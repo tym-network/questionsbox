@@ -16,30 +16,19 @@
 // along with QuestionsBox.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-const {app, BrowserWindow} = require('electron');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { app, BrowserWindow } = require('electron');
+const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
 let win;
+const isDev = process.env.NODE_ENV === 'development';
 
-function createWindow() {
-    win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            nodeIntegration: true
-        }
-    });
-
-    win.loadURL(url.format({
-        pathname: path.join(__dirname, '..', 'html', 'index.html'),
-        protocol: 'file:',
-        slashes: true
-    }));
-
-    const appPath = `${app.getPath('appData')}/QuestionsBox`;
-    const videoPath = `${appPath}/videos`;
+function createFoldersAndPaths() {
+    const appPath = path.join(app.getPath('appData'), 'QuestionsBox');
+    const videoPath = path.join(appPath, 'videos');
 
     try {
         fs.mkdirSync(appPath);
@@ -58,20 +47,55 @@ function createWindow() {
     }
 
     global.paths = {
-        'appData': appPath,
-        'appPath': app.getAppPath(),
-        'error': `${appPath}/error.json`,
-        'config': `${appPath}/config.json`,
-        'videos': videoPath,
-        'questions': `${appPath}/questions.json`
+        appData: appPath,
+        appPath: app.getAppPath(),
+        error: path.join(appPath, 'error.json'),
+        config: path.join(appPath, 'config.json'),
+        videos: videoPath,
+        questions: path.join(appPath, 'questions.json')
     };
+}
+
+function createWindow() {
+    win = new BrowserWindow({
+        width: 800,
+        height: 600,
+        webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true
+        }
+    });
+
+    createFoldersAndPaths();
+
+    if (isDev) {
+        // Load index.html via webpack dev server.
+        win.loadURL('http://localhost:9000/html/index.html');
+    } else {
+        win.loadURL(url.format({
+            pathname: path.join(__dirname, '..', 'html', 'index.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+    }
 
     win.on('closed', () => {
-        win = null
+        win = null;
     });
 }
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+    if (isDev) {
+        installExtension(REACT_DEVELOPER_TOOLS)
+            .then(name => {
+                console.log(`Added Extension:  ${name}`);
+                createWindow();
+            })
+            .catch(err => console.log('An error occurred: ', err));
+    } else {
+        createWindow();
+    }
+});
 
 app.on('window-all-closed', () => {
     app.quit();

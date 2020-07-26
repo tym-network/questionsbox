@@ -20,14 +20,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class Question extends React.PureComponent {
-
-    static propTypes = {
-        question: PropTypes.string.isRequired
-    };
-
     render() {
+        const { question } = this.props;
         return (
-            <p>{this.props.question}</p>
+            <p>{question}</p>
         );
     }
 }
+
+Question.propTypes = {
+    question: PropTypes.string.isRequired
+};

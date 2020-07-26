@@ -25,13 +25,8 @@ import { getStream } from '../../utils/WebRTCUtils';
  * @param {Object} WrappedComponent
  */
 export default function withStream(WrappedComponent) {
-    return class WebRTCStreamContainer extends React.PureComponent {
-
+    class WebRTCStreamContainer extends React.PureComponent {
         currentConstraints = {};
-
-        static propTypes = {
-            constraints: PropTypes.object.isRequired
-        };
 
         constructor(props) {
             super(props);
@@ -46,41 +41,30 @@ export default function withStream(WrappedComponent) {
         }
 
         componentDidMount() {
-            this.getStream(this.props.constraints);
+            const { constraints } = this.props;
+            this.getStream(constraints);
         }
 
         componentDidUpdate(prevProps) {
+            const { constraints } = this.props;
             if (JSON.stringify(prevProps) !== JSON.stringify(this.props)) {
-                this.getStream(this.props.constraints);
+                this.getStream(constraints);
             }
         }
 
         componentWillUnmount() {
-            if (this.state.stream) {
-                this.state.stream.getTracks().forEach(track => {
+            const { stream } = this.state;
+            if (stream) {
+                stream.getTracks().forEach(track => {
                     track.stop();
                 });
             }
         }
 
-        handleStream(stream) {
-            this.setState({
-                error: null,
-                stream: stream
-            });
-        }
-
-        handleStreamError(err) {
-            window.logger.error('Can\'t get stream with constraints', this.currentConstraints, err);
-
-            this.setState({
-                error: err
-            });
-        }
-
         getStream(constraints) {
-            if (this.state.stream) {
-                this.state.stream.getTracks().forEach(track => {
+            const { stream } = this.state;
+            if (stream) {
+                stream.getTracks().forEach(track => {
                     track.stop();
                 });
                 this.setState({
@@ -93,14 +77,39 @@ export default function withStream(WrappedComponent) {
             getStream(constraints).then(this.handleStream, this.handleStreamError);
         }
 
+        handleStream(stream) {
+            this.setState({
+                error: null,
+                stream
+            });
+        }
+
+        handleStreamError(err) {
+            window.logger.error('Can\'t get stream with constraints', this.currentConstraints, err);
+
+            this.setState({
+                error: err
+            });
+        }
+
         render() {
             const { constraints, ...passThroughProps } = this.props; // eslint-disable-line no-unused-vars
+            const { stream, error } = this.state;
 
-            return <WrappedComponent
-                stream={this.state.stream}
-                streamError={this.state.error}
-                {...passThroughProps}
-            />
+            return (
+                <WrappedComponent
+                    stream={stream}
+                    streamError={error}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
+                    {...passThroughProps}
+                />
+            );
         }
     }
+
+    WebRTCStreamContainer.propTypes = {
+        constraints: PropTypes.object.isRequired
+    };
+
+    return WebRTCStreamContainer;
 }

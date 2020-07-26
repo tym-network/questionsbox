@@ -16,17 +16,17 @@
 // along with QuestionsBox.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-const fs = require('fs');
 import React from 'react';
 import RecordRTC from 'recordrtc';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import electron from 'electron';
 
-import { getStream } from '../../utils/WebRTCUtils';
+import { getStream, listDevices } from '../../utils/WebRTCUtils';
+
+const fs = require('fs');
 
 export default function withRecorder(WrappedComponent) {
-
     return class WebRTCContainer extends React.PureComponent {
-
         multiStreamRecorder;
 
         constructor(props) {
@@ -43,13 +43,13 @@ export default function withRecorder(WrappedComponent) {
 
         startRecording(audioInputDeviceId, videoInputDeviceId) {
             const mediaConstraints = {
-                audio: {deviceId: {exact: audioInputDeviceId}},
+                audio: { deviceId: { exact: audioInputDeviceId } },
                 video: {
-                    deviceId: {exact: videoInputDeviceId}
+                    deviceId: { exact: videoInputDeviceId }
                 }
             };
 
-            const onMediaError = function(e) {
+            const onMediaError = e => {
                 window.logger.error('Media error while recording', e);
             };
 
@@ -64,20 +64,59 @@ export default function withRecorder(WrappedComponent) {
                 this.recordRTC.startRecording();
             };
 
-            getStream(mediaConstraints)
-                .then(onMediaSuccess)
-                .catch(onMediaError);
+            new Promise((res, rej) => {
+                // We are missing a device id in the configuration file
+                if (!videoInputDeviceId || !audioInputDeviceId) {
+                    listDevices().then(deviceList => {
+                        // Use first device in the list for the video device
+                        if (
+                            !videoInputDeviceId
+                            && deviceList
+                            && deviceList.videoInputs
+                            && deviceList.videoInputs[0]
+                            && deviceList.videoInputs[0].id
+                        ) {
+                            mediaConstraints.video.deviceId = {
+                                exact: deviceList.videoInputs[0].id
+                            };
+                        } else {
+                            rej(new Error('Unable to find a video device'));
+                        }
+
+                        // Use first device in the list for the audio device
+                        if (
+                            !audioInputDeviceId
+                            && deviceList
+                            && deviceList.audioInputs
+                            && deviceList.audioInputs[0]
+                            && deviceList.audioInputs[0].id
+                        ) {
+                            mediaConstraints.audio.deviceId = {
+                                exact: deviceList.audioInputs[0].id
+                            };
+                        } else {
+                            rej(new Error('Unable to find an audio device'));
+                        }
+
+                        res();
+                    });
+                } else {
+                    res();
+                }
+            }).then(
+                () => (getStream(mediaConstraints))
+            ).then(onMediaSuccess).catch(onMediaError);
         }
 
         stopRecording() {
             if (this.recordRTC) {
                 this.recordRTC.stopRecording(() => {
                     const blobs = this.recordRTC.getBlob();
-                    const videoName = + new Date();
+                    const videoName = +new Date();
 
                     try {
-                        var fileStream = fs.createWriteStream(`${electron.remote.getGlobal('paths').videos}/${videoName}.webm`);
-                        var fileReader = new FileReader();
+                        const fileStream = fs.createWriteStream(`${electron.remote.getGlobal('paths').videos}/${videoName}.webm`);
+                        const fileReader = new FileReader();
                         fileReader.onload = event => {
                             fileStream.write(Buffer.from(new Uint8Array(event.target.result)), () => {
                                 window.logger.info('File saved', videoName);
@@ -85,9 +124,9 @@ export default function withRecorder(WrappedComponent) {
                         };
                         fileReader.onerror = event => {
                             window.logger.error('Failed to read blobs', event);
-                        }
+                        };
                         fileReader.readAsArrayBuffer(blobs);
-                    } catch(e) {
+                    } catch (e) {
                         window.logger.error(e);
                     }
 
@@ -99,8 +138,9 @@ export default function withRecorder(WrappedComponent) {
         }
 
         stopStream() {
-            if (this.state.stream) {
-                this.state.stream.getTracks().forEach(function(track) {
+            const { stream } = this.state;
+            if (stream) {
+                stream.getTracks().forEach(track => {
                     track.stop();
                 });
                 this.setState({
@@ -110,13 +150,17 @@ export default function withRecorder(WrappedComponent) {
         }
 
         render() {
-            return <WrappedComponent
-                setInputDevice={this.setInputDevice}
-                startRecording={this.startRecording}
-                stopRecording={this.stopRecording}
-                stream={this.state.stream}
-                {...this.props}
-            />;
+            const { stream } = this.state;
+            return (
+                <WrappedComponent
+                    setInputDevice={this.setInputDevice}
+                    startRecording={this.startRecording}
+                    stopRecording={this.stopRecording}
+                    stream={stream}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
+                    {...this.props}
+                />
+            );
         }
-    }
+    };
 }

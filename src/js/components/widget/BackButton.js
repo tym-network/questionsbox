@@ -20,14 +20,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class BackButton extends React.PureComponent {
-
-    static propTypes = {
-        onClick: PropTypes.func.isRequired
-    };
-
     render() {
+        const { onClick } = this.props;
+
         return (
-            <button className="back icon-angle-left" onClick={this.props.onClick}></button>
+            <button
+                className="back icon-angle-left"
+                onClick={onClick}
+                type="button"
+                aria-label="Back"
+            />
         );
     }
 }
+
+BackButton.propTypes = {
+    onClick: PropTypes.func.isRequired
+};

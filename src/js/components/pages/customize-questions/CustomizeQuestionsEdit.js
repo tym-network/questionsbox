@@ -23,16 +23,6 @@ import i18next from 'i18next';
 import CustomizeQuestionsTextarea from './CustomizeQuestionsTextarea';
 
 export default class CustomizeQuestionsEdit extends React.PureComponent {
-
-    static propTypes = {
-        question: PropTypes.object.isRequired,
-        languagesSelected: PropTypes.arrayOf(PropTypes.string).isRequired,
-        index: PropTypes.number.isRequired,
-        addQuestion: PropTypes.func.isRequired,
-        editQuestion: PropTypes.func.isRequired,
-        removeQuestion: PropTypes.func.isRequired
-    };
-
     constructor(props) {
         super(props);
 
@@ -63,34 +53,47 @@ export default class CustomizeQuestionsEdit extends React.PureComponent {
         const { question, languagesSelected, index } = this.props;
 
         return (
-            <React.Fragment>
+            <>
                 <div className="questions-edit">
-                    <span className="question-number">{index + 1}.</span>
+                    <span className="question-number">
+                        {index + 1}
+                        .
+                    </span>
                     <div className="questions-edit-textareas">
-                        {languagesSelected.map(locale =>
+                        {languagesSelected.map(locale => (
                             <CustomizeQuestionsTextarea
                                 key={locale}
                                 locale={locale}
                                 question={question[locale]}
                                 editQuestion={this.editQuestion(locale)}
                             />
-                        )}
+                        ))}
                     </div>
                     <button
                         className="questions-edit-remove"
                         onClick={this.removeQuestion}
+                        type="button"
                     >
-                        <i className="icon-trash"></i>
+                        <i className="icon-trash" />
                     </button>
                 </div>
                 <button
                     className="btn-pill btn-add-question"
                     onClick={this.addQuestion}
+                    type="button"
                 >
                     {i18next.t('addQuestion')}
                 </button>
-            </React.Fragment>
+            </>
         );
     }
-
 }
+
+CustomizeQuestionsEdit.propTypes = {
+    question: PropTypes.object.isRequired,
+    languagesSelected: PropTypes.arrayOf(PropTypes.string).isRequired,
+    index: PropTypes.number.isRequired,
+    addQuestion: PropTypes.func.isRequired,
+    editQuestion: PropTypes.func.isRequired,
+    removeQuestion: PropTypes.func.isRequired
+};

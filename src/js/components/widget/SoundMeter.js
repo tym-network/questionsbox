@@ -22,11 +22,6 @@ import PropTypes from 'prop-types';
 import { throttle } from '../../utils/Utils';
 
 export default class SoundMeter extends React.PureComponent {
-
-    static propTypes = {
-        stream: PropTypes.object
-    };
-
     constructor(props) {
         super(props);
 
@@ -38,25 +33,40 @@ export default class SoundMeter extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.listenToAudioChanges(this.props.stream);
+        const { stream } = this.props;
+        this.listenToAudioChanges(stream);
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.stream !== this.props.stream) {
-            if (this.audioContext) {
+        const { stream } = this.props;
+        if (prevProps.stream !== stream) {
+            if (this.audioContext && this.audioContext.state === 'running') {
                 this.audioContext.close();
             }
-            this.listenToAudioChanges(this.props.stream);
+            this.listenToAudioChanges(stream);
         }
     }
 
     componentWillUnmount() {
-        if (this.audioContext) {
+        if (this.audioContext && this.audioContext.state === 'running') {
             this.audioContext.close();
         }
         if (this.script) {
             this.script.onaudioprocess = null;
         }
+    }
+
+    onAudioProcess(event) {
+        const input = event.inputBuffer.getChannelData(0);
+        let sum = 0.0;
+        const l = input.length;
+        for (let i = 0; i < l; ++i) {
+            sum += Math.abs(input[i]);
+        }
+
+        this.setState({
+            volume: (sum / l) * 2 // Increase volume by 2 to make it more "relevant"
+        });
     }
 
     listenToAudioChanges(stream) {
@@ -76,31 +86,27 @@ export default class SoundMeter extends React.PureComponent {
         script.connect(this.audioContext.destination);
     }
 
-    onAudioProcess(event) {
-        const input = event.inputBuffer.getChannelData(0);
-        let sum = 0.0;
-        let l = input.length;
-        for (let i = 0; i < l; ++i) {
-            sum += Math.abs(input[i]);
-        }
-
-        this.setState({
-            volume: (sum / l) * 2 // Increase volume by 2 to make it more "relevant"
-        });
-    }
-
     render() {
+        const { volume } = this.state;
         const style = {
-            transform: `scaleX(${Math.min(1, this.state.volume)})`
+            transform: `scaleX(${Math.min(1, volume)})`
         };
 
         return (
             <div className="sound-meter-container">
-                <i className="icon-microphone"></i>
+                <i className="icon-microphone" />
                 <div className="sound-meter">
-                    <div className="sound-meter-bar" style={style}></div>
+                    <div className="sound-meter-bar" style={style} />
                 </div>
             </div>
         );
     }
 }
+
+SoundMeter.defaultProps = {
+    stream: null
+};
+
+SoundMeter.propTypes = {
+    stream: PropTypes.object
+};

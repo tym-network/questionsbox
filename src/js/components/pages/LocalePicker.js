@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 // Copyright (C) 2018 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
@@ -23,21 +24,13 @@ import mem from 'mem';
 import { getLocales } from '../../utils/Utils';
 
 // Import all flags
-function importAll (r) {
+function importAll(r) {
     r.keys().forEach(r);
 }
 
 importAll(require.context('../../../assets/img/flags', true, /\.svg$/));
 
 export default class LocalePicker extends React.PureComponent {
-
-    static propTypes = {
-        locales: PropTypes.arrayOf(PropTypes.string).isRequired,
-        frontBack: PropTypes.string.isRequired,
-        goToNextStep: PropTypes.func.isRequired,
-        setLocale: PropTypes.func.isRequired
-    };
-
     constructor(props) {
         super(props);
 
@@ -47,23 +40,26 @@ export default class LocalePicker extends React.PureComponent {
 
     setLocale(locale) {
         return () => {
-            this.props.setLocale(locale);
-            this.props.goToNextStep();
+            const { setLocale, goToNextStep } = this.props;
+            setLocale(locale);
+            goToNextStep();
         };
     }
 
     getLocaleObjects() {
+        const { locales } = this.props;
         const localesIndexed = {};
         getLocales().forEach(locale => {
             localesIndexed[locale.value] = locale;
         });
-        return this.props.locales.map(locale => (
+        return locales.map(locale => (
             localesIndexed[locale]
         ));
     }
 
     render() {
-        const classNames = `${this.props.frontBack}`;
+        const { frontBack } = this.props;
+        const classNames = `${frontBack}`;
         const locales = this.getLocaleObjects();
         return (
             <section id="locale" className={classNames}>
@@ -71,14 +67,13 @@ export default class LocalePicker extends React.PureComponent {
                     <h1>Select a language</h1>
                     <div className="locale-picker-flags">
                         {
-                            locales.map(locale => {
-                                return (
-                                    <div className="flag" key={locale.value} onClick={this.setLocale(locale.value)}>
-                                        <img src={locale.flag} alt={locale.value} />
-                                        <span className="flag-label">{locale.name}</span>
-                                    </div>
-                                );
-                            })
+                            locales.map(locale => (
+                                // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                                <div className="flag" key={locale.value} onClick={this.setLocale(locale.value)}>
+                                    <img src={locale.flag} alt={locale.value} />
+                                    <span className="flag-label">{locale.name}</span>
+                                </div>
+                            ))
                         }
                     </div>
                 </div>
@@ -86,3 +81,10 @@ export default class LocalePicker extends React.PureComponent {
         );
     }
 }
+
+LocalePicker.propTypes = {
+    locales: PropTypes.arrayOf(PropTypes.string).isRequired,
+    frontBack: PropTypes.string.isRequired,
+    goToNextStep: PropTypes.func.isRequired,
+    setLocale: PropTypes.func.isRequired
+};

@@ -28,22 +28,14 @@ import CustomizeQuestionsList from './customize-questions/CustomizeQuestionsList
 import { debounce } from '../../utils/Utils';
 
 export default class CustomizeQuestions extends React.PureComponent {
-
-    static propTypes = {
-        frontBack: PropTypes.string.isRequired,
-        back: PropTypes.func.isRequired,
-        questions: PropTypes.object.isRequired,
-        questionsData: PropTypes.object.isRequired,
-        saveQuestions: PropTypes.func.isRequired
-    };
-
     constructor(props) {
         super(props);
 
-        const languagesSelected = Object.keys(this.props.questions);
+        const { questions } = this.props;
+        const languagesSelected = Object.keys(questions);
         this.state = {
-            languagesSelected: languagesSelected,
-            questions: this.props.questions,
+            languagesSelected,
+            questions,
             saveStatus: null
         };
 
@@ -66,7 +58,7 @@ export default class CustomizeQuestions extends React.PureComponent {
     addLanguage(language) {
         const { questions, languagesSelected } = this.state;
         let nbQuestions = 0;
-        let arrayEmptyQuestions = [];
+        const arrayEmptyQuestions = [];
 
         // Get the number of questions
         Object.keys(questions).forEach(locale => {
@@ -74,12 +66,12 @@ export default class CustomizeQuestions extends React.PureComponent {
         });
 
         for (let i = 0; i < nbQuestions; i++) {
-            arrayEmptyQuestions.push("");
+            arrayEmptyQuestions.push('');
         }
 
         this.setState({
             languagesSelected: [...languagesSelected, language],
-            questions: {...questions, [language]: arrayEmptyQuestions}
+            questions: { ...questions, [language]: arrayEmptyQuestions }
         }, () => {
             this.saveQuestions();
         });
@@ -87,7 +79,7 @@ export default class CustomizeQuestions extends React.PureComponent {
 
     removeLanguage(language) {
         const { questions, languagesSelected } = this.state;
-        const newQuestions = {...questions};
+        const newQuestions = { ...questions };
         const newLanguagesSelected = [...languagesSelected];
         const indexLanguage = newLanguagesSelected.indexOf(language);
 
@@ -106,7 +98,7 @@ export default class CustomizeQuestions extends React.PureComponent {
         const { questions } = this.state;
         const newQuestions = JSON.parse(JSON.stringify(questions));
         Object.keys(newQuestions).forEach(locale => {
-            newQuestions[locale].splice(questionIndex + 1, 0, "");
+            newQuestions[locale].splice(questionIndex + 1, 0, '');
         });
 
         this.setState({
@@ -144,11 +136,12 @@ export default class CustomizeQuestions extends React.PureComponent {
 
     saveQuestions() {
         const { saveQuestions } = this.props;
+        const { questions } = this.state;
 
         this.setState({
             saveStatus: 'saving'
         });
-        saveQuestions(this.state.questions).then(() => {
+        saveQuestions(questions).then(() => {
             this.setState({
                 saveStatus: 'saved'
             });
@@ -164,16 +157,16 @@ export default class CustomizeQuestions extends React.PureComponent {
         const { back, frontBack, questionsData } = this.props;
         const { languagesSelected, questions, saveStatus } = this.state;
         const className = `${frontBack}`;
-        const languages = Object.keys(this.state.questions);
+        const languages = Object.keys(questions);
 
         return (
             <section id="customize-questions" className={className}>
-                <BackButton onClick={back}/>
+                <BackButton onClick={back} />
                 <div className="content-wrap">
                     <div className="custom-form">
                         <h1>{i18next.t('questionsList')}</h1>
                         <div className="customize-block">
-                            <label>{i18next.t('languages')}</label>
+                            <h2>{i18next.t('languages')}</h2>
                             <CustomizeQuestionsLanguages
                                 languages={languages}
                                 languagesSelected={languagesSelected}
@@ -183,9 +176,10 @@ export default class CustomizeQuestions extends React.PureComponent {
                             />
                         </div>
                         {
-                            languagesSelected.length > 0 &&
+                            languagesSelected.length > 0
+                            && (
                                 <div className="customize-block">
-                                    <label>{i18next.t('questions')}</label>
+                                    <h2>{i18next.t('questions')}</h2>
                                     <CustomizeQuestionsList
                                         languagesSelected={languagesSelected}
                                         questions={questions}
@@ -194,6 +188,7 @@ export default class CustomizeQuestions extends React.PureComponent {
                                         removeQuestion={this.removeQuestion}
                                     />
                                 </div>
+                            )
                         }
                     </div>
                     <footer className="save-indicator-container">
@@ -206,5 +201,12 @@ export default class CustomizeQuestions extends React.PureComponent {
             </section>
         );
     }
-
 }
+
+CustomizeQuestions.propTypes = {
+    frontBack: PropTypes.string.isRequired,
+    back: PropTypes.func.isRequired,
+    questions: PropTypes.object.isRequired,
+    questionsData: PropTypes.object.isRequired,
+    saveQuestions: PropTypes.func.isRequired
+};

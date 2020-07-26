@@ -20,41 +20,52 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class VideoOutput extends React.PureComponent {
+    constructor(props) {
+        super(props);
 
-    static propTypes = {
-        stream: PropTypes.object,
-        streamError: PropTypes.object
-    };
+        this.video = React.createRef();
+    }
 
     componentDidMount() {
-        if (this.video) {
-            this.video.play();
+        const { stream } = this.props;
+
+        if (this.video && this.video.current) {
+            if (stream) {
+                this.video.current.srcObject = stream;
+            }
+            this.video.current.play();
         }
     }
 
     componentDidUpdate() {
-        if (this.video) {
-            this.video.play();
+        const { stream } = this.props;
+
+        if (this.video.current) {
+            if (stream) {
+                this.video.current.srcObject = stream;
+            }
+            this.video.current.play();
         }
     }
 
     componentWillUnmount() {
-        if (this.video) {
-            this.video.pause();
+        if (this.video.current) {
+            this.video.current.pause();
         }
     }
 
     render() {
-        if (this.props.streamError) {
+        const { stream, streamError } = this.props;
+        if (streamError) {
             return (
                 <div className="error-message">ERROR</div>
-            )
+            );
         }
 
-        if (!this.props.stream) {
+        if (!stream) {
             return (
                 <div className="video-placeholder">
-                    <i className="icon-no-camera"></i>
+                    <i className="icon-no-camera" />
                 </div>
             );
         }
@@ -62,11 +73,19 @@ export default class VideoOutput extends React.PureComponent {
         return (
             <video
                 id="video-output"
-                ref={ref => this.video = ref}
-                src={this.props.stream ? URL.createObjectURL(this.props.stream) : null}
-                muted={true}
-            >
-            </video>
+                ref={this.video}
+                muted
+            />
         );
     }
 }
+
+VideoOutput.defaultProps = {
+    stream: null,
+    streamError: null
+};
+
+VideoOutput.propTypes = {
+    stream: PropTypes.object,
+    streamError: PropTypes.object
+};

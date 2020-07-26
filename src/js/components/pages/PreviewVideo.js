@@ -21,46 +21,53 @@ import PropTypes from 'prop-types';
 import i18next from 'i18next';
 
 export default class PreviewVideo extends React.PureComponent {
-
-    static propTypes = {
-        frontBack: PropTypes.string.isRequired,
-        goToNextStep: PropTypes.func.isRequired,
-        startRecording: PropTypes.func.isRequired,
-        stream: PropTypes.object,
-        resolution: PropTypes.object
-    };
-
     constructor(props) {
         super(props);
+        const { startRecording } = this.props;
 
         this.state = {
             style: {}
         };
 
+        this.video = React.createRef();
+
         // Start recording as soon as the preview is displayed
-        this.props.startRecording();
+        startRecording();
     }
 
     componentDidMount() {
+        const { stream } = this.props;
         this.playVideo();
         this.computeHeight();
+
+        if (this.video && this.video.current && stream) {
+            this.video.current.srcObject = stream;
+        }
     }
 
     componentDidUpdate() {
+        const { stream } = this.props;
+        if (this.video && this.video.current && stream) {
+            this.video.current.srcObject = stream;
+        }
+
         this.playVideo();
     }
 
     playVideo() {
-        this.video && this.video.play();
+        if (this.video && this.video.current) {
+            this.video.current.play();
+        }
     }
 
     computeHeight() {
-        if (!this.video || !this.props.resolution) {
+        const { resolution } = this.props;
+        if (!this.video || !resolution) {
             return;
         }
 
         // Compute height based on resolution
-        const resolutionRatio = this.props.resolution.width / this.props.resolution.height;
+        const resolutionRatio = resolution.width / resolution.height;
         const newHeight = this.previewVideo.offsetWidth / resolutionRatio;
 
         this.setState({
@@ -71,17 +78,30 @@ export default class PreviewVideo extends React.PureComponent {
     }
 
     render() {
-        const classNames = this.props.frontBack;
+        const { frontBack, goToNextStep } = this.props;
+        const { style } = this.state;
+        const classNames = frontBack;
         return (
-            <section id="preview-video" ref={ref => this.previewVideo = ref} className={classNames} style={this.state.style}>
+            <section id="preview-video" ref={ref => { this.previewVideo = ref; }} className={classNames} style={style}>
                 <video
-                    ref={ref => this.video = ref}
-                    src={this.props.stream ? URL.createObjectURL(this.props.stream) : null}
-                    muted={true}
-                >
-                </video>
-                <button onClick={this.props.goToNextStep}>{i18next.t('next')}</button>
+                    ref={this.video}
+                    muted
+                />
+                <button onClick={goToNextStep} type="button">{i18next.t('next')}</button>
             </section>
         );
     }
 }
+
+PreviewVideo.defaultProps = {
+    stream: null,
+    resolution: null
+};
+
+PreviewVideo.propTypes = {
+    frontBack: PropTypes.string.isRequired,
+    goToNextStep: PropTypes.func.isRequired,
+    startRecording: PropTypes.func.isRequired,
+    stream: PropTypes.object,
+    resolution: PropTypes.object
+};

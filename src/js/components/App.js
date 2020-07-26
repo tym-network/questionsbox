@@ -16,11 +16,12 @@
 // along with QuestionsBox.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
-const fs = require('fs');
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import electron from 'electron';
 
 import { readJsonFile } from '../utils/Utils';
@@ -33,8 +34,9 @@ import Menu from './pages/Menu';
 import PreviewVideo from './pages/PreviewVideo';
 import Settings from './pages/Settings';
 
-export default class App extends React.Component {
+const fs = require('fs');
 
+export class App extends React.Component {
     steps = [
         'menu',
         'customize',
@@ -47,16 +49,10 @@ export default class App extends React.Component {
     ];
 
     multiStreamRecorder;
+
     frontBack = 'front';
 
     key = 1; // Used to refresh menu if locale is updated
-
-    static propTypes = {
-        startRecording: PropTypes.func,
-        stopRecording: PropTypes.func,
-        setInputDevice: PropTypes.func,
-        stream: PropTypes.object
-    };
 
     constructor(props) {
         super(props);
@@ -71,7 +67,7 @@ export default class App extends React.Component {
             questions: {},
             questionsData: {},
             saveConfigurationStatus: null
-        }
+        };
 
         this.saveConfiguration = this.saveConfiguration.bind(this);
         this.isFlipped = this.isFlipped.bind(this);
@@ -90,8 +86,9 @@ export default class App extends React.Component {
     }
 
     setQuestions(questions) {
-        const questionsData = Object.assign({}, questions.data);
-        delete questions.data;
+        const questionsData = { ...questions.data };
+        const questionsCopy = { ...questions };
+        delete questionsCopy.data;
         // If only one language, use it for the interface
         const locales = Object.keys(questions);
         if (locales.length === 1) {
@@ -99,8 +96,48 @@ export default class App extends React.Component {
         }
 
         this.setState({
-            questions: questions,
-            questionsData: questionsData
+            questions: questionsCopy,
+            questionsData
+        });
+    }
+
+    setCurrentInput(type, id, cb) {
+        if (type === 'audio') {
+            this.setState(state => ({
+                configuration: {
+                    ...state.configuration,
+                    audioInputDeviceId: id
+                }
+            }), cb);
+        } else if (type === 'video') {
+            this.setState(state => ({
+                configuration: {
+                    ...state.configuration,
+                    videoInputDeviceId: id
+                }
+            }), cb);
+        }
+    }
+
+    setConfigurationProperty(property, value) {
+        this.setState(state => ({
+            configuration: {
+                ...state.configuration,
+                [property]: value,
+                updatedAt: Date.now()
+            }
+        }));
+    }
+
+    setLocale(locale) {
+        // If possible, also change interface's locale
+        if (window.locales.includes(locale)) {
+            this.key++; // Update Menu to take the new locale into consideration
+            i18next.changeLanguage(locale);
+        }
+
+        this.setState({
+            locale
         });
     }
 
@@ -108,35 +145,37 @@ export default class App extends React.Component {
         readJsonFile(electron.remote.getGlobal('paths').questions).then(data => {
             if (!data) {
                 // No data, use the default questions
-                readJsonFile(`${electron.remote.getGlobal('paths').appPath}/default-questions.json`).then(defaultQuestions => {
+                const defaultQuestionsFile = `${electron.remote.getGlobal('paths').appPath}/default-questions.json`;
+                readJsonFile(defaultQuestionsFile).then(defaultQuestions => {
                     this.setQuestions(defaultQuestions);
                     fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(defaultQuestions, null, 4), () => {});
                 }, err => {
-                    window.logger.error('Unable to read default-questions.json', err)
+                    window.logger.error('Unable to read default-questions.json', err);
                 });
             } else {
                 this.setQuestions(data);
             }
         }, err => {
-            window.logger.error('Error while reading questions.json file', err)
+            window.logger.error('Error while reading questions.json file', err);
         });
     }
 
     saveQuestions(questions) {
         return new Promise((res, rej) => {
-            if (!questions.data) {
-                questions.data = {};
+            const questionsCopy = { ...questions };
+            if (!questionsCopy.data) {
+                questionsCopy.data = {};
             }
-            questions.data.updatedAt = Date.now();
-            fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(questions, null, 4), err => {
+            questionsCopy.data.updatedAt = Date.now();
+            fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(questionsCopy, null, 4), err => {
                 if (err) {
                     window.logger.error(err);
                     rej(err);
                 }
-                const questionsData = Object.assign({}, questions.data);
-                delete questions.data;
+                const questionsData = { ...questionsCopy.data };
+                delete questionsCopy.data;
                 this.setState({
-                    questions: questions,
+                    questions: questionsCopy,
                     questionsData
                 });
                 res();
@@ -147,23 +186,25 @@ export default class App extends React.Component {
     loadConfiguration() {
         // Read config file
         readJsonFile(electron.remote.getGlobal('paths').config).then(data => {
-            const mergedConfiguration = Object.assign({}, this.state.configuration, data);
-
-            this.setState({
-                configuration: mergedConfiguration
-            });
+            this.setState(state => ({
+                configuration: {
+                    ...state.configuration,
+                    data
+                }
+            }));
         }, err => {
-            window.logger.error('Error while reading config.json file', err)
+            window.logger.error('Error while reading config.json file', err);
         });
     }
 
     saveConfiguration() {
+        const { configuration } = this.state;
         // Save to config.json file
         this.setState({
             saveConfigurationStatus: 'saving'
         });
 
-        fs.writeFile(electron.remote.getGlobal('paths').config, JSON.stringify(this.state.configuration, null, 4), (err) => {
+        fs.writeFile(electron.remote.getGlobal('paths').config, JSON.stringify(configuration, null, 4), (err) => {
             if (err) {
                 window.logger.error(err);
                 this.setState({
@@ -181,13 +222,14 @@ export default class App extends React.Component {
     }
 
     goToNextStep() {
-        let index = this.steps.indexOf(this.state.step);
+        const { step } = this.state;
+        const index = this.steps.indexOf(step);
 
         this.nextStep(index);
     }
 
     goToStep(step) {
-        let index = this.steps.indexOf(step);
+        const index = this.steps.indexOf(step);
 
         // Reset save status
         this.setState({
@@ -197,7 +239,7 @@ export default class App extends React.Component {
         if (this.shouldShowNextStep(step)) {
             this.frontBack = this.frontBack === 'front' ? 'back' : 'front';
             this.setState({
-                step: step
+                step
             });
         } else {
             this.nextStep(index);
@@ -205,26 +247,29 @@ export default class App extends React.Component {
     }
 
     nextStep(index) {
-        if (this.state.step === 'customize' || this.state.step === 'settings') {
+        const { step } = this.state;
+        let newIndex = index;
+        if (step === 'customize' || step === 'settings') {
             this.saveConfiguration();
         }
 
         if (index >= 0) {
             if (index + 1 >= this.steps.length) {
                 // Back to locale picker
-                index = this.steps.indexOf('locale');
+                newIndex = this.steps.indexOf('locale');
             } else {
-                index++;
+                newIndex = index + 1;
             }
 
-            const nextStep = this.steps[index];
+            const nextStep = this.steps[newIndex];
             this.goToStep(nextStep);
         }
     }
 
     shouldShowNextStep(nextStep) {
         if (nextStep === 'locale') {
-            const locales =  Object.keys(this.state.questions);
+            const { questions } = this.state;
+            const locales = Object.keys(questions);
             if (locales.length === 1) {
                 return false;
             }
@@ -233,169 +278,137 @@ export default class App extends React.Component {
         return true;
     }
 
-    setCurrentInput(type, id, cb) {
-        if (type === 'audio') {
-            const newConfiguration = Object.assign({}, this.state.configuration, {
-                audioInputDeviceId: id
-            });
-            this.setState({
-                configuration: newConfiguration
-            }, cb);
-        } else if (type === 'video') {
-            const newConfiguration = Object.assign({}, this.state.configuration, {
-                videoInputDeviceId: id
-            });
-            this.setState({
-                configuration: newConfiguration
-            }, cb);
-        }
-    }
-
-    setConfigurationProperty(property, value) {
-        const newConfiguration = Object.assign({}, this.state.configuration, {
-            [property]: value,
-            updatedAt: Date.now()
-        });
-        this.setState({
-            configuration: newConfiguration
-        });
-    }
-
-    setLocale(locale) {
-        // If possible, also change interface's locale
-        if (window.locales.includes(locale)) {
-            this.key++; // Update Menu to take the new locale into consideration
-            i18next.changeLanguage(locale);
-        }
-
-        this.setState({
-            locale
-        });
-    }
-
     startRecording() {
-        this.props.startRecording(this.state.configuration.audioInputDeviceId, this.state.configuration.videoInputDeviceId);
+        const { startRecording } = this.props;
+        const { configuration } = this.state;
+        startRecording(configuration.audioInputDeviceId, configuration.videoInputDeviceId);
     }
 
     render() {
         let wrapperClasses = null;
         const timeoutFlip = 1000;
+        const {
+            step, saveConfigurationStatus, configuration, questions, questionsData, locale
+        } = this.state;
+        const { stopRecording, stream } = this.props;
 
         if (this.isFlipped()) {
             wrapperClasses = 'flipped';
         }
 
         let currentComponent;
-        switch (this.state.step) {
-            case 'menu':
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <Menu
-                            key={this.key}
-                            goToStep={this.goToStep}
-                            frontBack={this.frontBack}
-                        />
-                    </CSSTransition>
-                );
-                break;
-            case 'customize':
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <Customize
-                            back={() => {this.goToStep('menu');}}
-                            editQuestions={() => {this.goToStep('customize-questions');}}
-                            save={this.saveConfiguration}
-                            saveStatus={this.state.saveConfigurationStatus}
-                            frontBack={this.frontBack}
-                            configuration={this.state.configuration}
-                            setConfigurationProperty={this.setConfigurationProperty}
-                        />
-                    </CSSTransition>
-                );
-                break;
-            case 'customize-questions':
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <CustomizeQuestions
-                            back={() => {this.goToStep('customize');}}
-                            frontBack={this.frontBack}
-                            questions={this.state.questions}
-                            questionsData={this.state.questionsData}
-                            saveQuestions={this.saveQuestions}
-                        />
-                    </CSSTransition>
-                );
-                break;
-            case 'settings':
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <Settings
-                            back={() => {this.goToStep('menu');}}
-                            save={this.saveConfiguration}
-                            saveStatus={this.state.saveConfigurationStatus}
-                            frontBack={this.frontBack}
-                            currentAudioInputId={this.state.configuration.audioInputDeviceId}
-                            currentVideoInputId={this.state.configuration.videoInputDeviceId}
-                            setCurrentInput={this.setCurrentInput}
-                        />
-                    </CSSTransition>
-                );
-                break;
-            case 'locale':
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <LocalePicker
-                            locales={Object.keys(this.state.questions)}
-                            frontBack={this.frontBack}
-                            goToNextStep={this.goToNextStep}
-                            setLocale={this.setLocale}
-                        />
-                    </CSSTransition>
-                );
-                break;
-            case 'preview-video':
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <PreviewVideo
-                            frontBack={this.frontBack}
-                            goToNextStep={this.goToNextStep}
-                            startRecording={this.startRecording}
-                            stream={this.props.stream}
-                        />
-                    </CSSTransition>
-                );
-                break;
-            case 'introduction':
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <Introduction
-                            frontBack={this.frontBack}
-                            goToNextStep={this.goToNextStep}
-                            title={this.state.configuration.title}
-                            logo={this.state.configuration.logo}
-                        />
-                    </CSSTransition>
-                );
-                break;
-            case 'main-viewer':
-                if (!this.state.questions || !this.state.locale || !this.state.questions[this.state.locale]) {
-                    window.logger.error('Unable to retrieve questions for given locale', {
-                        questions: this.state.questions,
-                        locale: this.state.locale
-                    });
-                }
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="flip" timeout={timeoutFlip}>
-                        <MainViewer
-                            frontBack={this.frontBack}
-                            goToNextStep={this.goToNextStep}
-                            questions={this.state.questions[this.state.locale]}
-                            configuration={this.state.configuration}
-                            stopRecording={this.props.stopRecording}
-                        />
-                    </CSSTransition>
-                );
-                break;
+        switch (step) {
+        case 'menu':
+            currentComponent = (
+                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                    <Menu
+                        key={this.key}
+                        goToStep={this.goToStep}
+                        frontBack={this.frontBack}
+                    />
+                </CSSTransition>
+            );
+            break;
+        case 'customize':
+            currentComponent = (
+                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                    <Customize
+                        back={() => { this.goToStep('menu'); }}
+                        editQuestions={() => { this.goToStep('customize-questions'); }}
+                        save={this.saveConfiguration}
+                        saveStatus={saveConfigurationStatus}
+                        frontBack={this.frontBack}
+                        configuration={configuration}
+                        setConfigurationProperty={this.setConfigurationProperty}
+                    />
+                </CSSTransition>
+            );
+            break;
+        case 'customize-questions':
+            currentComponent = (
+                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                    <CustomizeQuestions
+                        back={() => { this.goToStep('customize'); }}
+                        frontBack={this.frontBack}
+                        questions={questions}
+                        questionsData={questionsData}
+                        saveQuestions={this.saveQuestions}
+                    />
+                </CSSTransition>
+            );
+            break;
+        case 'settings':
+            currentComponent = (
+                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                    <Settings
+                        back={() => { this.goToStep('menu'); }}
+                        save={this.saveConfiguration}
+                        saveStatus={saveConfigurationStatus}
+                        frontBack={this.frontBack}
+                        currentAudioInputId={configuration.audioInputDeviceId}
+                        currentVideoInputId={configuration.videoInputDeviceId}
+                        setCurrentInput={this.setCurrentInput}
+                    />
+                </CSSTransition>
+            );
+            break;
+        case 'locale':
+            currentComponent = (
+                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                    <LocalePicker
+                        locales={Object.keys(questions)}
+                        frontBack={this.frontBack}
+                        goToNextStep={this.goToNextStep}
+                        setLocale={this.setLocale}
+                    />
+                </CSSTransition>
+            );
+            break;
+        case 'preview-video':
+            currentComponent = (
+                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                    <PreviewVideo
+                        frontBack={this.frontBack}
+                        goToNextStep={this.goToNextStep}
+                        startRecording={this.startRecording}
+                        stream={stream}
+                    />
+                </CSSTransition>
+            );
+            break;
+        case 'introduction':
+            currentComponent = (
+                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                    <Introduction
+                        frontBack={this.frontBack}
+                        goToNextStep={this.goToNextStep}
+                        title={configuration.title}
+                        logo={configuration.logo}
+                    />
+                </CSSTransition>
+            );
+            break;
+        case 'main-viewer':
+            if (!questions || !locale || !questions[locale]) {
+                window.logger.error('Unable to retrieve questions for given locale', {
+                    questions,
+                    locale
+                });
+            }
+            currentComponent = (
+                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                    <MainViewer
+                        frontBack={this.frontBack}
+                        goToNextStep={this.goToNextStep}
+                        questions={questions[locale]}
+                        configuration={configuration}
+                        stopRecording={stopRecording}
+                    />
+                </CSSTransition>
+            );
+            break;
+        default:
+            break;
         }
 
         return (
@@ -405,10 +418,19 @@ export default class App extends React.Component {
                         {currentComponent}
                     </TransitionGroup>
                 </div>
-                {
-                    // {this.props.stream && <video id="video-feedback" ref={ref => this.video = ref} muted="true" src={URL.createObjectURL(this.props.stream)}></video>}
-                }
             </div>
         );
     }
 }
+
+App.defaultProps = {
+    stream: null
+};
+
+App.propTypes = {
+    startRecording: PropTypes.func.isRequired,
+    stopRecording: PropTypes.func.isRequired,
+    stream: PropTypes.object
+};
+
+export default hot(App);
