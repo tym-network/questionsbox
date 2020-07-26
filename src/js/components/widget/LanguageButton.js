@@ -21,14 +21,6 @@ import PropTypes from 'prop-types';
 import i18next from 'i18next';
 
 export default class LanguageButton extends React.PureComponent {
-
-    static propTypes = {
-        language: PropTypes.string.isRequired,
-        isSelected: PropTypes.bool.isRequired,
-        toggle: PropTypes.func.isRequired,
-        remove: PropTypes.func.isRequired
-    };
-
     constructor(props) {
         super(props);
         this.onToggle = this.onToggle.bind(this);
@@ -59,19 +51,26 @@ export default class LanguageButton extends React.PureComponent {
                 />
                 <label className="button btn-pill-left" htmlFor={inputId}>
                     <div className="checkbox">
-                        <i className="icon-eye visibility-indicator"></i>
+                        <i className="icon-eye visibility-indicator" />
                     </div>
                     { language }
                 </label>
                 <button
+                    type="button"
                     className="language-button-remove btn-pill-right"
                     alt={i18next.t('delete')}
                     onClick={this.onRemove}
                 >
-                    <i className="icon-trash"></i>
+                    <i className="icon-trash" />
                 </button>
             </div>
         );
     }
-
 }
+
+LanguageButton.propTypes = {
+    language: PropTypes.string.isRequired,
+    isSelected: PropTypes.bool.isRequired,
+    toggle: PropTypes.func.isRequired,
+    remove: PropTypes.func.isRequired
+};

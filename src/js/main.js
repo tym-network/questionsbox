@@ -16,14 +16,14 @@
 // along with QuestionsBox.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-const {app, BrowserWindow} = require('electron');
+const { app, BrowserWindow } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
 let win;
-let isDev = process.env['NODE_ENV'] === 'development';
+const isDev = process.env.NODE_ENV === 'development';
 
 function createFoldersAndPaths() {
     const appPath = path.join(app.getPath('appData'), 'QuestionsBox');
@@ -46,12 +46,12 @@ function createFoldersAndPaths() {
     }
 
     global.paths = {
-        'appData': appPath,
-        'appPath': app.getAppPath(),
-        'error': path.join(appPath, 'error.json'),
-        'config': path.join(appPath, 'config.json'),
-        'videos': videoPath,
-        'questions': path.join(appPath, 'questions.json')
+        appData: appPath,
+        appPath: app.getAppPath(),
+        error: path.join(appPath, 'error.json'),
+        config: path.join(appPath, 'config.json'),
+        videos: videoPath,
+        questions: path.join(appPath, 'questions.json')
     };
 }
 
@@ -79,7 +79,7 @@ function createWindow() {
     }
 
     win.on('closed', () => {
-        win = null
+        win = null;
     });
 }
 

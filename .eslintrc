@@ -3,14 +3,28 @@
     "plugins": [
         "react"
     ],
-    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "extends": ["airbnb"],
     "env": {
         "browser": true,
         "node": true,
         "es6": true
     },
     "rules": {
-        "no-console": "off"
+        "no-console": "off",
+        "indent": ["error", 4],
+        "react/jsx-indent":  ["error", 4],
+        "react/jsx-indent-props":  ["error", 4],
+        "comma-dangle": ["error", "only-multiline"],
+        "arrow-parens": "off",
+        "import/no-dynamic-require": "off",
+        "global-require": "off",
+        "react/jsx-filename-extension": "off",
+        "no-use-before-define": ["error", { "functions": false }],
+        "max-len": ["error", { "code": 200, "ignoreComments": true }],
+        "import/first": ["error"],
+        "no-plusplus": "off",
+        "react/forbid-prop-types": "off",
+        "jsx-a11y/media-has-caption": "off"
     },
     "settings": {
         "react": {

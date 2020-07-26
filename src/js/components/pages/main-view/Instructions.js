@@ -21,12 +21,8 @@ import PropTypes from 'prop-types';
 import i18next from 'i18next';
 
 export default class Instructions extends React.PureComponent {
-
-    static propTypes = {
-        goToNextSubstep: PropTypes.func.isRequired
-    };
-
     render() {
+        const { goToNextSubstep } = this.props;
         return (
             <div id="instructions">
                 <div className="instructions-wrapper">
@@ -34,16 +30,38 @@ export default class Instructions extends React.PureComponent {
                         <p className="largeParagraph">{i18next.t('instruction1')}</p>
                         <p>{i18next.t('instruction2')}</p>
                         <ul>
-                            <li><span className="icon-mouse"></span> {i18next.t('buzz')}</li>
-                            <li><span className="icon-keyboard"></span> {i18next.t('nextQuestion')}</li>
-                            <li><span className="icon-arrow-left-b"></span> {i18next.t('previousQuestion')}</li>
+                            <li>
+                                <span className="icon-mouse" />
+                                {' '}
+                                {i18next.t('buzz')}
+                            </li>
+                            <li>
+                                <span className="icon-keyboard" />
+                                {' '}
+                                {i18next.t('nextQuestion')}
+                            </li>
+                            <li>
+                                <span className="icon-arrow-left-b" />
+                                {' '}
+                                {i18next.t('previousQuestion')}
+                            </li>
                         </ul>
                     </div>
                 </div>
                 <footer>
-                    <button id="letsGo" onClick={this.props.goToNextSubstep}>{i18next.t('letsGo')}</button>
+                    <button
+                        id="letsGo"
+                        onClick={goToNextSubstep}
+                        type="button"
+                    >
+                        {i18next.t('letsGo')}
+                    </button>
                 </footer>
             </div>
         );
     }
 }
+
+Instructions.propTypes = {
+    goToNextSubstep: PropTypes.func.isRequired
+};

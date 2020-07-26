@@ -20,13 +20,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class CustomizeQuestionsTextarea extends React.PureComponent {
-
-    static propTypes = {
-        question: PropTypes.string.isRequired,
-        locale: PropTypes.string.isRequired,
-        editQuestion: PropTypes.func.isRequired
-    };
-
     constructor(props) {
         super(props);
 
@@ -48,9 +41,19 @@ export default class CustomizeQuestionsTextarea extends React.PureComponent {
                 <textarea
                     value={question}
                     onChange={this.onChange}
-                ></textarea>
+                />
             </div>
         );
     }
-
 }
+
+CustomizeQuestionsTextarea.defaultProps = {
+    question: '',
+    locale: null
+};
+
+CustomizeQuestionsTextarea.propTypes = {
+    question: PropTypes.string,
+    locale: PropTypes.string,
+    editQuestion: PropTypes.func.isRequired
+};

@@ -24,15 +24,6 @@ import LanguageButton from '../../widget/LanguageButton';
 import CustomizeQuestionsAddLanguage from './CustomizeQuestionsAddLanguage';
 
 export default class CustomizeQuestionsLanguages extends React.PureComponent {
-
-    static propTypes = {
-        languages: PropTypes.arrayOf(PropTypes.string).isRequired,
-        languagesSelected: PropTypes.arrayOf(PropTypes.string).isRequired,
-        setLanguagesSelected: PropTypes.func.isRequired,
-        addLanguage: PropTypes.func.isRequired,
-        removeLanguage: PropTypes.func.isRequired
-    };
-
     constructor(props) {
         super(props);
 
@@ -64,26 +55,30 @@ export default class CustomizeQuestionsLanguages extends React.PureComponent {
     }
 
     render() {
-        const { languages, languagesSelected, addLanguage, removeLanguage } = this.props;
+        const {
+            languages, languagesSelected, addLanguage, removeLanguage
+        } = this.props;
 
         return (
-            <React.Fragment>
+            <>
                 <div className="languages-row">
                     <button
                         className="btn-pill"
                         onClick={this.selectAll}
+                        type="button"
                     >
                         {i18next.t('displayAll')}
                     </button>
                     <button
                         className="btn-pill"
                         onClick={this.unselectAll}
+                        type="button"
                     >
                         {i18next.t('hideAll')}
                     </button>
                 </div>
                 <div className="languages-row">
-                    { languages.map(language =>
+                    { languages.map(language => (
                         <LanguageButton
                             key={language}
                             language={language}
@@ -91,14 +86,21 @@ export default class CustomizeQuestionsLanguages extends React.PureComponent {
                             toggle={this.toggleLanguage}
                             remove={removeLanguage}
                         />
-                    )}
+                    ))}
                     <CustomizeQuestionsAddLanguage
                         currentLanguages={languages}
                         addLanguage={addLanguage}
                     />
                 </div>
-            </React.Fragment>
+            </>
         );
     }
-
 }
+
+CustomizeQuestionsLanguages.propTypes = {
+    languages: PropTypes.arrayOf(PropTypes.string).isRequired,
+    languagesSelected: PropTypes.arrayOf(PropTypes.string).isRequired,
+    setLanguagesSelected: PropTypes.func.isRequired,
+    addLanguage: PropTypes.func.isRequired,
+    removeLanguage: PropTypes.func.isRequired
+};

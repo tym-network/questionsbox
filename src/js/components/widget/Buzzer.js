@@ -18,16 +18,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import buzzSound from '../../../assets/sound/buzz.ogg';
+import defaultBuzzSoundFile from '../../../assets/sound/buzz.ogg';
 
 export default class Buzzer extends React.PureComponent {
-
-    static propTypes = {
-        id: PropTypes.number.isRequired,
-        onEnd: PropTypes.func.isRequired,
-        buzzSound: PropTypes.string
-    };
-
     constructor(props) {
         super(props);
 
@@ -44,14 +37,27 @@ export default class Buzzer extends React.PureComponent {
     }
 
     onEnded() {
-        this.props.onEnd(this.props.id);
+        const { id, onEnd } = this.props;
+        onEnd(id);
     }
 
     render() {
+        const { buzzSound } = this.props;
         return (
-            <audio className="buzzer" ref={ref => this.buzzer = ref}>
-                <source src={this.props.buzzSound || buzzSound} />
+            // eslint-disable-next-line jsx-a11y/media-has-caption
+            <audio className="buzzer" ref={ref => { this.buzzer = ref; }}>
+                <source src={buzzSound || defaultBuzzSoundFile} />
             </audio>
         );
     }
 }
+
+Buzzer.defaultProps = {
+    buzzSound: null
+};
+
+Buzzer.propTypes = {
+    id: PropTypes.number.isRequired,
+    onEnd: PropTypes.func.isRequired,
+    buzzSound: PropTypes.string
+};

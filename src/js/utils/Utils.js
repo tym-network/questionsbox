@@ -31,30 +31,29 @@ import dkFlag from '../../assets/img/flags/dk.svg';
 import plFlag from '../../assets/img/flags/pl.svg';
 
 export function throttle(callback, wait, context = this) {
-    let timeout = null
-    let callbackArgs = null
+    let timeout = null;
+    let callbackArgs = null;
 
     const later = () => {
-        timeout = null
-    }
+        timeout = null;
+    };
 
-    return function() {
+    return function throttledFunction(...args) {
         if (!timeout) {
-            callbackArgs = arguments
-            callback.apply(context, callbackArgs)
-            timeout = setTimeout(later, wait)
+            callbackArgs = args;
+            callback.apply(context, callbackArgs);
+            timeout = setTimeout(later, wait);
         }
-    }
+    };
 }
-
 
 // Source https://davidwalsh.name/javascript-debounce-function
 export function debounce(callback, wait, immediate) {
     let timeout;
 
-    return function() {
-        const context = this, args = arguments;
-        const later = function() {
+    return function debouncedFunction(...args) {
+        const context = this;
+        const later = function later() {
             timeout = null;
             if (!immediate) callback.apply(context, args);
         };
@@ -75,10 +74,10 @@ export function readJsonFile(fileName) {
             }
 
             try {
-                data = JSON.parse(data);
-                res(data);
-            } catch(err) {
-                rej(err);
+                const parsedData = JSON.parse(data);
+                res(parsedData);
+            } catch (error) {
+                rej(error);
             }
         });
     });
@@ -86,17 +85,41 @@ export function readJsonFile(fileName) {
 
 export function getLocales() {
     return [
-        { value: 'en', name: 'English', labelKey: 'langEnglish', flag: enFlag },
-        { value: 'fr', name: 'Français', labelKey: 'langFrench', flag: frFlag },
-        { value: 'es', name: 'Español', labelKey: 'langSpanish', flag: esFlag },
-        { value: 'de', name: 'Deutsch', labelKey: 'langGerman', flag: deFlag },
-        { value: 'it', name: 'Italiano', labelKey: 'langItalian', flag: itFlag },
-        { value: 'ru', name: 'русский', labelKey: 'langRussian', flag: ruFlag },
-        { value: 'pt', name: 'Português', labelKey: 'langPortuguese', flag: ptFlag },
-        { value: 'nl', name: 'Nederlandse', labelKey: 'langDutch', flag: nlFlag },
-        { value: 'sv', name: 'Svenska', labelKey: 'langSwedish', flag: seFlag },
-        { value: 'no', name: 'Norsk', labelKey: 'langNorwegian', flag: noFlag },
-        { value: 'da', name: 'Dansk', labelKey: 'langDanish', flag: dkFlag },
-        { value: 'pl', name: 'Polski', labelKey: 'langPolish', flag: plFlag }
-    ]
+        {
+            value: 'en', name: 'English', labelKey: 'langEnglish', flag: enFlag
+        },
+        {
+            value: 'fr', name: 'Français', labelKey: 'langFrench', flag: frFlag
+        },
+        {
+            value: 'es', name: 'Español', labelKey: 'langSpanish', flag: esFlag
+        },
+        {
+            value: 'de', name: 'Deutsch', labelKey: 'langGerman', flag: deFlag
+        },
+        {
+            value: 'it', name: 'Italiano', labelKey: 'langItalian', flag: itFlag
+        },
+        {
+            value: 'ru', name: 'русский', labelKey: 'langRussian', flag: ruFlag
+        },
+        {
+            value: 'pt', name: 'Português', labelKey: 'langPortuguese', flag: ptFlag
+        },
+        {
+            value: 'nl', name: 'Nederlandse', labelKey: 'langDutch', flag: nlFlag
+        },
+        {
+            value: 'sv', name: 'Svenska', labelKey: 'langSwedish', flag: seFlag
+        },
+        {
+            value: 'no', name: 'Norsk', labelKey: 'langNorwegian', flag: noFlag
+        },
+        {
+            value: 'da', name: 'Dansk', labelKey: 'langDanish', flag: dkFlag
+        },
+        {
+            value: 'pl', name: 'Polski', labelKey: 'langPolish', flag: plFlag
+        }
+    ];
 }

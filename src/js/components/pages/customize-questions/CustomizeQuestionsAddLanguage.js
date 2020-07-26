@@ -25,12 +25,6 @@ import Select from 'react-select';
 import { getLocales } from '../../../utils/Utils';
 
 export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
-
-    static propTypes = {
-        currentLanguages: PropTypes.arrayOf(PropTypes.string),
-        addLanguage: PropTypes.func.isRequired
-    };
-
     constructor(props) {
         super(props);
 
@@ -43,6 +37,38 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
         this.closeModal = this.closeModal.bind(this);
         this.addLanguage = this.addLanguage.bind(this);
         this.onSelectedLanguageChange = this.onSelectedLanguageChange.bind(this);
+    }
+
+    static getSupportedLanguages() {
+        const languages = getLocales();
+        languages.forEach(lang => {
+            // eslint-disable-next-line no-param-reassign
+            lang.label = i18next.t(lang.labelKey);
+        });
+        return languages.sort((a, b) => (
+            a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1
+        ));
+    }
+
+    onSelectedLanguageChange(language) {
+        this.setState({
+            selectedLanguage: language
+        });
+    }
+
+    static getLabel(language) {
+        let { label } = language;
+
+        if (language.value !== i18next.language) {
+            label += ` (${language.name})`;
+        }
+
+        return (
+            <div className="language-select-item">
+                <img src={language.flag} alt="" className="flag-label" />
+                <span>{label}</span>
+            </div>
+        );
     }
 
     openModal() {
@@ -58,65 +84,36 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
     }
 
     addLanguage() {
+        const { addLanguage } = this.props;
         const { selectedLanguage } = this.state;
 
         if (!selectedLanguage) {
             return;
         }
 
-        this.props.addLanguage(selectedLanguage.value);
+        addLanguage(selectedLanguage.value);
         this.setState({
             open: false,
             selectedLanguage: null
         });
     }
 
-    getSupportedLanguages() {
-        const languages = getLocales();
-        languages.map(lang => {
-            lang.label = i18next.t(lang.labelKey);
-        });
-        return languages.sort((a, b) => (
-            a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1
-        ));
-    }
-
-    getLabel(language) {
-        let label = language.label;
-
-        if (language.value !== i18next.language) {
-            label += ` (${language.name})`;
-        }
-
-        return (
-            <div className="language-select-item">
-              <img src={language.flag} alt="" className="flag-label" />
-              <span>{label}</span>
-            </div>
-          );
-    }
-
-    onSelectedLanguageChange(language) {
-        this.setState({
-            selectedLanguage: language
-        });
-    }
-
     render() {
         const { currentLanguages } = this.props;
-        const { selectedLanguage } = this.state;
-        const availableLanguages = this.getSupportedLanguages().filter(lang => !currentLanguages.includes(lang.value));
+        const { selectedLanguage, open } = this.state;
+        const availableLanguages = CustomizeQuestionsAddLanguage.getSupportedLanguages().filter(lang => !currentLanguages.includes(lang.value));
 
         return (
-            <React.Fragment>
+            <>
                 <button
                     className="btn-pill"
                     onClick={this.openModal}
+                    type="button"
                 >
                     {i18next.t('addLanguage')}
                 </button>
                 <Modal
-                    show={this.state.open}
+                    show={open}
                     onHide={this.closeModal}
                     dialogClassName="add-language-modal"
                 >
@@ -128,9 +125,9 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
                             <label htmlFor="language">{i18next.t('language')}</label>
                             <Select
                                 options={availableLanguages}
-                                formatOptionLabel={this.getLabel}
-                                isClearable={true}
-                                isSearchable={true}
+                                formatOptionLabel={CustomizeQuestionsAddLanguage.getLabel}
+                                isClearable
+                                isSearchable
                                 value={selectedLanguage}
                                 onChange={this.onSelectedLanguageChange}
                                 placeholder={i18next.t('searchSelectLanguage')}
@@ -141,13 +138,22 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
                         <button
                             onClick={this.addLanguage}
                             disabled={!selectedLanguage}
+                            type="button"
                         >
                             {i18next.t('addLanguageAction')}
                         </button>
                     </Modal.Footer>
-                    </Modal>
-            </React.Fragment>
+                </Modal>
+            </>
         );
     }
-
 }
+
+CustomizeQuestionsAddLanguage.defaultProps = {
+    currentLanguages: []
+};
+
+CustomizeQuestionsAddLanguage.propTypes = {
+    currentLanguages: PropTypes.arrayOf(PropTypes.string),
+    addLanguage: PropTypes.func.isRequired
+};

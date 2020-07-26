@@ -21,11 +21,6 @@ import PropTypes from 'prop-types';
 import i18next from 'i18next';
 
 export default class Thanks extends React.PureComponent {
-
-    static propTypes = {
-        goToNextStep: PropTypes.func.isRequired
-    };
-
     constructor(props) {
         super(props);
 
@@ -36,22 +31,32 @@ export default class Thanks extends React.PureComponent {
 
     componentDidMount() {
         const interval = setInterval(() => {
-            this.setState({
-                timeToRestart: this.state.timeToRestart - 1
+            this.setState(state => ({
+                timeToRestart: state.timeToRestart - 1
+            }), () => {
+                const { timeToRestart } = this.state;
+                const { goToNextStep } = this.props;
+
+                if (timeToRestart === 0) {
+                    clearInterval(interval);
+                    goToNextStep();
+                }
             });
-            if (this.state.timeToRestart === 0) {
-                clearInterval(interval);
-                this.props.goToNextStep();
-            }
         }, 1000);
     }
 
     render() {
+        const { timeToRestart } = this.state;
+
         return (
             <div id="thanks">
                 <p>{i18next.t('thankYou')}</p>
-                <p className="restart">{i18next.t('restartMessage', {time: this.state.timeToRestart})}</p>
+                <p className="restart">{i18next.t('restartMessage', { time: timeToRestart })}</p>
             </div>
         );
     }
 }
+
+Thanks.propTypes = {
+    goToNextStep: PropTypes.func.isRequired
+};

@@ -27,71 +27,66 @@ import BackButton from '../widget/BackButton';
 import SaveIndicator from '../widget/SaveIndicator';
 
 export default class Customize extends React.PureComponent {
-
-    static propTypes = {
-        frontBack: PropTypes.string.isRequired,
-        save: PropTypes.func.isRequired,
-        saveStatus: PropTypes.string,
-        back: PropTypes.func.isRequired,
-        editQuestions: PropTypes.func.isRequired,
-        setConfigurationProperty: PropTypes.func.isRequired,
-        configuration: PropTypes.object,
-        buzzSound: PropTypes.string
-    };
-
     constructor(props) {
         super(props);
+        const { save } = this.props;
 
         this.onTitleChanged = this.onTitleChanged.bind(this);
         this.openFileDialog = this.openFileDialog.bind(this);
         this.onFilePathChanged = this.onFilePathChanged.bind(this);
         this.clearFilePath = this.clearFilePath.bind(this);
-        this.saveDebounced = debounce(this.props.save, 500);
+        this.saveDebounced = debounce(save, 500);
     }
 
     onTitleChanged(e) {
+        const { setConfigurationProperty } = this.props;
         const title = e.target.value;
 
-        this.props.setConfigurationProperty('title', title);
+        setConfigurationProperty('title', title);
         this.saveDebounced();
+    }
+
+    onFilePathChanged(property) {
+        return e => {
+            const { setConfigurationProperty } = this.props;
+            const filePath = e.target.value;
+
+            setConfigurationProperty(property, filePath);
+            this.saveDebounced();
+        };
     }
 
     openFileDialog(property, filters) {
         return () => {
+            const { setConfigurationProperty } = this.props;
             const file = remote.dialog.showOpenDialog({
-                filters: filters,
+                filters,
                 properties: ['openFile']
             });
 
             if (file && file[0]) {
-                this.props.setConfigurationProperty(property, file[0]);
+                setConfigurationProperty(property, file[0]);
                 this.saveDebounced();
             }
         };
     }
 
-    onFilePathChanged(property) {
-        return e => {
-            const filePath = e.target.value;
-
-            this.props.setConfigurationProperty(property, filePath);
-            this.saveDebounced();
-        };
-    }
-
     clearFilePath(property) {
         return () => {
-            this.props.setConfigurationProperty(property, null);
+            const { setConfigurationProperty } = this.props;
+            setConfigurationProperty(property, null);
             this.saveDebounced();
         };
     }
 
     render() {
-        const { frontBack, configuration, saveStatus, back, editQuestions } = this.props;
+        const {
+            frontBack, configuration, saveStatus, back, editQuestions
+        } = this.props;
         const className = `${frontBack}`;
         return (
             <section id="customize" className={className}>
-                <BackButton onClick={back}/>
+                <BackButton onClick={back} />
                 <div className="content-wrap">
                     <div className="custom-form">
                         <h1>{i18next.t('customize')}</h1>
@@ -121,10 +116,14 @@ export default class Customize extends React.PureComponent {
                                     className="file-picker"
                                     onClick={this.openFileDialog(
                                         'logo',
-                                        [{'name': 'img', 'extensions': ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'svg', 'webp']}]
+                                        [{
+                                            name: 'img',
+                                            extensions: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'svg', 'webp']
+                                        }]
                                     )}
                                 >
-                                    <i className="icon-folder"></i>{i18next.t('chooseFile')}
+                                    <i className="icon-folder" />
+                                    {i18next.t('chooseFile')}
                                 </button>
                                 <button
                                     id="logo-remove"
@@ -132,7 +131,7 @@ export default class Customize extends React.PureComponent {
                                     className="remove-file"
                                     onClick={this.clearFilePath('logo')}
                                 >
-                                    <i className="icon-close-circled"></i>
+                                    <i className="icon-close-circled" />
                                 </button>
                             </div>
                         </div>
@@ -153,10 +152,14 @@ export default class Customize extends React.PureComponent {
                                     className="file-picker"
                                     onClick={this.openFileDialog(
                                         'buzzSound',
-                                        [{'name': 'sound', 'extensions': ['ogg', 'wav', 'mp3', 'webm']}]
+                                        [{
+                                            name: 'sound',
+                                            extensions: ['ogg', 'wav', 'mp3', 'webm']
+                                        }]
                                     )}
                                 >
-                                    <i className="icon-folder"></i>{i18next.t('chooseFile')}
+                                    <i className="icon-folder" />
+                                    {i18next.t('chooseFile')}
                                 </button>
                                 <button
                                     id="buzz-sound-remove"
@@ -164,13 +167,15 @@ export default class Customize extends React.PureComponent {
                                     className="remove-file"
                                     onClick={this.clearFilePath('buzzSound')}
                                 >
-                                    <i className="icon-close-circled"></i>
+                                    <i className="icon-close-circled" />
                                 </button>
                             </div>
                         </div>
                         <div className="customize-block">
                             <label htmlFor="edit-questions-button">{i18next.t('questionsList')}</label>
-                            <button htmlFor="edit-questions-button" onClick={editQuestions}>{i18next.t('editQuestions')}</button>
+                            <button htmlFor="edit-questions-button" onClick={editQuestions} type="button">
+                                {i18next.t('editQuestions')}
+                            </button>
                         </div>
                     </div>
                     <footer className="save-indicator-container">
@@ -184,3 +189,17 @@ export default class Customize extends React.PureComponent {
         );
     }
 }
+
+Customize.defaultProps = {
+    saveStatus: null
+};
+
+Customize.propTypes = {
+    frontBack: PropTypes.string.isRequired,
+    save: PropTypes.func.isRequired,
+    saveStatus: PropTypes.string,
+    back: PropTypes.func.isRequired,
+    editQuestions: PropTypes.func.isRequired,
+    setConfigurationProperty: PropTypes.func.isRequired,
+    configuration: PropTypes.object.isRequired
+};

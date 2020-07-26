@@ -20,12 +20,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class VideoOutput extends React.PureComponent {
-
-    static propTypes = {
-        stream: PropTypes.object,
-        streamError: PropTypes.object
-    };
-
     constructor(props) {
         super(props);
 
@@ -37,7 +31,7 @@ export default class VideoOutput extends React.PureComponent {
 
         if (this.video && this.video.current) {
             if (stream) {
-                this.video.current.srcObject = this.props.stream;
+                this.video.current.srcObject = stream;
             }
             this.video.current.play();
         }
@@ -48,7 +42,7 @@ export default class VideoOutput extends React.PureComponent {
 
         if (this.video.current) {
             if (stream) {
-                this.video.current.srcObject = this.props.stream;
+                this.video.current.srcObject = stream;
             }
             this.video.current.play();
         }
@@ -61,16 +55,17 @@ export default class VideoOutput extends React.PureComponent {
     }
 
     render() {
-        if (this.props.streamError) {
+        const { stream, streamError } = this.props;
+        if (streamError) {
             return (
                 <div className="error-message">ERROR</div>
-            )
+            );
         }
 
-        if (!this.props.stream) {
+        if (!stream) {
             return (
                 <div className="video-placeholder">
-                    <i className="icon-no-camera"></i>
+                    <i className="icon-no-camera" />
                 </div>
             );
         }
@@ -79,9 +74,18 @@ export default class VideoOutput extends React.PureComponent {
             <video
                 id="video-output"
                 ref={this.video}
-                muted={true}
-            >
-            </video>
+                muted
+            />
         );
     }
 }
+
+VideoOutput.defaultProps = {
+    stream: null,
+    streamError: null
+};
+
+VideoOutput.propTypes = {
+    stream: PropTypes.object,
+    streamError: PropTypes.object
+};

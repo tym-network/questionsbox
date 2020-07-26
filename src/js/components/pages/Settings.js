@@ -25,49 +25,52 @@ import SaveIndicator from '../widget/SaveIndicator';
 import SoundMeter from '../widget/SoundMeter';
 import VideoOutput from '../widget/VideoOutput';
 import withStream from '../containers/WebRTCStreamContainer';
-import { listDevices } from '../../utils/WebRTCUtils'
+import { listDevices } from '../../utils/WebRTCUtils';
 
 const VideoOutputWithStream = withStream(VideoOutput);
 const SoundMeterWithStream = withStream(SoundMeter);
 
 export default class Settings extends React.PureComponent {
-
-    static propTypes = {
-        frontBack: PropTypes.string.isRequired,
-        save: PropTypes.func.isRequired,
-        saveStatus: PropTypes.string,
-        back: PropTypes.func.isRequired,
-        setCurrentInput: PropTypes.func.isRequired,
-        currentAudioInputId: PropTypes.string,
-        currentVideoInputId: PropTypes.string,
-    };
-
     constructor(props) {
         super(props);
 
         this.state = {
             audioInputs: [],
             videoInputs: []
-        }
+        };
 
         this.handleDeviceList = this.handleDeviceList.bind(this);
     }
 
     componentDidMount() {
-        listDevices().then(this.handleDeviceList)
+        listDevices().then(this.handleDeviceList);
+    }
+
+    onInputChanged(mediaType) {
+        return e => {
+            const { setCurrentInput, save } = this.props;
+            const id = e.target.value;
+
+            setCurrentInput(mediaType, id, () => {
+                save();
+            });
+        };
     }
 
     handleDeviceList(deviceList) {
+        const {
+            currentAudioInputId, currentVideoInputId, setCurrentInput
+        } = this.props;
         const { audioInputs, videoInputs } = deviceList;
         let audioInputExists = false;
         let videoInputExists = false;
 
         audioInputExists = !!audioInputs.find(deviceInfo => (
-            deviceInfo.deviceId === this.props.currentAudioInputId
+            deviceInfo.deviceId === currentAudioInputId
         ));
 
         videoInputExists = !!videoInputs.find(deviceInfo => (
-            deviceInfo.deviceId === this.props.currentVideoInputId
+            deviceInfo.deviceId === currentVideoInputId
         ));
 
         this.setState({
@@ -76,30 +79,27 @@ export default class Settings extends React.PureComponent {
         });
 
         if (!audioInputExists && audioInputs.length > 0) {
-            this.props.setCurrentInput('audio', audioInputs[0].id);
+            setCurrentInput('audio', audioInputs[0].id);
         }
         if (!videoInputExists && videoInputs.length > 0) {
-            this.props.setCurrentInput('video', videoInputs[0].id);
+            setCurrentInput('video', videoInputs[0].id);
         }
 
         return true;
     }
 
-    onInputChanged(mediaType) {
-        return e => {
-            const id = e.target.value;
-
-            this.props.setCurrentInput(mediaType, id, () => {
-                this.props.save();
-            });
-        }
-    }
-
     render() {
-        const className = `${this.props.frontBack}`;
+        const {
+            back, frontBack, saveStatus, currentAudioInputId, currentVideoInputId
+        } = this.props;
+        const {
+            audioInputs, videoInputs
+        } = this.state;
+        const className = `${frontBack}`;
+
         return (
             <section id="settings" className={className}>
-                <BackButton onClick={this.props.back} />
+                <BackButton onClick={back} />
                 <div className="content-wrap">
                     <h1>{i18next.t('settings')}</h1>
                     <div className="settings-wrapper">
@@ -107,8 +107,8 @@ export default class Settings extends React.PureComponent {
                             <div className="select-input">
                                 <label htmlFor="audio-input">{i18next.t('audioInput')}</label>
                                 <div className="select-wrapper">
-                                    <select id="audio-input" value={this.props.currentAudioInputId} onChange={this.onInputChanged('audio')}>
-                                        {this.state.audioInputs.map(audioInput => (
+                                    <select id="audio-input" value={currentAudioInputId} onChange={this.onInputChanged('audio')}>
+                                        {audioInputs.map(audioInput => (
                                             <option key={audioInput.id} value={audioInput.id}>{audioInput.text}</option>
                                         ))}
                                     </select>
@@ -117,15 +117,15 @@ export default class Settings extends React.PureComponent {
                             <div className="settings-preview-audio">
                                 <SoundMeterWithStream
                                     constraints={{
-                                        audio: { deviceId: {exact: this.props.currentAudioInputId} }
+                                        audio: { deviceId: { exact: currentAudioInputId } }
                                     }}
                                 />
                             </div>
                             <div className="select-input">
                                 <label htmlFor="video-input">{i18next.t('videoInput')}</label>
                                 <div className="select-wrapper">
-                                    <select id="video-input" value={this.props.currentVideoInputId} onChange={this.onInputChanged('video')}>
-                                        {this.state.videoInputs.map(videoInput => (
+                                    <select id="video-input" value={currentVideoInputId} onChange={this.onInputChanged('video')}>
+                                        {videoInputs.map(videoInput => (
                                             <option key={videoInput.id} value={videoInput.id}>{videoInput.text}</option>
                                         ))}
                                     </select>
@@ -134,17 +134,33 @@ export default class Settings extends React.PureComponent {
                             <div className="settings-preview-video">
                                 <VideoOutputWithStream
                                     constraints={{
-                                        video: { deviceId: {exact: this.props.currentVideoInputId} }
+                                        video: { deviceId: { exact: currentVideoInputId } }
                                     }}
                                 />
                             </div>
                         </div>
                     </div>
                     <footer className="save-indicator-container">
-                        <SaveIndicator saveStatus={this.props.saveStatus} />
+                        <SaveIndicator saveStatus={saveStatus} />
                     </footer>
                 </div>
             </section>
         );
     }
 }
+
+Settings.defaultProps = {
+    saveStatus: null,
+    currentAudioInputId: null,
+    currentVideoInputId: null
+};
+
+Settings.propTypes = {
+    frontBack: PropTypes.string.isRequired,
+    save: PropTypes.func.isRequired,
+    saveStatus: PropTypes.string,
+    back: PropTypes.func.isRequired,
+    setCurrentInput: PropTypes.func.isRequired,
+    currentAudioInputId: PropTypes.string,
+    currentVideoInputId: PropTypes.string,
+};

@@ -23,18 +23,12 @@ import Question from './Question';
 import { throttle } from '../../../utils/Utils';
 
 export default class Questions extends React.PureComponent {
-
-    static propTypes = {
-        goToNextSubstep: PropTypes.func.isRequired,
-        questions: PropTypes.arrayOf(PropTypes.string).isRequired
-    };
-
     constructor(props) {
         super(props);
 
         this.state = {
             questionIndex: 0
-        }
+        };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.previousQuestion = throttle(this.previousQuestion.bind(this), 1000);
@@ -59,31 +53,43 @@ export default class Questions extends React.PureComponent {
     }
 
     previousQuestion() {
-        if (this.state.questionIndex > 0) {
+        const { questionIndex } = this.state;
+        if (questionIndex > 0) {
             this.setState({
-                questionIndex: this.state.questionIndex - 1
+                questionIndex: questionIndex - 1
             });
         }
     }
 
     nextQuestion() {
-        if (this.state.questionIndex + 1 < this.props.questions.length) {
+        const { questionIndex } = this.state;
+        const { questions, goToNextSubstep } = this.props;
+
+        if (questionIndex + 1 < questions.length) {
             this.setState({
-                questionIndex: this.state.questionIndex + 1
+                questionIndex: questionIndex + 1
             });
         } else {
             // Go to "Thanks"
-            this.props.goToNextSubstep();
+            goToNextSubstep();
         }
     }
 
     render() {
+        const { questions } = this.props;
+        const { questionIndex } = this.state;
+
         return (
             <div id="question">
                 <Question
-                    question={this.props.questions[this.state.questionIndex]}
+                    question={questions[questionIndex]}
                 />
             </div>
         );
     }
 }
+
+Questions.propTypes = {
+    goToNextSubstep: PropTypes.func.isRequired,
+    questions: PropTypes.arrayOf(PropTypes.string).isRequired
+};

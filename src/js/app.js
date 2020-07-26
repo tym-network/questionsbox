@@ -22,8 +22,8 @@ import i18next from 'i18next';
 import winston from 'winston';
 import electron from 'electron';
 
-import withRecorder from './components/containers/WebRTCContainer.js';
-import App from './components/App.js';
+import withRecorder from './components/containers/WebRTCContainer';
+import { App } from './components/App';
 import '../sass/main.scss';
 
 // Add a logger
@@ -52,7 +52,7 @@ window.locales.forEach(locale => {
 });
 
 // Disable right click
-document.body.addEventListener('contextmenu', function(ev) {
+document.body.addEventListener('contextmenu', ev => {
     ev.preventDefault();
     return false;
 });
@@ -65,20 +65,21 @@ i18next.init(
         whitelist: window.locales,
         ns: 'default',
         defaultNS: 'default',
-        resources: resources
-    }, function(err) {
+        resources
+    }, err => {
         if (err) {
             window.logger.err('Unable to fetch translations', err);
         }
 
         // Init the app
-        const wrapper = document.getElementById("app");
+        const wrapper = document.getElementById('app');
 
         if (wrapper) {
             const AppWithRecorder = withRecorder(App);
             ReactDOM.render(
-                <AppWithRecorder />
-            , wrapper);
+                <AppWithRecorder />,
+                wrapper
+            );
         }
     }
 );

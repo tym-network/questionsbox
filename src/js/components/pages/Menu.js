@@ -22,11 +22,10 @@ import i18next from 'i18next';
 import electron from 'electron';
 
 export default class Menu extends React.PureComponent {
-
-    static propTypes = {
-        frontBack: PropTypes.string.isRequired,
-        goToStep: PropTypes.func.isRequired
-    };
+    static openVideoFolder() {
+        const videoFolder = electron.remote.getGlobal('paths').videos;
+        electron.shell.showItemInFolder(videoFolder);
+    }
 
     constructor(props) {
         super(props);
@@ -36,28 +35,30 @@ export default class Menu extends React.PureComponent {
 
     goToStep(step) {
         return () => {
-            this.props.goToStep(step);
-        }
-    }
-
-    openVideoFolder() {
-        const videoFolder = electron.remote.getGlobal('paths').videos;
-        electron.shell.showItemInFolder(videoFolder);
+            const { goToStep } = this.props;
+            goToStep(step);
+        };
     }
 
     render() {
+        const { frontBack } = this.props;
         return (
-            <section id="menu" className={this.props.frontBack}>
+            <section id="menu" className={frontBack}>
                 <div className="content-wrap">
                     <h1>{i18next.t('menu')}</h1>
                     <div className="menu-wrapper">
-                        <button onClick={this.goToStep('customize')}>{i18next.t('customize')}</button>
-                        <button onClick={this.goToStep('settings')}>{i18next.t('settings')}</button>
-                        <button onClick={this.openVideoFolder}>{i18next.t('videoFolder')}</button>
-                        <button className="start" onClick={this.goToStep('locale')}>{i18next.t('start')}</button>
+                        <button onClick={this.goToStep('customize')} type="button">{i18next.t('customize')}</button>
+                        <button onClick={this.goToStep('settings')} type="button">{i18next.t('settings')}</button>
+                        <button onClick={Menu.openVideoFolder} type="button">{i18next.t('videoFolder')}</button>
+                        <button className="start" onClick={this.goToStep('locale')} type="button">{i18next.t('start')}</button>
                     </div>
                 </div>
             </section>
         );
     }
 }
+
+Menu.propTypes = {
+    frontBack: PropTypes.string.isRequired,
+    goToStep: PropTypes.func.isRequired
+};

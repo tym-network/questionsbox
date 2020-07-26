@@ -18,7 +18,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CSSTransition, TransitionGroup } from 'react-transition-group'
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import fs from 'fs';
 
 import Buzzer from '../widget/Buzzer';
@@ -28,17 +28,6 @@ import Questions from './main-view/Questions';
 import Thanks from './main-view/Thanks';
 
 export default class MainViewer extends React.PureComponent {
-
-    static propTypes = {
-        frontBack: PropTypes.string.isRequired,
-        goToNextStep: PropTypes.func.isRequired,
-        questions: PropTypes.arrayOf(PropTypes.string).isRequired,
-        configuration: PropTypes.shape({
-            buzzSound: PropTypes.string
-        }),
-        stopRecording: PropTypes.func.isRequired
-    };
-
     steps = [
         'instructions',
         'intro-video',
@@ -72,14 +61,54 @@ export default class MainViewer extends React.PureComponent {
         document.removeEventListener('click', this.onDocumentClick);
     }
 
-    onDocumentClick (e) {
+    onDocumentClick(e) {
         if (e.target.tagName !== 'BUTTON') {
             this.addBuzzer();
         }
     }
 
+    onBuzzerEnd(id) {
+        // Remove buzzer based on the id
+        const { buzzers } = this.state;
+        const index = buzzers.indexOf(id);
+        const newBuzzers = JSON.parse(JSON.stringify(buzzers));
+
+        if (index >= 0) {
+            newBuzzers.splice(index, 1);
+        }
+
+        this.setState({
+            buzzers: newBuzzers
+        });
+    }
+
+    setStyle(style) {
+        this.setState({
+            style
+        });
+    }
+
+    addBuzzer() {
+        const { buzzers } = this.state;
+        const newBuzzers = buzzers.slice(0);
+
+        newBuzzers.push(this.lastBuzzId);
+        this.lastBuzzId++;
+
+        this.setState({
+            buzzers: newBuzzers
+        });
+    }
+
+    goToNextStep() {
+        const { stopRecording, goToNextStep } = this.props;
+        stopRecording();
+        goToNextStep();
+    }
+
     goToNextSubstep() {
-        let index = this.steps.indexOf(this.state.step);
+        const { step } = this.state;
+        const index = this.steps.indexOf(step);
 
         if (index >= 0) {
             if (index + 1 >= this.steps.length) {
@@ -89,8 +118,8 @@ export default class MainViewer extends React.PureComponent {
             let nextStep = this.steps[index + 1];
             if (nextStep === 'intro-video') {
                 try {
-                    fs.statSync('../movies/baq.webm')
-                } catch(e) {
+                    fs.statSync('../movies/baq.webm');
+                } catch (e) {
                     // Don't show IntroVideo if video isn't found
                     nextStep = this.steps[index + 2];
                 }
@@ -103,102 +132,80 @@ export default class MainViewer extends React.PureComponent {
         }
     }
 
-    goToNextStep() {
-        this.props.stopRecording();
-        this.props.goToNextStep();
-    }
-
-    setStyle(style) {
-        this.setState({
-            style
-        });
-    }
-
-    addBuzzer() {
-        let newBuzzers = this.state.buzzers.slice(0);
-
-        newBuzzers.push(this.lastBuzzId);
-        this.lastBuzzId++;
-
-        this.setState({
-            buzzers: newBuzzers
-        });
-    }
-
-    onBuzzerEnd(id) {
-        // Remove buzzer based on the id
-        const index = this.state.buzzers.indexOf(id);
-        let newBuzzers = JSON.parse(JSON.stringify(this.state.buzzers));
-
-        if (index >= 0) {
-            newBuzzers.splice(index, 1);
-        }
-
-        this.setState({
-            buzzers: newBuzzers
-        });
-    }
-
     render() {
+        const { frontBack, questions, configuration } = this.props;
+        const { step, buzzers, style } = this.state;
         let currentComponent;
         const timeoutTransition = 400;
-        const classNames = this.props.frontBack;
+        const classNames = frontBack;
 
-        switch (this.state.step) {
-            case 'instructions':
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="fade" timeout={timeoutTransition}>
-                        <Instructions
-                            goToNextSubstep={this.goToNextSubstep}
-                        />
-                    </CSSTransition>
-                );
-                break;
-            case 'intro-video':
-                currentComponent = (
-                    <CSSTransition key={this.state.step} classNames="fade" timeout={timeoutTransition}>
-                        <IntroVideo
-                            goToNextSubstep={this.goToNextSubstep}
-                            setStyle={this.setStyle}
-                        />
-                    </CSSTransition>
-                );
-                break;
-            case 'questions':
-                currentComponent = (
-                    <Questions
+        switch (step) {
+        case 'instructions':
+            currentComponent = (
+                <CSSTransition key={step} classNames="fade" timeout={timeoutTransition}>
+                    <Instructions
                         goToNextSubstep={this.goToNextSubstep}
-                        questions={this.props.questions}
                     />
-                );
-                break;
-            case 'thanks':
-                currentComponent = (
-                    <Thanks
-                        goToNextStep={this.goToNextStep}
+                </CSSTransition>
+            );
+            break;
+        case 'intro-video':
+            currentComponent = (
+                <CSSTransition key={step} classNames="fade" timeout={timeoutTransition}>
+                    <IntroVideo
+                        goToNextSubstep={this.goToNextSubstep}
+                        setStyle={this.setStyle}
                     />
-                );
-                break;
+                </CSSTransition>
+            );
+            break;
+        case 'questions':
+            currentComponent = (
+                <Questions
+                    goToNextSubstep={this.goToNextSubstep}
+                    questions={questions}
+                />
+            );
+            break;
+        case 'thanks':
+            currentComponent = (
+                <Thanks
+                    goToNextStep={this.goToNextStep}
+                />
+            );
+            break;
+        default:
+            break;
         }
 
-        const buzzers = this.state.buzzers.map(buzzerId => (
+        const buzzersElements = buzzers.map(buzzerId => (
             <Buzzer
                 key={buzzerId}
                 id={buzzerId}
-                buzzSound={this.props.configuration.buzzSound}
+                buzzSound={configuration.buzzSound}
                 onEnd={this.onBuzzerEnd}
             />
-        ))
+        ));
 
         return (
-            <section id="start" className={classNames} style={this.state.style}>
+            <section id="start" className={classNames} style={style}>
                 <div className="content-wrap flex-column">
                     <TransitionGroup>
                         {currentComponent}
                     </TransitionGroup>
                 </div>
-                {buzzers}
+                {buzzersElements}
             </section>
         );
     }
 }
+
+MainViewer.propTypes = {
+    frontBack: PropTypes.string.isRequired,
+    goToNextStep: PropTypes.func.isRequired,
+    questions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    configuration: PropTypes.shape({
+        buzzSound: PropTypes.string
+    }).isRequired,
+    stopRecording: PropTypes.func.isRequired
+};

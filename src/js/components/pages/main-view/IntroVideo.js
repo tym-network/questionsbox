@@ -20,34 +20,34 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class IntroVideo extends React.PureComponent {
-
-    static propTypes = {
-        goToNextSubstep: PropTypes.func.isRequired,
-        setStyle: PropTypes.func.isRequired
-    };
-
     componentDidMount() {
+        const { goToNextSubstep, setStyle } = this.props;
+
         if (!this.video) {
             return;
         }
 
         this.video.addEventListener('ended', () => {
-            this.props.goToNextSubstep();
+            goToNextSubstep();
         });
         this.video.addEventListener('loadeddata', () => {
-            this.props.setStyle({
+            setStyle({
                 height: this.video.offsetHeight
-            })
+            });
         });
         this.video.play();
-
     }
 
     render() {
         return (
-            <video id="introVideo" ref={ref => this.video = ref}>
+            <video id="introVideo" ref={ref => { this.video = ref; }}>
                 <source src="../movies/baq.webm" type="video/webm" />
             </video>
         );
     }
 }
+
+IntroVideo.propTypes = {
+    goToNextSubstep: PropTypes.func.isRequired,
+    setStyle: PropTypes.func.isRequired
+};

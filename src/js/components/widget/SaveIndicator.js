@@ -22,36 +22,27 @@ import i18next from 'i18next';
 import moment from 'moment';
 
 export default class SaveIndicator extends React.PureComponent {
-
     debounce = null;
-
-    static propTypes = {
-        saveStatus: PropTypes.string,
-        updatedAt: PropTypes.number
-    };
 
     constructor(props) {
         super(props);
 
         this.state = {
-            status: null,
-            lastChangeAt: null
+            status: null
         };
 
         this.showNextStatus = this.showNextStatus.bind(this);
     }
 
-    componentWillUnmount() {
-        if (this.debounce) {
-            clearTimeout(this.debounce);
-        }
-    }
-
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.saveStatus !== this.props.saveStatus) {
-            if (this.props.saveStatus === 'saving') {
+        const { saveStatus } = this.props;
+        const { status } = this.state;
+
+        if (prevProps.saveStatus !== saveStatus) {
+            if (saveStatus === 'saving') {
+                // eslint-disable-next-line react/no-did-update-set-state
                 this.setState({
-                    status: this.props.saveStatus
+                    status: saveStatus
                 });
                 // Stay in "Saving" for at least 600ms
                 this.debounce = setTimeout(this.showNextStatus, 600);
@@ -59,16 +50,17 @@ export default class SaveIndicator extends React.PureComponent {
 
             if (!this.debounce) {
                 // Status changed to "saved" or "error" and "saving" has been displayed to more than 600ms
-                if (this.props.saveStatus === 'saved' || this.props.saveStatus === 'error') {
+                if (saveStatus === 'saved' || saveStatus === 'error') {
+                    // eslint-disable-next-line react/no-did-update-set-state
                     this.setState({
-                        status: this.props.saveStatus
+                        status: saveStatus
                     });
                 }
             }
         }
 
-        if (prevState.status !== this.state.status) {
-            if (this.state.status === 'saved') {
+        if (prevState.status !== status) {
+            if (status === 'saved') {
                 // Show "saved" for 10s then back to "updated at"
                 this.debounce = setTimeout(() => {
                     this.setState({
@@ -79,8 +71,14 @@ export default class SaveIndicator extends React.PureComponent {
         }
     }
 
+    componentWillUnmount() {
+        if (this.debounce) {
+            clearTimeout(this.debounce);
+        }
+    }
+
     showNextStatus() {
-        const nextStatus = this.props.saveStatus;
+        const { saveStatus: nextStatus } = this.props;
         this.setState({
             status: nextStatus
         });
@@ -93,7 +91,7 @@ export default class SaveIndicator extends React.PureComponent {
         const { updatedAt } = this.props;
         let statusText;
         let statusClass;
-        let statusTitle = "";
+        let statusTitle = '';
         if (status === 'saving') {
             statusText = i18next.t('saving');
             statusClass = 'warn';
@@ -114,9 +112,19 @@ export default class SaveIndicator extends React.PureComponent {
         }
 
         return (
-            <div className={`save-indicator ${statusClass}`} ref={ref => this.saveIndicator = ref}>
+            <div className={`save-indicator ${statusClass}`} ref={ref => { this.saveIndicator = ref; }}>
                 <span className="save-indicator-text" title={statusTitle}>{statusText}</span>
             </div>
         );
     }
 }
+
+SaveIndicator.defaultProps = {
+    saveStatus: null,
+    updatedAt: null
+};
+
+SaveIndicator.propTypes = {
+    saveStatus: PropTypes.string,
+    updatedAt: PropTypes.number
+};
