@@ -19,6 +19,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import electron from 'electron';
 
 export default class Menu extends React.PureComponent {

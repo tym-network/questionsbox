@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import electron from 'electron';
 
 import { readJsonFile } from '../utils/Utils';

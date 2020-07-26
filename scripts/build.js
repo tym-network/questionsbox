@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 // Copyright (C) 2018 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
@@ -18,21 +19,22 @@
 
 const webpack = require('webpack');
 const builder = require('electron-builder');
-const Platform = builder.Platform;
 const path = require('path');
 const fs = require('fs');
 
-const webpackRendererConfiguration = require('./../webpack.renderer.prod.js');
-const webpackMainConfiguration = require('./../webpack.main.prod.js');
+const { Platform } = builder;
+const webpackRendererConfiguration = require('../webpack.renderer.prod.js');
+const webpackMainConfiguration = require('../webpack.main.prod.js');
 
 // Build the source code
-const rendererCompilePromise = function() {
-    return new Promise((res, rej) => {
+const rendererCompilePromise = () => (
+    new Promise((res, rej) => {
         const rendererCompiler = webpack(webpackRendererConfiguration);
+        console.log('Build renderer');
         rendererCompiler.run((err, stats) => {
             if (err || stats.hasErrors()) {
                 console.log('Error while building renderer source code (Webpack)');
-                console.error(err, stats);
+                // console.error(err, stats);
                 rej(err);
             } else {
                 // Start building the code into an electron app
@@ -40,16 +42,17 @@ const rendererCompilePromise = function() {
                 res();
             }
         });
-    });
-};
+    })
+);
 
-const mainCompilePromise = function() {
-    return new Promise((res, rej) => {
+const mainCompilePromise = () => (
+    new Promise((res, rej) => {
         const mainCompiler = webpack(webpackMainConfiguration);
+        console.log('Build main');
         mainCompiler.run((err, stats) => {
             if (err || stats.hasErrors()) {
                 console.log('Error while building main source code (Webpack)');
-                console.error(err, stats);
+                // console.error(err, stats);
                 rej(err);
             } else {
                 // Start building the code into a NW app
@@ -57,8 +60,8 @@ const mainCompilePromise = function() {
                 res();
             }
         });
-    });
-};
+    })
+);
 
 // First, clear build folder
 const buildDirectory = path.join(__dirname, '..', 'build');
@@ -68,9 +71,9 @@ console.log(`CLEAR BUILD FOLDER (${webDirectory})`);
 Promise.all([buildDirectory, webDirectory]).then(() => {
     console.log('CLEAR BUILD FOLDERS OK');
     Promise.all([rendererCompilePromise(), mainCompilePromise()]).then(() => {
-        const buildWindows = buildApp(Platform.WINDOWS.createTarget());
-        const buildLinux = buildApp(Platform.LINUX.createTarget());
-        const buildMac = buildApp(Platform.MAC.createTarget());
+        const buildWindows = buildApp('windows', Platform.WINDOWS.createTarget());
+        const buildLinux = buildApp('linux', Platform.LINUX.createTarget());
+        const buildMac = buildApp('mac', Platform.MAC.createTarget());
 
         return Promise.all([
             buildWindows,
@@ -91,7 +94,7 @@ function removeFile(filePath) {
                 return rej(err);
             }
 
-            res();
+            return res();
         });
     });
 }
@@ -103,7 +106,7 @@ function removeDirectory(filePath) {
                 return rej(err);
             }
 
-            res();
+            return res();
         });
     });
 }
@@ -116,12 +119,12 @@ function handleFile(filePath) {
             }
 
             if (stats.isDirectory()) {
-                return emptyDirectory(filePath).then(() => {
-                    return removeDirectory(filePath);
-                });
-            } else {
-                return removeFile(filePath);
+                return emptyDirectory(filePath).then(() => (
+                    removeDirectory(filePath)
+                ));
             }
+
+            return removeFile(filePath);
         });
     });
 }
@@ -134,6 +137,7 @@ function emptyDirectory(directory) {
                 return rej(err);
             }
 
+            // eslint-disable-next-line no-restricted-syntax
             for (const file of files) {
                 const filePath = path.join(directory, file);
                 filesPromises.push(handleFile(filePath));
@@ -145,7 +149,7 @@ function emptyDirectory(directory) {
 }
 
 // Build the app
-function buildApp(target) {
+function buildApp(targetName, target) {
     return builder.build({
         config: {
             appId: 'com.questionsbox',
@@ -176,8 +180,10 @@ function buildApp(target) {
         targets: target
     }).then(() => {
         console.log('App built!');
-    }).catch((error) => {
-        console.log('Error while building app (electron-builder)');
+    }).catch(error => {
+        console.log('#########################################################################');
+        console.log(`Error while building app (electron-builder) - Target = ${targetName}`);
         console.error(error);
-    })
+        throw error;
+    });
 }

@@ -20,6 +20,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import i18next from 'i18next';
 import winston from 'winston';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import electron from 'electron';
 
 import withRecorder from './components/containers/WebRTCContainer';

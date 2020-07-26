@@ -18,6 +18,7 @@
 
 import React from 'react';
 import RecordRTC from 'recordrtc';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import electron from 'electron';
 
 import { getStream, listDevices } from '../../utils/WebRTCUtils';

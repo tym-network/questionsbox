@@ -16,6 +16,7 @@
 // along with QuestionsBox.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 const { app, BrowserWindow } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 const fs = require('fs');
