@@ -21,7 +21,6 @@ const { app, BrowserWindow } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
 
 let win;
 const isDev = process.env.NODE_ENV === 'development';
@@ -72,11 +71,7 @@ function createWindow() {
         // Load index.html via webpack dev server.
         win.loadURL('http://localhost:9000/html/index.html');
     } else {
-        win.loadURL(url.format({
-            pathname: path.join(__dirname, '..', 'html', 'index.html'),
-            protocol: 'file:',
-            slashes: true
-        }));
+        win.loadFile(path.join('web', 'html', 'index.html'));
     }
 
     win.on('closed', () => {
