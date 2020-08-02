@@ -189,7 +189,7 @@ export class App extends React.Component {
             this.setState(state => ({
                 configuration: {
                     ...state.configuration,
-                    data
+                    ...data
                 }
             }));
         }, err => {
