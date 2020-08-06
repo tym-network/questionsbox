@@ -263,7 +263,7 @@ section.front, section.back {
         position: relative;
         width: 100%;
         padding: 40px;
-        overflow: scroll;
+        overflow: auto;
 
         &.flex-column {
             height: 100%;

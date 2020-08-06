@@ -43,8 +43,8 @@ export class App extends React.Component {
         'customize-questions',
         'settings',
         'locale',
-        'preview-video',
         'introduction',
+        'preview-video',
         'main-viewer'
     ];
 

@@ -43,7 +43,7 @@ export default class Introduction extends React.PureComponent {
                             onClick={goToNextStep}
                             type="button"
                         >
-                            {i18next.t('instructionsButton')}
+                            {i18next.t('start')}
                         </button>
                     </footer>
                 </div>
