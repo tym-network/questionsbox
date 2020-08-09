@@ -174,6 +174,11 @@ export class App extends React.Component {
                 }
                 const questionsData = { ...questionsCopy.data };
                 delete questionsCopy.data;
+                // If only one language, use it for the interface
+                const locales = Object.keys(questionsCopy);
+                if (locales.length === 1) {
+                    this.setLocale(locales[0]);
+                }
                 this.setState({
                     questions: questionsCopy,
                     questionsData
