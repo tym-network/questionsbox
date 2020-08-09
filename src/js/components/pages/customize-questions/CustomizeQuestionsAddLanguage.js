@@ -116,6 +116,7 @@ export default class CustomizeQuestionsAddLanguage extends React.PureComponent {
                     show={open}
                     onHide={this.closeModal}
                     dialogClassName="add-language-modal"
+                    centered
                 >
                     <Modal.Header closeButton>
                         <Modal.Title>{i18next.t('addLanguage')}</Modal.Title>
