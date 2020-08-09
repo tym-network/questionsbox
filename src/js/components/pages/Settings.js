@@ -66,11 +66,11 @@ export default class Settings extends React.PureComponent {
         let videoInputExists = false;
 
         audioInputExists = !!audioInputs.find(deviceInfo => (
-            deviceInfo.deviceId === currentAudioInputId
+            deviceInfo.id === currentAudioInputId
         ));
 
         videoInputExists = !!videoInputs.find(deviceInfo => (
-            deviceInfo.deviceId === currentVideoInputId
+            deviceInfo.id === currentVideoInputId
         ));
 
         this.setState({

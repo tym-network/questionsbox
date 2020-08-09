@@ -90,7 +90,7 @@ export class App extends React.Component {
         const questionsCopy = { ...questions };
         delete questionsCopy.data;
         // If only one language, use it for the interface
-        const locales = Object.keys(questions);
+        const locales = Object.keys(questionsCopy);
         if (locales.length === 1) {
             this.setLocale(locales[0]);
         }
@@ -189,7 +189,7 @@ export class App extends React.Component {
             this.setState(state => ({
                 configuration: {
                     ...state.configuration,
-                    data
+                    ...data
                 }
             }));
         }, err => {
