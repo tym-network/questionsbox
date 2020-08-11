@@ -19,8 +19,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
+import withKeyDownListener from '../containers/KeyDownListener';
 
-export default class PreviewVideo extends React.PureComponent {
+class PreviewVideo extends React.PureComponent {
     constructor(props) {
         super(props);
         const { startRecording } = this.props;
@@ -33,6 +34,8 @@ export default class PreviewVideo extends React.PureComponent {
 
         // Start recording as soon as the preview is displayed
         startRecording();
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        props.setKeyDownListener(this.handleKeyDown);
     }
 
     componentDidMount() {
@@ -52,6 +55,15 @@ export default class PreviewVideo extends React.PureComponent {
         }
 
         this.playVideo();
+    }
+
+    handleKeyDown(keyCode) {
+        const { goToNextStep } = this.props;
+
+        if (keyCode === 13) {
+            // Enter key
+            goToNextStep();
+        }
     }
 
     playVideo() {
@@ -103,5 +115,8 @@ PreviewVideo.propTypes = {
     goToNextStep: PropTypes.func.isRequired,
     startRecording: PropTypes.func.isRequired,
     stream: PropTypes.object,
-    resolution: PropTypes.object
+    resolution: PropTypes.object,
+    setKeyDownListener: PropTypes.func.isRequired
 };
+
+export default withKeyDownListener(PreviewVideo);

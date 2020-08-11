@@ -19,9 +19,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
+import withKeyDownListener from '../containers/KeyDownListener';
 import defaultLogo from '../../../assets/img/logo.png';
 
-export default class Introduction extends React.PureComponent {
+class Introduction extends React.PureComponent {
+    constructor(props) {
+        super(props);
+
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        props.setKeyDownListener(this.handleKeyDown);
+    }
+
+    handleKeyDown(keyCode) {
+        const { goToNextStep } = this.props;
+
+        if (keyCode === 13) {
+            // Enter key
+            goToNextStep();
+        }
+    }
+
     render() {
         const {
             frontBack, title, logo, goToNextStep
@@ -60,5 +77,8 @@ Introduction.propTypes = {
     frontBack: PropTypes.string.isRequired,
     goToNextStep: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    logo: PropTypes.string
+    logo: PropTypes.string,
+    setKeyDownListener: PropTypes.func.isRequired
 };
+
+export default withKeyDownListener(Introduction);
