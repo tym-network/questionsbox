@@ -91,8 +91,7 @@ class LocalePicker extends React.PureComponent {
     setLocale(e) {
         this.setState({
             selectedLocale: e.target.value
-        });
-        this.onSumbit();
+        }, this.onSumbit);
     }
 
     handleKeyDown(keyCode) {
