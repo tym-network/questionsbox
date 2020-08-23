@@ -136,7 +136,8 @@ class LocalePicker extends React.PureComponent {
                                         id={`locale-${locale.value}`}
                                         value={locale.value}
                                         checked={selectedLocale === locale.value}
-                                        onChange={this.setLocale}
+                                        readOnly
+                                        onClick={this.setLocale}
                                     />
                                     <label className="flag" htmlFor={`locale-${locale.value}`}>
                                         <img src={locale.flag} alt={locale.value} />
