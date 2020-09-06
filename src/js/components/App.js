@@ -296,6 +296,12 @@ export class App extends React.Component {
             step, saveConfigurationStatus, configuration, questions, questionsData, locale
         } = this.state;
         const { stopRecording, stream } = this.props;
+        let resolution = sessionStorage.getItem(`resolution-${configuration.videoInputDeviceId}`);
+        try {
+            resolution = JSON.parse(resolution);
+        } catch (e) {
+            window.logger(e);
+        }
 
         if (this.isFlipped()) {
             wrapperClasses = 'flipped';
@@ -377,6 +383,7 @@ export class App extends React.Component {
                         goToNextStep={this.goToNextStep}
                         startRecording={this.startRecording}
                         stream={stream}
+                        resolution={resolution}
                     />
                 </CSSTransition>
             );

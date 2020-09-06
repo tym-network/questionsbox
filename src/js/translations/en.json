@@ -50,6 +50,7 @@
         "langDanish": "Danish",
         "langPolish": "Polish",
         "searchSelectLanguage": "Search or select the language to add",
-        "updatedAt": "Last update: {{time}}"
+        "updatedAt": "Last update: {{time}}",
+        "previewExplanation": "Make sure all the participants can be seen and click \"Next\""
     }
 }

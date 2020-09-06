@@ -20,6 +20,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
 import withKeyDownListener from '../containers/KeyDownListener';
+import { throttle } from '../../utils/Utils';
 
 class PreviewVideo extends React.PureComponent {
     constructor(props) {
@@ -35,6 +36,7 @@ class PreviewVideo extends React.PureComponent {
         // Start recording as soon as the preview is displayed
         startRecording();
         this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.onResize = throttle(this.onResize.bind(this), 200, this);
         props.setKeyDownListener(this.handleKeyDown);
     }
 
@@ -46,15 +48,25 @@ class PreviewVideo extends React.PureComponent {
         if (this.video && this.video.current && stream) {
             this.video.current.srcObject = stream;
         }
+
+        window.addEventListener('resize', this.onResize);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         const { stream } = this.props;
-        if (this.video && this.video.current && stream) {
+        if (this.video && this.video.current && stream && stream !== prevProps.stream) {
             this.video.current.srcObject = stream;
+            this.playVideo();
+            this.computeHeight();
         }
+    }
 
-        this.playVideo();
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.onResize);
+    }
+
+    onResize() {
+        this.computeHeight();
     }
 
     handleKeyDown(keyCode) {
@@ -74,19 +86,29 @@ class PreviewVideo extends React.PureComponent {
 
     computeHeight() {
         const { resolution } = this.props;
+        const mainEl = document.querySelector('#main');
+
         if (!this.video || !resolution) {
             return;
         }
 
         // Compute height based on resolution
         const resolutionRatio = resolution.width / resolution.height;
-        const newHeight = this.previewVideo.offsetWidth / resolutionRatio;
+        const newHeight = mainEl.offsetWidth / resolutionRatio;
 
-        this.setState({
-            style: {
-                height: newHeight
-            }
-        });
+        if (newHeight > mainEl.offsetHeight) {
+            this.setState({
+                style: {
+                    width: mainEl.offsetHeight * resolutionRatio
+                }
+            });
+        } else {
+            this.setState({
+                style: {
+                    height: newHeight
+                }
+            });
+        }
     }
 
     render() {
@@ -94,11 +116,12 @@ class PreviewVideo extends React.PureComponent {
         const { style } = this.state;
         const classNames = frontBack;
         return (
-            <section id="preview-video" ref={ref => { this.previewVideo = ref; }} className={classNames} style={style}>
+            <section id="preview-video" className={classNames} style={style}>
                 <video
                     ref={this.video}
                     muted
                 />
+                <p className="preview-explanation">{i18next.t('previewExplanation')}</p>
                 <button onClick={goToNextStep} type="button">{i18next.t('next')}</button>
             </section>
         );

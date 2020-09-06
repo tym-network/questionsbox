@@ -32,5 +32,19 @@
         bottom: 40px;
         background: rgba(0, 0, 0, 0.4);
         color: white !important;
+
+        &:hover {
+            background: scale-color($color: $blue, $alpha: -60%);
+        }
+    }
+
+    .preview-explanation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px 20px;
+        background: rgba(0, 0, 0, 0.4);
+        color: white;
     }
 }

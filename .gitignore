@@ -6,3 +6,7 @@ node_modules/
 
 # Build
 build/
+
+# Local environment
+.metals
+.vscode
