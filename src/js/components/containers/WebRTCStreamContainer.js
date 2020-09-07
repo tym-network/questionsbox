@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //

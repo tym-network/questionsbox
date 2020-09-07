@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
