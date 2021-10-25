@@ -90,15 +90,14 @@ export default class Settings extends React.PureComponent {
 
     render() {
         const {
-            back, frontBack, saveStatus, currentAudioInputId, currentVideoInputId
+            back, saveStatus, currentAudioInputId, currentVideoInputId
         } = this.props;
         const {
             audioInputs, videoInputs
         } = this.state;
-        const className = `${frontBack}`;
 
         return (
-            <section id="settings" className={className}>
+            <section id="settings" className="card">
                 <BackButton onClick={back} />
                 <div className="content-wrap">
                     <h1>{i18next.t('settings')}</h1>
@@ -156,7 +155,6 @@ Settings.defaultProps = {
 };
 
 Settings.propTypes = {
-    frontBack: PropTypes.string.isRequired,
     save: PropTypes.func.isRequired,
     saveStatus: PropTypes.string,
     back: PropTypes.func.isRequired,

@@ -20,7 +20,6 @@ import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import electron from 'electron';
 
@@ -33,6 +32,7 @@ import MainViewer from './pages/MainViewer';
 import Menu from './pages/Menu';
 import PreviewVideo from './pages/PreviewVideo';
 import Settings from './pages/Settings';
+import OverlapTransition from './containers/OverlapTransition';
 
 const fs = require('fs');
 
@@ -49,8 +49,6 @@ export class App extends React.Component {
     ];
 
     multiStreamRecorder;
-
-    frontBack = 'front';
 
     key = 1; // Used to refresh menu if locale is updated
 
@@ -70,9 +68,9 @@ export class App extends React.Component {
         };
 
         this.saveConfiguration = this.saveConfiguration.bind(this);
-        this.isFlipped = this.isFlipped.bind(this);
         this.goToStep = this.goToStep.bind(this);
         this.goToNextStep = this.goToNextStep.bind(this);
+        this.backToMenu = this.backToMenu.bind(this);
         this.setCurrentInput = this.setCurrentInput.bind(this);
         this.setConfigurationProperty = this.setConfigurationProperty.bind(this);
         this.setLocale = this.setLocale.bind(this);
@@ -222,10 +220,6 @@ export class App extends React.Component {
         });
     }
 
-    isFlipped() {
-        return this.frontBack === 'back';
-    }
-
     goToNextStep() {
         const { step } = this.state;
         const index = this.steps.indexOf(step);
@@ -242,7 +236,6 @@ export class App extends React.Component {
         });
 
         if (this.shouldShowNextStep(step)) {
-            this.frontBack = this.frontBack === 'front' ? 'back' : 'front';
             this.setState({
                 step
             });
@@ -283,6 +276,12 @@ export class App extends React.Component {
         return true;
     }
 
+    backToMenu() {
+        this.setState({
+            step: 'menu'
+        });
+    }
+
     startRecording() {
         const { startRecording } = this.props;
         const { configuration } = this.state;
@@ -290,12 +289,11 @@ export class App extends React.Component {
     }
 
     render() {
-        let wrapperClasses = null;
-        const timeoutFlip = 1000;
         const {
             step, saveConfigurationStatus, configuration, questions, questionsData, locale
         } = this.state;
         const { stopRecording, stream } = this.props;
+        let childComponent;
         let resolution = sessionStorage.getItem(`resolution-${configuration.videoInputDeviceId}`);
         try {
             resolution = JSON.parse(resolution);
@@ -303,132 +301,102 @@ export class App extends React.Component {
             window.logger(e);
         }
 
-        if (this.isFlipped()) {
-            wrapperClasses = 'flipped';
-        }
-
-        let currentComponent;
+        const mainComponent = (
+            <Menu
+                key={this.key}
+                goToStep={this.goToStep}
+            />
+        );
         switch (step) {
-        case 'menu':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
-                    <Menu
-                        key={this.key}
-                        goToStep={this.goToStep}
-                        frontBack={this.frontBack}
-                    />
-                </CSSTransition>
-            );
-            break;
-        case 'customize':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+            case 'customize':
+                childComponent = (
                     <Customize
-                        back={() => { this.goToStep('menu'); }}
                         editQuestions={() => { this.goToStep('customize-questions'); }}
                         save={this.saveConfiguration}
                         saveStatus={saveConfigurationStatus}
-                        frontBack={this.frontBack}
                         configuration={configuration}
                         setConfigurationProperty={this.setConfigurationProperty}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'customize-questions':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                );
+                break;
+            case 'customize-questions':
+                childComponent = (
                     <CustomizeQuestions
                         back={() => { this.goToStep('customize'); }}
-                        frontBack={this.frontBack}
                         questions={questions}
                         questionsData={questionsData}
                         saveQuestions={this.saveQuestions}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'settings':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                );
+                break;
+            case 'settings':
+                childComponent = (
                     <Settings
                         back={() => { this.goToStep('menu'); }}
                         save={this.saveConfiguration}
                         saveStatus={saveConfigurationStatus}
-                        frontBack={this.frontBack}
                         currentAudioInputId={configuration.audioInputDeviceId}
                         currentVideoInputId={configuration.videoInputDeviceId}
                         setCurrentInput={this.setCurrentInput}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'locale':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                );
+                break;
+            case 'locale':
+                childComponent = (
                     <LocalePicker
                         locales={Object.keys(questions)}
-                        frontBack={this.frontBack}
                         goToNextStep={this.goToNextStep}
                         setLocale={this.setLocale}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'preview-video':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                );
+                break;
+            case 'preview-video':
+                childComponent = (
                     <PreviewVideo
-                        frontBack={this.frontBack}
                         goToNextStep={this.goToNextStep}
                         startRecording={this.startRecording}
                         stream={stream}
                         resolution={resolution}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'introduction':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                );
+                break;
+            case 'introduction':
+                childComponent = (
                     <Introduction
-                        frontBack={this.frontBack}
                         goToNextStep={this.goToNextStep}
                         title={configuration.title}
                         logo={configuration.logo}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'main-viewer':
-            if (!questions || !locale || !questions[locale]) {
-                window.logger.error('Unable to retrieve questions for given locale', {
-                    questions,
-                    locale
-                });
-            }
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                );
+                break;
+            case 'main-viewer':
+                if (!questions || !locale || !questions[locale]) {
+                    window.logger.error('Unable to retrieve questions for given locale', {
+                        questions,
+                        locale
+                    });
+                }
+                childComponent = (
                     <MainViewer
-                        frontBack={this.frontBack}
                         goToNextStep={this.goToNextStep}
                         questions={questions[locale]}
                         configuration={configuration}
                         stopRecording={stopRecording}
                     />
-                </CSSTransition>
-            );
-            break;
-        default:
-            break;
+                );
+                break;
+            default:
+                break;
         }
 
         return (
-            <div id="wrapper" className={wrapperClasses}>
+            <div id="wrapper">
                 <div id="main">
-                    <TransitionGroup>
-                        {currentComponent}
-                    </TransitionGroup>
+                    <OverlapTransition
+                        main={mainComponent}
+                        child={childComponent}
+                        onChildClosed={this.backToMenu}
+                    />
                 </div>
             </div>
         );

@@ -140,42 +140,42 @@ export default class MainViewer extends React.PureComponent {
         const classNames = frontBack;
 
         switch (step) {
-        case 'instructions':
-            currentComponent = (
-                <CSSTransition key={step} classNames="fade" timeout={timeoutTransition}>
-                    <Instructions
+            case 'instructions':
+                currentComponent = (
+                    <CSSTransition key={step} classNames="fade" timeout={timeoutTransition}>
+                        <Instructions
+                            goToNextSubstep={this.goToNextSubstep}
+                        />
+                    </CSSTransition>
+                );
+                break;
+            case 'intro-video':
+                currentComponent = (
+                    <CSSTransition key={step} classNames="fade" timeout={timeoutTransition}>
+                        <IntroVideo
+                            goToNextSubstep={this.goToNextSubstep}
+                            setStyle={this.setStyle}
+                        />
+                    </CSSTransition>
+                );
+                break;
+            case 'questions':
+                currentComponent = (
+                    <Questions
                         goToNextSubstep={this.goToNextSubstep}
+                        questions={questions}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'intro-video':
-            currentComponent = (
-                <CSSTransition key={step} classNames="fade" timeout={timeoutTransition}>
-                    <IntroVideo
-                        goToNextSubstep={this.goToNextSubstep}
-                        setStyle={this.setStyle}
+                );
+                break;
+            case 'thanks':
+                currentComponent = (
+                    <Thanks
+                        goToNextStep={this.goToNextStep}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'questions':
-            currentComponent = (
-                <Questions
-                    goToNextSubstep={this.goToNextSubstep}
-                    questions={questions}
-                />
-            );
-            break;
-        case 'thanks':
-            currentComponent = (
-                <Thanks
-                    goToNextStep={this.goToNextStep}
-                />
-            );
-            break;
-        default:
-            break;
+                );
+                break;
+            default:
+                break;
         }
 
         const buzzersElements = buzzers.map(buzzerId => (
