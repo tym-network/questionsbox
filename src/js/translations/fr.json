@@ -2,7 +2,9 @@
     "default": {
         "settings": "Réglages",
         "audioInput": "Entrée son",
+        "audioInputMissing": "Aucun microphone détécté",
         "videoInput": "Caméra",
+        "videoInputMissing": "Aucune caméra détectée",
         "saveSettings": "Sauvegarder les réglages",
         "instructionsButton": "Instructions",
         "instruction1": "Des questions vont être affichées à l'écran. Lisez la question à haute voix puis répondez et/ou buzzez",

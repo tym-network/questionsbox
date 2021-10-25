@@ -36,7 +36,7 @@ export default class Settings extends React.PureComponent {
 
         this.state = {
             audioInputs: [],
-            videoInputs: []
+            videoInputs: [],
         };
 
         this.handleDeviceList = this.handleDeviceList.bind(this);
@@ -47,7 +47,7 @@ export default class Settings extends React.PureComponent {
     }
 
     onInputChanged(mediaType) {
-        return e => {
+        return (e) => {
             const { setCurrentInput, save } = this.props;
             const id = e.target.value;
 
@@ -58,24 +58,19 @@ export default class Settings extends React.PureComponent {
     }
 
     handleDeviceList(deviceList) {
-        const {
-            currentAudioInputId, currentVideoInputId, setCurrentInput
-        } = this.props;
+        console.log(deviceList);
+        const { currentAudioInputId, currentVideoInputId, setCurrentInput } = this.props;
         const { audioInputs, videoInputs } = deviceList;
         let audioInputExists = false;
         let videoInputExists = false;
 
-        audioInputExists = !!audioInputs.find(deviceInfo => (
-            deviceInfo.id === currentAudioInputId
-        ));
+        audioInputExists = !!audioInputs.find((deviceInfo) => deviceInfo.id === currentAudioInputId);
 
-        videoInputExists = !!videoInputs.find(deviceInfo => (
-            deviceInfo.id === currentVideoInputId
-        ));
+        videoInputExists = !!videoInputs.find((deviceInfo) => deviceInfo.id === currentVideoInputId);
 
         this.setState({
             audioInputs,
-            videoInputs
+            videoInputs,
         });
 
         if (!audioInputExists && audioInputs.length > 0) {
@@ -85,16 +80,14 @@ export default class Settings extends React.PureComponent {
             setCurrentInput('video', videoInputs[0].id);
         }
 
+        console.log(audioInputExists, videoInputExists);
+
         return true;
     }
 
     render() {
-        const {
-            back, saveStatus, currentAudioInputId, currentVideoInputId
-        } = this.props;
-        const {
-            audioInputs, videoInputs
-        } = this.state;
+        const { back, saveStatus, currentAudioInputId, currentVideoInputId } = this.props;
+        const { audioInputs, videoInputs } = this.state;
 
         return (
             <section id="settings" className="card">
@@ -105,38 +98,62 @@ export default class Settings extends React.PureComponent {
                         <div className="settings-wrapper-inputs">
                             <div className="select-input">
                                 <label htmlFor="audio-input">{i18next.t('audioInput')}</label>
-                                <div className="select-wrapper">
-                                    <select id="audio-input" value={currentAudioInputId} onChange={this.onInputChanged('audio')}>
-                                        {audioInputs.map(audioInput => (
-                                            <option key={audioInput.id} value={audioInput.id}>{audioInput.text}</option>
-                                        ))}
-                                    </select>
+                                {audioInputs?.length > 0 ? (
+                                    <div className="select-wrapper">
+                                        <select id="audio-input" value={currentAudioInputId} onChange={this.onInputChanged('audio')}>
+                                            {audioInputs.map((audioInput) => (
+                                                <option key={audioInput.id} value={audioInput.id}>
+                                                    {audioInput.text}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ) : (
+                                    <p className="errorText">{i18next.t('audioInputMissing')}</p>
+                                )}
+                            </div>
+                            {currentAudioInputId && (
+                                <div className="settings-preview-audio">
+                                    <SoundMeterWithStream
+                                        constraints={{
+                                            audio: {
+                                                deviceId: {
+                                                    exact: currentAudioInputId,
+                                                },
+                                            },
+                                        }}
+                                    />
                                 </div>
-                            </div>
-                            <div className="settings-preview-audio">
-                                <SoundMeterWithStream
-                                    constraints={{
-                                        audio: { deviceId: { exact: currentAudioInputId } }
-                                    }}
-                                />
-                            </div>
+                            )}
                             <div className="select-input">
                                 <label htmlFor="video-input">{i18next.t('videoInput')}</label>
-                                <div className="select-wrapper">
-                                    <select id="video-input" value={currentVideoInputId} onChange={this.onInputChanged('video')}>
-                                        {videoInputs.map(videoInput => (
-                                            <option key={videoInput.id} value={videoInput.id}>{videoInput.text}</option>
-                                        ))}
-                                    </select>
+                                {videoInputs?.length > 0 ? (
+                                    <div className="select-wrapper">
+                                        <select id="video-input" value={currentVideoInputId} onChange={this.onInputChanged('video')}>
+                                            {videoInputs.map((videoInput) => (
+                                                <option key={videoInput.id} value={videoInput.id}>
+                                                    {videoInput.text}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ) : (
+                                    <p className="errorText">{i18next.t('videoInputMissing')}</p>
+                                )}
+                            </div>
+                            {currentVideoInputId && (
+                                <div className="settings-preview-video">
+                                    <VideoOutputWithStream
+                                        constraints={{
+                                            video: {
+                                                deviceId: {
+                                                    exact: currentVideoInputId,
+                                                },
+                                            },
+                                        }}
+                                    />
                                 </div>
-                            </div>
-                            <div className="settings-preview-video">
-                                <VideoOutputWithStream
-                                    constraints={{
-                                        video: { deviceId: { exact: currentVideoInputId } }
-                                    }}
-                                />
-                            </div>
+                            )}
                         </div>
                     </div>
                     <footer className="save-indicator-container">
@@ -151,7 +168,7 @@ export default class Settings extends React.PureComponent {
 Settings.defaultProps = {
     saveStatus: null,
     currentAudioInputId: null,
-    currentVideoInputId: null
+    currentVideoInputId: null,
 };
 
 Settings.propTypes = {

@@ -2,7 +2,9 @@
     "default": {
         "settings": "Settings",
         "audioInput": "Audio input",
+        "audioInputMissing": "No audio input detected",
         "videoInput": "Camera",
+        "videoInputMissing": "No camera detected",
         "saveSettings": "Save settings",
         "instructionsButton": "Instructions",
         "instruction1": "Questions will be displayed on the screen. Read them out loud then answer and/or hit the buzzer",

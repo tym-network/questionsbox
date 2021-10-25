@@ -17,12 +17,12 @@
 //
 
 #settings {
-
     .content-wrap {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding-left: 80px;
+        padding-left: 80px !important;
+        padding-bottom: 66px !important;
     }
 
     .settings-wrapper {
@@ -71,4 +71,3 @@
         }
     }
 }
-
