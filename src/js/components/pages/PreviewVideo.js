@@ -28,7 +28,7 @@ class PreviewVideo extends React.PureComponent {
         const { startRecording } = this.props;
 
         this.state = {
-            style: {}
+            style: {},
         };
 
         this.video = React.createRef();
@@ -99,30 +99,28 @@ class PreviewVideo extends React.PureComponent {
         if (newHeight > mainEl.offsetHeight) {
             this.setState({
                 style: {
-                    width: mainEl.offsetHeight * resolutionRatio
-                }
+                    width: mainEl.offsetHeight * resolutionRatio,
+                },
             });
         } else {
             this.setState({
                 style: {
-                    height: newHeight
-                }
+                    height: newHeight,
+                },
             });
         }
     }
 
     render() {
-        const { frontBack, goToNextStep } = this.props;
+        const { goToNextStep } = this.props;
         const { style } = this.state;
-        const classNames = frontBack;
         return (
-            <section id="preview-video" className={classNames} style={style}>
-                <video
-                    ref={this.video}
-                    muted
-                />
+            <section id="preview-video" className="card" style={style}>
+                <video ref={this.video} muted />
                 <p className="preview-explanation">{i18next.t('previewExplanation')}</p>
-                <button onClick={goToNextStep} type="button">{i18next.t('next')}</button>
+                <button onClick={goToNextStep} type="button">
+                    {i18next.t('next')}
+                </button>
             </section>
         );
     }
@@ -130,16 +128,15 @@ class PreviewVideo extends React.PureComponent {
 
 PreviewVideo.defaultProps = {
     stream: null,
-    resolution: null
+    resolution: null,
 };
 
 PreviewVideo.propTypes = {
-    frontBack: PropTypes.string.isRequired,
     goToNextStep: PropTypes.func.isRequired,
     startRecording: PropTypes.func.isRequired,
     stream: PropTypes.object,
     resolution: PropTypes.object,
-    setKeyDownListener: PropTypes.func.isRequired
+    setKeyDownListener: PropTypes.func.isRequired,
 };
 
 export default withKeyDownListener(PreviewVideo);

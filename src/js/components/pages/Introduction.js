@@ -40,26 +40,21 @@ class Introduction extends React.PureComponent {
     }
 
     render() {
-        const {
-            frontBack, title, logo, goToNextStep
-        } = this.props;
-        const classNames = frontBack;
+        const { title, logo, goToNextStep } = this.props;
         return (
-            <section id="introduction" className={classNames}>
+            <section id="introduction" className="card">
                 <div className="content-wrap flex-column">
                     <div className="introduction-wrapper">
                         <div>
-                            <span className="avatar"><img src={logo || defaultLogo} alt="" /></span>
+                            <span className="avatar">
+                                <img src={logo || defaultLogo} alt="" />
+                            </span>
                             <h1>{title}</h1>
                         </div>
                     </div>
 
                     <footer>
-                        <button
-                            id="see-instructions"
-                            onClick={goToNextStep}
-                            type="button"
-                        >
+                        <button id="see-instructions" onClick={goToNextStep} type="button">
                             {i18next.t('start')}
                         </button>
                     </footer>
@@ -70,15 +65,14 @@ class Introduction extends React.PureComponent {
 }
 
 Introduction.defaultProps = {
-    logo: null
+    logo: null,
 };
 
 Introduction.propTypes = {
-    frontBack: PropTypes.string.isRequired,
     goToNextStep: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     logo: PropTypes.string,
-    setKeyDownListener: PropTypes.func.isRequired
+    setKeyDownListener: PropTypes.func.isRequired,
 };
 
 export default withKeyDownListener(Introduction);

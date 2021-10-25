@@ -38,7 +38,7 @@ class LocalePicker extends React.PureComponent {
         const firstLocale = props.locales[0] ? props.locales[0] : null;
 
         this.state = {
-            selectedLocale: firstLocale
+            selectedLocale: firstLocale,
         };
 
         this.setLocale = this.setLocale.bind(this);
@@ -58,12 +58,10 @@ class LocalePicker extends React.PureComponent {
     getLocaleObjects() {
         const { locales } = this.props;
         const localesIndexed = {};
-        getLocales().forEach(locale => {
+        getLocales().forEach((locale) => {
             localesIndexed[locale.value] = locale;
         });
-        return locales.map(locale => (
-            localesIndexed[locale]
-        ));
+        return locales.map((locale) => localesIndexed[locale]);
     }
 
     getNextLocale() {
@@ -89,9 +87,12 @@ class LocalePicker extends React.PureComponent {
     }
 
     setLocale(e) {
-        this.setState({
-            selectedLocale: e.target.value
-        }, this.onSumbit);
+        this.setState(
+            {
+                selectedLocale: e.target.value,
+            },
+            this.onSumbit
+        );
     }
 
     handleKeyDown(keyCode) {
@@ -100,13 +101,13 @@ class LocalePicker extends React.PureComponent {
             // Right arrow key
             locale = this.getNextLocale();
             this.setState({
-                selectedLocale: locale
+                selectedLocale: locale,
             });
         } else if (keyCode === 37) {
             // Left arrow key
             locale = this.getPreviousLocale();
             this.setState({
-                selectedLocale: locale
+                selectedLocale: locale,
             });
         } else if (keyCode === 13) {
             // Enter key
@@ -115,37 +116,22 @@ class LocalePicker extends React.PureComponent {
     }
 
     render() {
-        const { frontBack } = this.props;
         const { selectedLocale } = this.state;
-        const classNames = `${frontBack}`;
         const locales = this.getLocaleObjects();
         return (
-            <section id="locale" className={classNames}>
+            <section id="locale" className="card">
                 <div className="content-wrap flex-column">
                     <h1>Select a language</h1>
-                    <form
-                        className="locale-picker-flags"
-                        onSubmit={this.onSumbit}
-                    >
-                        {
-                            locales.map(locale => (
-                                <div key={locale.value}>
-                                    <input
-                                        type="radio"
-                                        name="locale"
-                                        id={`locale-${locale.value}`}
-                                        value={locale.value}
-                                        checked={selectedLocale === locale.value}
-                                        readOnly
-                                        onClick={this.setLocale}
-                                    />
-                                    <label className="flag" htmlFor={`locale-${locale.value}`}>
-                                        <img src={locale.flag} alt={locale.value} />
-                                        <span className="flag-label">{locale.name}</span>
-                                    </label>
-                                </div>
-                            ))
-                        }
+                    <form className="locale-picker-flags" onSubmit={this.onSumbit}>
+                        {locales.map((locale) => (
+                            <div key={locale.value}>
+                                <input type="radio" name="locale" id={`locale-${locale.value}`} value={locale.value} checked={selectedLocale === locale.value} readOnly onClick={this.setLocale} />
+                                <label className="flag" htmlFor={`locale-${locale.value}`}>
+                                    <img src={locale.flag} alt={locale.value} />
+                                    <span className="flag-label">{locale.name}</span>
+                                </label>
+                            </div>
+                        ))}
                     </form>
                 </div>
             </section>
@@ -155,10 +141,9 @@ class LocalePicker extends React.PureComponent {
 
 LocalePicker.propTypes = {
     locales: PropTypes.arrayOf(PropTypes.string).isRequired,
-    frontBack: PropTypes.string.isRequired,
     goToNextStep: PropTypes.func.isRequired,
     setLocale: PropTypes.func.isRequired,
-    setKeyDownListener: PropTypes.func.isRequired
+    setKeyDownListener: PropTypes.func.isRequired,
 };
 
 export default withKeyDownListener(LocalePicker);
