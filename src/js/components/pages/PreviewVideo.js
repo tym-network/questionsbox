@@ -65,10 +65,6 @@ class PreviewVideo extends React.PureComponent {
         window.removeEventListener('resize', this.onResize);
     }
 
-    onResize() {
-        this.computeHeight();
-    }
-
     handleKeyDown(keyCode) {
         const { goToNextStep } = this.props;
 
@@ -76,6 +72,10 @@ class PreviewVideo extends React.PureComponent {
             // Enter key
             goToNextStep();
         }
+    }
+
+    onResize() {
+        this.computeHeight();
     }
 
     playVideo() {

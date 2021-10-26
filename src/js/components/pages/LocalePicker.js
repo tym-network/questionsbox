@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import mem from 'mem';
+import memoize from 'lodash.memoize';
 import withKeyDownListener from '../containers/KeyDownListener';
 
 import { getLocales } from '../../utils/Utils';
@@ -42,10 +42,30 @@ class LocalePicker extends React.PureComponent {
         };
 
         this.setLocale = this.setLocale.bind(this);
-        this.getLocaleObjects = mem(this.getLocaleObjects);
+        this.getLocaleObjects = memoize(this.getLocaleObjects);
         this.onSumbit = this.onSumbit.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         props.setKeyDownListener(this.handleKeyDown);
+    }
+
+    handleKeyDown(keyCode) {
+        let locale;
+        if (keyCode === 39) {
+            // Right arrow key
+            locale = this.getNextLocale();
+            this.setState({
+                selectedLocale: locale,
+            });
+        } else if (keyCode === 37) {
+            // Left arrow key
+            locale = this.getPreviousLocale();
+            this.setState({
+                selectedLocale: locale,
+            });
+        } else if (keyCode === 13) {
+            // Enter key
+            this.onSumbit();
+        }
     }
 
     onSumbit() {
@@ -93,26 +113,6 @@ class LocalePicker extends React.PureComponent {
             },
             this.onSumbit
         );
-    }
-
-    handleKeyDown(keyCode) {
-        let locale;
-        if (keyCode === 39) {
-            // Right arrow key
-            locale = this.getNextLocale();
-            this.setState({
-                selectedLocale: locale,
-            });
-        } else if (keyCode === 37) {
-            // Left arrow key
-            locale = this.getPreviousLocale();
-            this.setState({
-                selectedLocale: locale,
-            });
-        } else if (keyCode === 13) {
-            // Enter key
-            this.onSumbit();
-        }
     }
 
     render() {

@@ -35,14 +35,14 @@ export default function withKeyDownListener(WrappedComponent) {
             document.removeEventListener('keydown', this.handleKeyDown);
         }
 
-        setEventListener(eventListener) {
-            this.eventListener = eventListener;
-        }
-
         handleKeyDown(e) {
             if (this.eventListener && typeof this.eventListener === 'function') {
                 this.eventListener(e.keyCode);
             }
+        }
+
+        setEventListener(eventListener) {
+            this.eventListener = eventListener;
         }
 
         render() {

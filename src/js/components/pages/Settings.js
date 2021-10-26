@@ -46,17 +46,6 @@ export default class Settings extends React.PureComponent {
         listDevices().then(this.handleDeviceList);
     }
 
-    onInputChanged(mediaType) {
-        return (e) => {
-            const { setCurrentInput, save } = this.props;
-            const id = e.target.value;
-
-            setCurrentInput(mediaType, id, () => {
-                save();
-            });
-        };
-    }
-
     handleDeviceList(deviceList) {
         console.log(deviceList);
         const { currentAudioInputId, currentVideoInputId, setCurrentInput } = this.props;
@@ -83,6 +72,17 @@ export default class Settings extends React.PureComponent {
         console.log(audioInputExists, videoInputExists);
 
         return true;
+    }
+
+    onInputChanged(mediaType) {
+        return (e) => {
+            const { setCurrentInput, save } = this.props;
+            const id = e.target.value;
+
+            setCurrentInput(mediaType, id, () => {
+                save();
+            });
+        };
     }
 
     render() {
