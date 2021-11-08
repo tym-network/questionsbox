@@ -1,5 +1,5 @@
 {
     "tabWidth": 4,
     "singleQuote": true,
-    "printWidth": 100000
+    "printWidth": 200
 }

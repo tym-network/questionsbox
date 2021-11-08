@@ -169,12 +169,13 @@ Settings.defaultProps = {
     saveStatus: null,
     currentAudioInputId: null,
     currentVideoInputId: null,
+    back: () => {},
 };
 
 Settings.propTypes = {
     save: PropTypes.func.isRequired,
     saveStatus: PropTypes.string,
-    back: PropTypes.func.isRequired,
+    back: PropTypes.func,
     setCurrentInput: PropTypes.func.isRequired,
     currentAudioInputId: PropTypes.string,
     currentVideoInputId: PropTypes.string,

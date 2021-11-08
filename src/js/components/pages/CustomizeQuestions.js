@@ -206,10 +206,7 @@ export default class CustomizeQuestions extends React.PureComponent {
                         )}
                     </div>
                     <footer className="save-indicator-container">
-                        <SaveIndicator
-                            saveStatus={saveStatus}
-                            updatedAt={questionsData.updatedAt}
-                        />
+                        <SaveIndicator saveStatus={saveStatus} updatedAt={questionsData.updatedAt} />
                     </footer>
                 </div>
             </section>
@@ -217,8 +214,12 @@ export default class CustomizeQuestions extends React.PureComponent {
     }
 }
 
+CustomizeQuestions.defaultProps = {
+    back: () => {},
+};
+
 CustomizeQuestions.propTypes = {
-    back: PropTypes.func.isRequired,
+    back: PropTypes.func,
     questions: PropTypes.object.isRequired,
     questionsData: PropTypes.object.isRequired,
     saveQuestions: PropTypes.func.isRequired,
