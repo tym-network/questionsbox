@@ -106,6 +106,7 @@ class PreviewVideo extends React.PureComponent {
             this.setState({
                 style: {
                     height: newHeight,
+                    minHeight: 0,
                 },
             });
         }

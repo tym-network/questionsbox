@@ -90,67 +90,69 @@ export default class Settings extends React.PureComponent {
             <section id="settings" className="card">
                 <BackButton onClick={back} />
                 <div className="content-wrap">
-                    <h1>{i18next.t('settings')}</h1>
-                    <div className="settings-wrapper">
-                        <div className="settings-wrapper-inputs">
-                            <div className="select-input">
-                                <label htmlFor="audio-input">{i18next.t('audioInput')}</label>
-                                {audioInputs?.length > 0 ? (
-                                    <div className="select-wrapper">
-                                        <select id="audio-input" value={currentAudioInputId} onChange={this.onInputChanged('audio')}>
-                                            {audioInputs.map((audioInput) => (
-                                                <option key={audioInput.id} value={audioInput.id}>
-                                                    {audioInput.text}
-                                                </option>
-                                            ))}
-                                        </select>
+                    <div>
+                        <h1>{i18next.t('settings')}</h1>
+                        <div className="settings-wrapper">
+                            <div className="settings-wrapper-inputs">
+                                <div className="select-input">
+                                    <label htmlFor="audio-input">{i18next.t('audioInput')}</label>
+                                    {audioInputs?.length > 0 ? (
+                                        <div className="select-wrapper">
+                                            <select id="audio-input" value={currentAudioInputId} onChange={this.onInputChanged('audio')}>
+                                                {audioInputs.map((audioInput) => (
+                                                    <option key={audioInput.id} value={audioInput.id}>
+                                                        {audioInput.text}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    ) : (
+                                        <p className="errorText">{i18next.t('audioInputMissing')}</p>
+                                    )}
+                                </div>
+                                {currentAudioInputId && (
+                                    <div className="settings-preview-audio">
+                                        <SoundMeterWithStream
+                                            constraints={{
+                                                audio: {
+                                                    deviceId: {
+                                                        exact: currentAudioInputId,
+                                                    },
+                                                },
+                                            }}
+                                        />
                                     </div>
-                                ) : (
-                                    <p className="errorText">{i18next.t('audioInputMissing')}</p>
+                                )}
+                                <div className="select-input">
+                                    <label htmlFor="video-input">{i18next.t('videoInput')}</label>
+                                    {videoInputs?.length > 0 ? (
+                                        <div className="select-wrapper">
+                                            <select id="video-input" value={currentVideoInputId} onChange={this.onInputChanged('video')}>
+                                                {videoInputs.map((videoInput) => (
+                                                    <option key={videoInput.id} value={videoInput.id}>
+                                                        {videoInput.text}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    ) : (
+                                        <p className="errorText">{i18next.t('videoInputMissing')}</p>
+                                    )}
+                                </div>
+                                {currentVideoInputId && (
+                                    <div className="settings-preview-video">
+                                        <VideoOutputWithStream
+                                            constraints={{
+                                                video: {
+                                                    deviceId: {
+                                                        exact: currentVideoInputId,
+                                                    },
+                                                },
+                                            }}
+                                        />
+                                    </div>
                                 )}
                             </div>
-                            {currentAudioInputId && (
-                                <div className="settings-preview-audio">
-                                    <SoundMeterWithStream
-                                        constraints={{
-                                            audio: {
-                                                deviceId: {
-                                                    exact: currentAudioInputId,
-                                                },
-                                            },
-                                        }}
-                                    />
-                                </div>
-                            )}
-                            <div className="select-input">
-                                <label htmlFor="video-input">{i18next.t('videoInput')}</label>
-                                {videoInputs?.length > 0 ? (
-                                    <div className="select-wrapper">
-                                        <select id="video-input" value={currentVideoInputId} onChange={this.onInputChanged('video')}>
-                                            {videoInputs.map((videoInput) => (
-                                                <option key={videoInput.id} value={videoInput.id}>
-                                                    {videoInput.text}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                ) : (
-                                    <p className="errorText">{i18next.t('videoInputMissing')}</p>
-                                )}
-                            </div>
-                            {currentVideoInputId && (
-                                <div className="settings-preview-video">
-                                    <VideoOutputWithStream
-                                        constraints={{
-                                            video: {
-                                                deviceId: {
-                                                    exact: currentVideoInputId,
-                                                },
-                                            },
-                                        }}
-                                    />
-                                </div>
-                            )}
                         </div>
                     </div>
                     <footer className="save-indicator-container">
