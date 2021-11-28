@@ -1,7 +1,7 @@
 {
     "name": "questions-box",
     "description": "Create a set of questions and record your friends answering them",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "author": "Théotime Loiseau <contac@theotimeloiseau.com>",
     "license": "GPL-3.0",
     "homepage": "https://github.com/tym-network/questionsbox",
