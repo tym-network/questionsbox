@@ -13,7 +13,7 @@ import Customize from './Customize';
 import CustomizeQuestions from './CustomizeQuestions';
 import OverlapTransition from '../containers/OverlapTransition';
 
-export class CustomizeRouter extends React.Component {
+class CustomizeRouter extends React.Component {
     constructor(props) {
         super(props);
 

@@ -47,7 +47,6 @@ export default class Settings extends React.PureComponent {
     }
 
     handleDeviceList(deviceList) {
-        console.log(deviceList);
         const { currentAudioInputId, currentVideoInputId, setCurrentInput } = this.props;
         const { audioInputs, videoInputs } = deviceList;
         let audioInputExists = false;
@@ -68,8 +67,6 @@ export default class Settings extends React.PureComponent {
         if (!videoInputExists && videoInputs.length > 0) {
             setCurrentInput('video', videoInputs[0].id);
         }
-
-        console.log(audioInputExists, videoInputExists);
 
         return true;
     }
