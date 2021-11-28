@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -42,9 +42,8 @@ export default class Menu extends React.PureComponent {
     }
 
     render() {
-        const { frontBack } = this.props;
         return (
-            <section id="menu" className={frontBack}>
+            <section id="menu" className="card">
                 <div className="content-wrap">
                     <h1>{i18next.t('menu')}</h1>
                     <div className="menu-wrapper">
@@ -60,6 +59,5 @@ export default class Menu extends React.PureComponent {
 }
 
 Menu.propTypes = {
-    frontBack: PropTypes.string.isRequired,
     goToStep: PropTypes.func.isRequired
 };

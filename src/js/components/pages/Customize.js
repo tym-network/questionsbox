@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -82,11 +82,10 @@ export default class Customize extends React.PureComponent {
 
     render() {
         const {
-            frontBack, configuration, saveStatus, back, editQuestions
+            configuration, saveStatus, back, editQuestions
         } = this.props;
-        const className = `${frontBack}`;
         return (
-            <section id="customize" className={className}>
+            <section id="customize" className="card">
                 <BackButton onClick={back} />
                 <div className="content-wrap">
                     <div className="custom-form">
@@ -196,7 +195,6 @@ Customize.defaultProps = {
 };
 
 Customize.propTypes = {
-    frontBack: PropTypes.string.isRequired,
     save: PropTypes.func.isRequired,
     saveStatus: PropTypes.string,
     back: PropTypes.func.isRequired,

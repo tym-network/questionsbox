@@ -1,8 +1,6 @@
 {
     "parser": "babel-eslint",
-    "plugins": [
-        "react"
-    ],
+    "plugins": ["react"],
     "extends": ["airbnb"],
     "env": {
         "browser": true,
@@ -11,9 +9,15 @@
     },
     "rules": {
         "no-console": "off",
-        "indent": ["error", 4],
-        "react/jsx-indent":  ["error", 4],
-        "react/jsx-indent-props":  ["error", 4],
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4],
         "comma-dangle": ["error", "only-multiline"],
         "arrow-parens": "off",
         "import/no-dynamic-require": "off",
@@ -24,7 +28,9 @@
         "import/first": ["error"],
         "no-plusplus": "off",
         "react/forbid-prop-types": "off",
-        "jsx-a11y/media-has-caption": "off"
+        "jsx-a11y/media-has-caption": "off",
+        "no-else-return": ["error", { "allowElseIf": true }],
+        "object-curly-newline": "off"
     },
     "settings": {
         "react": {

@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -19,31 +19,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
+import withKeyDownListener from '../containers/KeyDownListener';
 import defaultLogo from '../../../assets/img/logo.png';
 
-export default class Introduction extends React.PureComponent {
+class Introduction extends React.PureComponent {
+    constructor(props) {
+        super(props);
+
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        props.setKeyDownListener(this.handleKeyDown);
+    }
+
+    handleKeyDown(keyCode) {
+        const { goToNextStep } = this.props;
+
+        if (keyCode === 13) {
+            // Enter key
+            goToNextStep();
+        }
+    }
+
     render() {
-        const {
-            frontBack, title, logo, goToNextStep
-        } = this.props;
-        const classNames = frontBack;
+        const { title, logo, goToNextStep } = this.props;
         return (
-            <section id="introduction" className={classNames}>
+            <section id="introduction" className="card">
                 <div className="content-wrap flex-column">
                     <div className="introduction-wrapper">
                         <div>
-                            <span className="avatar"><img src={logo || defaultLogo} alt="" /></span>
+                            <span className="avatar">
+                                <img src={logo || defaultLogo} alt="" />
+                            </span>
                             <h1>{title}</h1>
                         </div>
                     </div>
 
                     <footer>
-                        <button
-                            id="see-instructions"
-                            onClick={goToNextStep}
-                            type="button"
-                        >
-                            {i18next.t('instructionsButton')}
+                        <button id="see-instructions" onClick={goToNextStep} type="button">
+                            {i18next.t('start')}
                         </button>
                     </footer>
                 </div>
@@ -53,12 +65,14 @@ export default class Introduction extends React.PureComponent {
 }
 
 Introduction.defaultProps = {
-    logo: null
+    logo: null,
 };
 
 Introduction.propTypes = {
-    frontBack: PropTypes.string.isRequired,
     goToNextStep: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    logo: PropTypes.string
+    logo: PropTypes.string,
+    setKeyDownListener: PropTypes.func.isRequired,
 };
+
+export default withKeyDownListener(Introduction);

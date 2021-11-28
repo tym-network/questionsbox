@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -17,12 +17,13 @@
 //
 
 #settings {
-
     .content-wrap {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding-left: 80px;
+        flex-grow: 1;
+        padding-left: 80px !important;
+        padding-bottom: 66px !important;
     }
 
     .settings-wrapper {
@@ -71,4 +72,3 @@
         }
     }
 }
-

@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -34,7 +34,6 @@ export default function withRecorder(WrappedComponent) {
 
             this.state = {
                 stream: null,
-                error: null
             };
 
             this.startRecording = this.startRecording.bind(this);
@@ -45,20 +44,20 @@ export default function withRecorder(WrappedComponent) {
             const mediaConstraints = {
                 audio: { deviceId: { exact: audioInputDeviceId } },
                 video: {
-                    deviceId: { exact: videoInputDeviceId }
-                }
+                    deviceId: { exact: videoInputDeviceId },
+                },
             };
 
-            const onMediaError = e => {
+            const onMediaError = (e) => {
                 window.logger.error('Media error while recording', e);
             };
 
-            const onMediaSuccess = stream => {
+            const onMediaSuccess = (stream) => {
                 this.setState({ stream });
                 const options = {
                     mimeType: 'video/webm;codecs=vp9',
                     type: 'video',
-                    disableLogs: true
+                    disableLogs: true,
                 };
                 this.recordRTC = RecordRTC(stream, options);
                 this.recordRTC.startRecording();
@@ -67,32 +66,20 @@ export default function withRecorder(WrappedComponent) {
             new Promise((res, rej) => {
                 // We are missing a device id in the configuration file
                 if (!videoInputDeviceId || !audioInputDeviceId) {
-                    listDevices().then(deviceList => {
+                    listDevices().then((deviceList) => {
                         // Use first device in the list for the video device
-                        if (
-                            !videoInputDeviceId
-                            && deviceList
-                            && deviceList.videoInputs
-                            && deviceList.videoInputs[0]
-                            && deviceList.videoInputs[0].id
-                        ) {
+                        if (!videoInputDeviceId && deviceList && deviceList.videoInputs && deviceList.videoInputs[0] && deviceList.videoInputs[0].id) {
                             mediaConstraints.video.deviceId = {
-                                exact: deviceList.videoInputs[0].id
+                                exact: deviceList.videoInputs[0].id,
                             };
                         } else {
                             rej(new Error('Unable to find a video device'));
                         }
 
                         // Use first device in the list for the audio device
-                        if (
-                            !audioInputDeviceId
-                            && deviceList
-                            && deviceList.audioInputs
-                            && deviceList.audioInputs[0]
-                            && deviceList.audioInputs[0].id
-                        ) {
+                        if (!audioInputDeviceId && deviceList && deviceList.audioInputs && deviceList.audioInputs[0] && deviceList.audioInputs[0].id) {
                             mediaConstraints.audio.deviceId = {
-                                exact: deviceList.audioInputs[0].id
+                                exact: deviceList.audioInputs[0].id,
                             };
                         } else {
                             rej(new Error('Unable to find an audio device'));
@@ -103,9 +90,10 @@ export default function withRecorder(WrappedComponent) {
                 } else {
                     res();
                 }
-            }).then(
-                () => (getStream(mediaConstraints))
-            ).then(onMediaSuccess).catch(onMediaError);
+            })
+                .then(() => getStream(mediaConstraints))
+                .then(onMediaSuccess)
+                .catch(onMediaError);
         }
 
         stopRecording() {
@@ -117,12 +105,12 @@ export default function withRecorder(WrappedComponent) {
                     try {
                         const fileStream = fs.createWriteStream(`${electron.remote.getGlobal('paths').videos}/${videoName}.webm`);
                         const fileReader = new FileReader();
-                        fileReader.onload = event => {
+                        fileReader.onload = (event) => {
                             fileStream.write(Buffer.from(new Uint8Array(event.target.result)), () => {
                                 window.logger.info('File saved', videoName);
                             });
                         };
-                        fileReader.onerror = event => {
+                        fileReader.onerror = (event) => {
                             window.logger.error('Failed to read blobs', event);
                         };
                         fileReader.readAsArrayBuffer(blobs);
@@ -140,11 +128,11 @@ export default function withRecorder(WrappedComponent) {
         stopStream() {
             const { stream } = this.state;
             if (stream) {
-                stream.getTracks().forEach(track => {
+                stream.getTracks().forEach((track) => {
                     track.stop();
                 });
                 this.setState({
-                    stream: null
+                    stream: null,
                 });
             }
         }

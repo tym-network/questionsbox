@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -19,8 +19,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
+import withKeyDownListener from '../../containers/KeyDownListener';
 
-export default class Instructions extends React.PureComponent {
+class Instructions extends React.PureComponent {
+    constructor(props) {
+        super(props);
+
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        props.setKeyDownListener(this.handleKeyDown);
+    }
+
+    handleKeyDown(keyCode) {
+        const { goToNextSubstep } = this.props;
+
+        if (keyCode === 13) {
+            // Enter key
+            goToNextSubstep();
+        }
+    }
+
     render() {
         const { goToNextSubstep } = this.props;
         return (
@@ -63,5 +80,8 @@ export default class Instructions extends React.PureComponent {
 }
 
 Instructions.propTypes = {
-    goToNextSubstep: PropTypes.func.isRequired
+    goToNextSubstep: PropTypes.func.isRequired,
+    setKeyDownListener: PropTypes.func.isRequired
 };
+
+export default withKeyDownListener(Instructions);

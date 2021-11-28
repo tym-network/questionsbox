@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -18,7 +18,7 @@
 
 .save-indicator-container {
     display: flex;
-    position: fixed;
+    position: absolute;
     justify-content: center;
     width: 100%;
     bottom: 0;

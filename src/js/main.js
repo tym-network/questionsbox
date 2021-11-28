@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -24,6 +24,9 @@ const path = require('path');
 
 let win;
 const isDev = process.env.NODE_ENV === 'development';
+
+// Fix reloading issue, see: https://github.com/electron/electron/issues/22119
+app.allowRendererProcessReuse = false;
 
 function createFoldersAndPaths() {
     const appPath = path.join(app.getPath('appData'), 'QuestionsBox');

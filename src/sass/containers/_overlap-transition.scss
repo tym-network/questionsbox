@@ -1,0 +1,31 @@
+.overlap-transition-main-animating {
+    transition: transform 0.4s ease-in;
+}
+
+.overlap-transition-child-animating {
+    position: absolute;
+    transition: all 0.4s ease-out;
+    top: 50%;
+}
+
+.overlap-transition-main-start {
+    transform: scale(1);
+    transition-timing-function: ease-out;
+}
+
+.overlap-transition-main-end {
+    transform: scale(0.6);
+    transition-timing-function: ease-in;
+}
+
+.overlap-transition-child-start {
+    left: 100vw;
+    transform: translateY(-50%);
+    transition-timing-function: ease-in;
+}
+
+.overlap-transition-child-end {
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    transition-timing-function: ease-out;
+}

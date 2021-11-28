@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -45,6 +45,9 @@ export default class SaveIndicator extends React.PureComponent {
                     status: saveStatus
                 });
                 // Stay in "Saving" for at least 600ms
+                if (this.debounce) {
+                    clearTimeout(this.debounce);
+                }
                 this.debounce = setTimeout(this.showNextStatus, 600);
             }
 
@@ -62,6 +65,9 @@ export default class SaveIndicator extends React.PureComponent {
         if (prevState.status !== status) {
             if (status === 'saved') {
                 // Show "saved" for 10s then back to "updated at"
+                if (this.debounce) {
+                    clearTimeout(this.debounce);
+                }
                 this.debounce = setTimeout(() => {
                     this.setState({
                         status: null

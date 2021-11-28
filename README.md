@@ -6,12 +6,12 @@ It's great to provide some entertainment during a party, a team building or any 
 
 ## Feature list
 
-- Record the webcam and the microphone and automatically save it in .webm
-- Allow the users to start a session on their own (loop by itself, instructions are provided in the app)
-- Supports multiple languages for questions: write your questions in any language, the user will chose the one he/she prefers before the questions start
-- Interface available in English and in French (and can easily be extended if someone wishes to translate it in an another language)
-- Customize the title, the logo and even the buzz sound to make it match your event
-- Edit the questions directly in the app
+-   Record the webcam and the microphone and automatically save it in .webm
+-   Allow the users to start a session on their own (loop by itself, instructions are provided in the app)
+-   Supports multiple languages for questions: write your questions in any language, the user will chose the one he/she prefers before the questions start
+-   Interface available in English and in French (and can easily be extended if someone wishes to translate it in an another language)
+-   Customize the title, the logo and even the buzz sound to make it match your event
+-   Edit the questions directly in the app
 
 ## Compatibility
 
@@ -43,9 +43,11 @@ If you ever encounter an error using the app, please create an issue on Github a
 
 The path where your `questions.json`, `config.json`, `error.json` files and the recorded videos are stored depends of the OS you use:
 
-- %APPDATA%/QuestionsBox on Windows
-- $XDG_CONFIG_HOME/QuestionsBox or ~/.config/QuestionsBox on Linux
-- ~/Library/Application Support/QuestionsBox or ~/Users/%CURRENTUSER%/Library/Application Support/QuestionsBox on macOS
+-   %APPDATA%/QuestionsBox on Windows
+-   $XDG_CONFIG_HOME/QuestionsBox or ~/.config/QuestionsBox on Linux
+-   ~/Library/Application Support/QuestionsBox or ~/Users/%CURRENTUSER%/Library/Application Support/QuestionsBox on macOS
+
+# Developer notes
 
 ## How to build the code from the source
 
@@ -58,6 +60,11 @@ If you only wish to build the "main" JS file, run `npm run build-main`. To build
 Note that these scripts also exist in "watch" versions: `npm run watch`, `npm run watch-main`, `npm run watch-renderer`.
 
 Once the code is build, you can start your Electron app by running `npm start`.
+
+TLDR:
+
+-   Terminal 1: `npm run watch`
+-   Terminal 2 : `npm start`
 
 ## How to package your own version
 
@@ -81,6 +88,5 @@ To build for Windows on MacOS, install wine and mono: `brew install mono` and `b
 
 ## Features to come
 
-- Improve UI and UX
-- Add HMR
-- Allow to write questions in all languages
+-   Improve UI and UX
+-   More customizations

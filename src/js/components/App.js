@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -20,37 +20,25 @@ import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import PropTypes from 'prop-types';
 import i18next from 'i18next';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import electron from 'electron';
 
 import { readJsonFile } from '../utils/Utils';
-import Customize from './pages/Customize';
-import CustomizeQuestions from './pages/CustomizeQuestions';
 import Introduction from './pages/Introduction';
 import LocalePicker from './pages/LocalePicker';
 import MainViewer from './pages/MainViewer';
 import Menu from './pages/Menu';
 import PreviewVideo from './pages/PreviewVideo';
 import Settings from './pages/Settings';
+import OverlapTransition from './containers/OverlapTransition';
+import CustomizeRouter from './pages/CustomizeRouter';
 
 const fs = require('fs');
 
 export class App extends React.Component {
-    steps = [
-        'menu',
-        'customize',
-        'customize-questions',
-        'settings',
-        'locale',
-        'preview-video',
-        'introduction',
-        'main-viewer'
-    ];
+    steps = ['menu', 'customize', 'customize-questions', 'settings', 'locale', 'introduction', 'preview-video', 'main-viewer'];
 
     multiStreamRecorder;
-
-    frontBack = 'front';
 
     key = 1; // Used to refresh menu if locale is updated
 
@@ -62,17 +50,18 @@ export class App extends React.Component {
             configuration: {
                 audioInputDeviceId: '',
                 videoInputDeviceId: '',
-                title: 'Questions Box'
+                title: 'Questions Box',
             },
             questions: {},
             questionsData: {},
-            saveConfigurationStatus: null
+            saveConfigurationStatus: null,
         };
 
         this.saveConfiguration = this.saveConfiguration.bind(this);
-        this.isFlipped = this.isFlipped.bind(this);
         this.goToStep = this.goToStep.bind(this);
         this.goToNextStep = this.goToNextStep.bind(this);
+        this.backToMenu = this.backToMenu.bind(this);
+        this.backToCustomize = this.backToCustomize.bind(this);
         this.setCurrentInput = this.setCurrentInput.bind(this);
         this.setConfigurationProperty = this.setConfigurationProperty.bind(this);
         this.setLocale = this.setLocale.bind(this);
@@ -97,35 +86,41 @@ export class App extends React.Component {
 
         this.setState({
             questions: questionsCopy,
-            questionsData
+            questionsData,
         });
     }
 
     setCurrentInput(type, id, cb) {
         if (type === 'audio') {
-            this.setState(state => ({
-                configuration: {
-                    ...state.configuration,
-                    audioInputDeviceId: id
-                }
-            }), cb);
+            this.setState(
+                (state) => ({
+                    configuration: {
+                        ...state.configuration,
+                        audioInputDeviceId: id,
+                    },
+                }),
+                cb
+            );
         } else if (type === 'video') {
-            this.setState(state => ({
-                configuration: {
-                    ...state.configuration,
-                    videoInputDeviceId: id
-                }
-            }), cb);
+            this.setState(
+                (state) => ({
+                    configuration: {
+                        ...state.configuration,
+                        videoInputDeviceId: id,
+                    },
+                }),
+                cb
+            );
         }
     }
 
     setConfigurationProperty(property, value) {
-        this.setState(state => ({
+        this.setState((state) => ({
             configuration: {
                 ...state.configuration,
                 [property]: value,
-                updatedAt: Date.now()
-            }
+                updatedAt: Date.now(),
+            },
         }));
     }
 
@@ -137,27 +132,33 @@ export class App extends React.Component {
         }
 
         this.setState({
-            locale
+            locale,
         });
     }
 
     loadQuestions() {
-        readJsonFile(electron.remote.getGlobal('paths').questions).then(data => {
-            if (!data) {
-                // No data, use the default questions
-                const defaultQuestionsFile = `${electron.remote.getGlobal('paths').appPath}/default-questions.json`;
-                readJsonFile(defaultQuestionsFile).then(defaultQuestions => {
-                    this.setQuestions(defaultQuestions);
-                    fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(defaultQuestions, null, 4), () => {});
-                }, err => {
-                    window.logger.error('Unable to read default-questions.json', err);
-                });
-            } else {
-                this.setQuestions(data);
+        readJsonFile(electron.remote.getGlobal('paths').questions).then(
+            (data) => {
+                if (!data) {
+                    // No data, use the default questions
+                    const defaultQuestionsFile = `${electron.remote.getGlobal('paths').appPath}/default-questions.json`;
+                    readJsonFile(defaultQuestionsFile).then(
+                        (defaultQuestions) => {
+                            this.setQuestions(defaultQuestions);
+                            fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(defaultQuestions, null, 4), () => {});
+                        },
+                        (err) => {
+                            window.logger.error('Unable to read default-questions.json', err);
+                        }
+                    );
+                } else {
+                    this.setQuestions(data);
+                }
+            },
+            (err) => {
+                window.logger.error('Error while reading questions.json file', err);
             }
-        }, err => {
-            window.logger.error('Error while reading questions.json file', err);
-        });
+        );
     }
 
     saveQuestions(questions) {
@@ -167,7 +168,7 @@ export class App extends React.Component {
                 questionsCopy.data = {};
             }
             questionsCopy.data.updatedAt = Date.now();
-            fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(questionsCopy, null, 4), err => {
+            fs.writeFile(electron.remote.getGlobal('paths').questions, JSON.stringify(questionsCopy, null, 4), (err) => {
                 if (err) {
                     window.logger.error(err);
                     rej(err);
@@ -181,7 +182,7 @@ export class App extends React.Component {
                 }
                 this.setState({
                     questions: questionsCopy,
-                    questionsData
+                    questionsData,
                 });
                 res();
             });
@@ -190,40 +191,39 @@ export class App extends React.Component {
 
     loadConfiguration() {
         // Read config file
-        readJsonFile(electron.remote.getGlobal('paths').config).then(data => {
-            this.setState(state => ({
-                configuration: {
-                    ...state.configuration,
-                    ...data
-                }
-            }));
-        }, err => {
-            window.logger.error('Error while reading config.json file', err);
-        });
+        readJsonFile(electron.remote.getGlobal('paths').config).then(
+            (data) => {
+                this.setState((state) => ({
+                    configuration: {
+                        ...state.configuration,
+                        ...data,
+                    },
+                }));
+            },
+            (err) => {
+                window.logger.error('Error while reading config.json file', err);
+            }
+        );
     }
 
     saveConfiguration() {
         const { configuration } = this.state;
         // Save to config.json file
         this.setState({
-            saveConfigurationStatus: 'saving'
+            saveConfigurationStatus: 'saving',
         });
 
         fs.writeFile(electron.remote.getGlobal('paths').config, JSON.stringify(configuration, null, 4), (err) => {
             if (err) {
                 window.logger.error(err);
                 this.setState({
-                    saveConfigurationStatus: 'error'
+                    saveConfigurationStatus: 'error',
                 });
             }
             this.setState({
-                saveConfigurationStatus: 'saved'
+                saveConfigurationStatus: 'saved',
             });
         });
-    }
-
-    isFlipped() {
-        return this.frontBack === 'back';
     }
 
     goToNextStep() {
@@ -238,13 +238,12 @@ export class App extends React.Component {
 
         // Reset save status
         this.setState({
-            saveConfigurationStatus: null
+            saveConfigurationStatus: null,
         });
 
         if (this.shouldShowNextStep(step)) {
-            this.frontBack = this.frontBack === 'front' ? 'back' : 'front';
             this.setState({
-                step
+                step,
             });
         } else {
             this.nextStep(index);
@@ -283,6 +282,18 @@ export class App extends React.Component {
         return true;
     }
 
+    backToMenu() {
+        this.setState({
+            step: 'menu',
+        });
+    }
+
+    backToCustomize() {
+        this.setState({
+            step: 'customize',
+        });
+    }
+
     startRecording() {
         const { startRecording } = this.props;
         const { configuration } = this.state;
@@ -290,138 +301,68 @@ export class App extends React.Component {
     }
 
     render() {
-        let wrapperClasses = null;
-        const timeoutFlip = 1000;
-        const {
-            step, saveConfigurationStatus, configuration, questions, questionsData, locale
-        } = this.state;
+        const { step, saveConfigurationStatus, configuration, questions, questionsData, locale } = this.state;
         const { stopRecording, stream } = this.props;
-
-        if (this.isFlipped()) {
-            wrapperClasses = 'flipped';
+        let childComponent;
+        let resolution = sessionStorage.getItem(`resolution-${configuration.videoInputDeviceId}`);
+        try {
+            resolution = JSON.parse(resolution);
+        } catch (e) {
+            window.logger(e);
         }
 
-        let currentComponent;
+        const mainComponent = <Menu key={this.key} goToStep={this.goToStep} />;
         switch (step) {
-        case 'menu':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
-                    <Menu
-                        key={this.key}
-                        goToStep={this.goToStep}
-                        frontBack={this.frontBack}
-                    />
-                </CSSTransition>
-            );
-            break;
-        case 'customize':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
-                    <Customize
-                        back={() => { this.goToStep('menu'); }}
-                        editQuestions={() => { this.goToStep('customize-questions'); }}
-                        save={this.saveConfiguration}
-                        saveStatus={saveConfigurationStatus}
-                        frontBack={this.frontBack}
+            case 'customize':
+                childComponent = (
+                    <CustomizeRouter
+                        saveConfiguration={this.saveConfiguration}
+                        saveConfigurationStatus={saveConfigurationStatus}
                         configuration={configuration}
                         setConfigurationProperty={this.setConfigurationProperty}
-                    />
-                </CSSTransition>
-            );
-            break;
-        case 'customize-questions':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
-                    <CustomizeQuestions
-                        back={() => { this.goToStep('customize'); }}
-                        frontBack={this.frontBack}
                         questions={questions}
                         questionsData={questionsData}
                         saveQuestions={this.saveQuestions}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'settings':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
+                );
+                break;
+            case 'settings':
+                childComponent = (
                     <Settings
-                        back={() => { this.goToStep('menu'); }}
                         save={this.saveConfiguration}
                         saveStatus={saveConfigurationStatus}
-                        frontBack={this.frontBack}
                         currentAudioInputId={configuration.audioInputDeviceId}
                         currentVideoInputId={configuration.videoInputDeviceId}
                         setCurrentInput={this.setCurrentInput}
                     />
-                </CSSTransition>
-            );
-            break;
-        case 'locale':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
-                    <LocalePicker
-                        locales={Object.keys(questions)}
-                        frontBack={this.frontBack}
-                        goToNextStep={this.goToNextStep}
-                        setLocale={this.setLocale}
-                    />
-                </CSSTransition>
-            );
-            break;
-        case 'preview-video':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
-                    <PreviewVideo
-                        frontBack={this.frontBack}
-                        goToNextStep={this.goToNextStep}
-                        startRecording={this.startRecording}
-                        stream={stream}
-                    />
-                </CSSTransition>
-            );
-            break;
-        case 'introduction':
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
-                    <Introduction
-                        frontBack={this.frontBack}
-                        goToNextStep={this.goToNextStep}
-                        title={configuration.title}
-                        logo={configuration.logo}
-                    />
-                </CSSTransition>
-            );
-            break;
-        case 'main-viewer':
-            if (!questions || !locale || !questions[locale]) {
-                window.logger.error('Unable to retrieve questions for given locale', {
-                    questions,
-                    locale
-                });
-            }
-            currentComponent = (
-                <CSSTransition key={step} classNames="flip" timeout={timeoutFlip}>
-                    <MainViewer
-                        frontBack={this.frontBack}
-                        goToNextStep={this.goToNextStep}
-                        questions={questions[locale]}
-                        configuration={configuration}
-                        stopRecording={stopRecording}
-                    />
-                </CSSTransition>
-            );
-            break;
-        default:
-            break;
+                );
+                break;
+            case 'locale':
+                childComponent = <LocalePicker locales={Object.keys(questions)} goToNextStep={this.goToNextStep} setLocale={this.setLocale} />;
+                break;
+            case 'preview-video':
+                childComponent = <PreviewVideo goToNextStep={this.goToNextStep} startRecording={this.startRecording} stream={stream} resolution={resolution} />;
+                break;
+            case 'introduction':
+                childComponent = <Introduction goToNextStep={this.goToNextStep} title={configuration.title} logo={configuration.logo} />;
+                break;
+            case 'main-viewer':
+                if (!questions || !locale || !questions[locale]) {
+                    window.logger.error('Unable to retrieve questions for given locale', {
+                        questions,
+                        locale,
+                    });
+                }
+                childComponent = <MainViewer goToNextStep={this.goToNextStep} questions={questions[locale]} configuration={configuration} stopRecording={stopRecording} />;
+                break;
+            default:
+                break;
         }
 
         return (
-            <div id="wrapper" className={wrapperClasses}>
+            <div id="wrapper">
                 <div id="main">
-                    <TransitionGroup>
-                        {currentComponent}
-                    </TransitionGroup>
+                    <OverlapTransition main={mainComponent} child={childComponent} onChildClosed={this.backToMenu} />
                 </div>
             </div>
         );
@@ -429,13 +370,13 @@ export class App extends React.Component {
 }
 
 App.defaultProps = {
-    stream: null
+    stream: null,
 };
 
 App.propTypes = {
     startRecording: PropTypes.func.isRequired,
     stopRecording: PropTypes.func.isRequired,
-    stream: PropTypes.object
+    stream: PropTypes.object,
 };
 
 export default hot(App);

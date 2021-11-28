@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -19,7 +19,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import mem from 'mem';
+import memoize from 'lodash.memoize';
+import withKeyDownListener from '../containers/KeyDownListener';
 
 import { getLocales } from '../../utils/Utils';
 
@@ -30,52 +31,108 @@ function importAll(r) {
 
 importAll(require.context('../../../assets/img/flags', true, /\.svg$/));
 
-export default class LocalePicker extends React.PureComponent {
+class LocalePicker extends React.PureComponent {
     constructor(props) {
         super(props);
 
+        const firstLocale = props.locales[0] ? props.locales[0] : null;
+
+        this.state = {
+            selectedLocale: firstLocale,
+        };
+
         this.setLocale = this.setLocale.bind(this);
-        this.getLocaleObjects = mem(this.getLocaleObjects);
+        this.getLocaleObjects = memoize(this.getLocaleObjects);
+        this.onSumbit = this.onSumbit.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        props.setKeyDownListener(this.handleKeyDown);
     }
 
-    setLocale(locale) {
-        return () => {
-            const { setLocale, goToNextStep } = this.props;
-            setLocale(locale);
-            goToNextStep();
-        };
+    handleKeyDown(keyCode) {
+        let locale;
+        if (keyCode === 39) {
+            // Right arrow key
+            locale = this.getNextLocale();
+            this.setState({
+                selectedLocale: locale,
+            });
+        } else if (keyCode === 37) {
+            // Left arrow key
+            locale = this.getPreviousLocale();
+            this.setState({
+                selectedLocale: locale,
+            });
+        } else if (keyCode === 13) {
+            // Enter key
+            this.onSumbit();
+        }
+    }
+
+    onSumbit() {
+        const { setLocale, goToNextStep } = this.props;
+        const { selectedLocale } = this.state;
+        setLocale(selectedLocale);
+        goToNextStep();
     }
 
     getLocaleObjects() {
         const { locales } = this.props;
         const localesIndexed = {};
-        getLocales().forEach(locale => {
+        getLocales().forEach((locale) => {
             localesIndexed[locale.value] = locale;
         });
-        return locales.map(locale => (
-            localesIndexed[locale]
-        ));
+        return locales.map((locale) => localesIndexed[locale]);
+    }
+
+    getNextLocale() {
+        const { locales } = this.props;
+        const { selectedLocale } = this.state;
+        let index = locales.indexOf(selectedLocale);
+        index++;
+        if (index >= locales.length) {
+            index = 0;
+        }
+        return locales[index];
+    }
+
+    getPreviousLocale() {
+        const { locales } = this.props;
+        const { selectedLocale } = this.state;
+        let index = locales.indexOf(selectedLocale);
+        index--;
+        if (index < 0) {
+            index = locales.length - 1;
+        }
+        return locales[index];
+    }
+
+    setLocale(e) {
+        this.setState(
+            {
+                selectedLocale: e.target.value,
+            },
+            this.onSumbit
+        );
     }
 
     render() {
-        const { frontBack } = this.props;
-        const classNames = `${frontBack}`;
+        const { selectedLocale } = this.state;
         const locales = this.getLocaleObjects();
         return (
-            <section id="locale" className={classNames}>
+            <section id="locale" className="card">
                 <div className="content-wrap flex-column">
                     <h1>Select a language</h1>
-                    <div className="locale-picker-flags">
-                        {
-                            locales.map(locale => (
-                                // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-                                <div className="flag" key={locale.value} onClick={this.setLocale(locale.value)}>
+                    <form className="locale-picker-flags" onSubmit={this.onSumbit}>
+                        {locales.map((locale) => (
+                            <div key={locale.value}>
+                                <input type="radio" name="locale" id={`locale-${locale.value}`} value={locale.value} checked={selectedLocale === locale.value} readOnly onClick={this.setLocale} />
+                                <label className="flag" htmlFor={`locale-${locale.value}`}>
                                     <img src={locale.flag} alt={locale.value} />
                                     <span className="flag-label">{locale.name}</span>
-                                </div>
-                            ))
-                        }
-                    </div>
+                                </label>
+                            </div>
+                        ))}
+                    </form>
                 </div>
             </section>
         );
@@ -84,7 +141,9 @@ export default class LocalePicker extends React.PureComponent {
 
 LocalePicker.propTypes = {
     locales: PropTypes.arrayOf(PropTypes.string).isRequired,
-    frontBack: PropTypes.string.isRequired,
     goToNextStep: PropTypes.func.isRequired,
-    setLocale: PropTypes.func.isRequired
+    setLocale: PropTypes.func.isRequired,
+    setKeyDownListener: PropTypes.func.isRequired,
 };
+
+export default withKeyDownListener(LocalePicker);

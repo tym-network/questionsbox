@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -33,7 +33,7 @@ export default function withStream(WrappedComponent) {
 
             this.state = {
                 stream: null,
-                error: null
+                error: null,
             };
 
             this.handleStream = this.handleStream.bind(this);
@@ -55,41 +55,41 @@ export default function withStream(WrappedComponent) {
         componentWillUnmount() {
             const { stream } = this.state;
             if (stream) {
-                stream.getTracks().forEach(track => {
+                stream.getTracks().forEach((track) => {
                     track.stop();
                 });
             }
         }
 
+        handleStream(stream) {
+            this.setState({
+                error: null,
+                stream,
+            });
+        }
+
+        handleStreamError(err) {
+            window.logger.error("Can't get stream with constraints", this.currentConstraints, err);
+
+            this.setState({
+                error: err,
+            });
+        }
+
         getStream(constraints) {
             const { stream } = this.state;
             if (stream) {
-                stream.getTracks().forEach(track => {
+                stream.getTracks().forEach((track) => {
                     track.stop();
                 });
                 this.setState({
-                    stream: null
+                    stream: null,
                 });
             }
 
             this.currentConstraints = constraints;
 
             getStream(constraints).then(this.handleStream, this.handleStreamError);
-        }
-
-        handleStream(stream) {
-            this.setState({
-                error: null,
-                stream
-            });
-        }
-
-        handleStreamError(err) {
-            window.logger.error('Can\'t get stream with constraints', this.currentConstraints, err);
-
-            this.setState({
-                error: err
-            });
         }
 
         render() {
@@ -108,7 +108,7 @@ export default function withStream(WrappedComponent) {
     }
 
     WebRTCStreamContainer.propTypes = {
-        constraints: PropTypes.object.isRequired
+        constraints: PropTypes.object.isRequired,
     };
 
     return WebRTCStreamContainer;

@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Théotime Loiseau
+// Copyright (C) 2020 Théotime Loiseau
 //
 // This file is part of QuestionsBox.
 //
@@ -17,13 +17,12 @@
 //
 
 #customize-questions {
-
     .content-wrap {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding-left: 80px;
-        padding-bottom: 66px;
+        padding-left: 80px !important;
+        padding-bottom: 66px !important;
     }
 
     .languages-row {
@@ -67,7 +66,7 @@
         display: flex;
         flex-direction: row;
 
-        input[type=checkbox] {
+        input[type='checkbox'] {
             position: absolute;
             opacity: 0;
             left: -100vw;
@@ -91,10 +90,9 @@
                     opacity: 0.4;
                 }
             }
-
         }
 
-        input[type=checkbox]:checked + label {
+        input[type='checkbox']:checked + label {
             .checkbox {
                 .visibility-indicator {
                     opacity: 1;
@@ -103,7 +101,8 @@
         }
 
         .language-button-remove {
-            &:hover, &:focus {
+            &:hover,
+            &:focus {
                 border-color: $red;
                 color: $red;
                 z-index: 2;
@@ -163,7 +162,8 @@
             border-radius: 0 6px 6px 0;
             border: 1px solid $border;
 
-            &:hover, &:focus {
+            &:hover,
+            &:focus {
                 color: $red;
                 border-color: $red;
             }
@@ -176,7 +176,6 @@
 }
 
 .add-language-modal {
-
     .language-select-item {
         .flag-label {
             width: 14px;
@@ -190,5 +189,4 @@
             vertical-align: middle;
         }
     }
-
 }
